@@ -36,4 +36,12 @@ class Website extends Model
     {
         return $this->hasMany(Incident::class);
     }
+
+    /**
+     * Scope query untuk mengambil website dengan status active
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('monitoring_status', 'active');
+    }
 }
