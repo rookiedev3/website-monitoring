@@ -16,17 +16,11 @@ class IncidentNote extends Model
         'note',
     ];
 
-    /**
-     * Incident yang dicatat.
-     */
     public function incident(): BelongsTo
     {
         return $this->belongsTo(Incident::class);
     }
 
-    /**
-     * User yang menulis catatan ini.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

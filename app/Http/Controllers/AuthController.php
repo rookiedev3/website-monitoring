@@ -49,9 +49,12 @@ class AuthController extends Controller
     private function dashboardRouteFor(string $role): string
     {
         return match ($role) {
-        'super_admin' => 'super_admin.dashboard',
-        'programmer'  => 'programmer.dashboard',
-        'viewer'      => 'viewer.dashboard',
+        // 'super_admin' => 'super_admin.dashboard',
+        // 'programmer'  => 'programmer.dashboard',
+        // 'viewer'      => 'viewer.dashboard',
+        'super_admin' => 'dashboard',
+        'programmer'  => 'dashboard',
+        'viewer'      => 'dashboard',
         default       => 'login',
         };
     }

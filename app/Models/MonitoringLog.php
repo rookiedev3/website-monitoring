@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,16 +11,8 @@ class MonitoringLog extends Model
 {
     use HasFactory;
 
-    /**
-     * Disable default updated_at column since the table only uses created_at.
-     */
     public $timestamps = false;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'website_id',
         'status',
@@ -34,11 +27,6 @@ class MonitoringLog extends Model
         'created_at',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'ssl_valid'        => 'boolean',
         'ssl_expired_at'   => 'datetime',
@@ -53,31 +41,94 @@ class MonitoringLog extends Model
      | RELATIONS
      ========================================== */
 
-    /**
-     * Relasi balik ke master data website.
-     */
     public function website(): BelongsTo
     {
         return $this->belongsTo(Website::class);
     }
 
     /* ==========================================
-     | SCOPES
+     | ACCESSORS FOR BLADE VIEWS
      ========================================== */
 
     /**
-     * Scope untuk menyaring log berdasarkan status tertentu.
+     * Formatting HTTP Code untuk Tampilan UI
+     * Contoh: "200 OK", "500 Server Error", atau "No Response (N/A)"
      */
-    public function scopeStatus($query, string $status)
+    protected function formattedHttpCode(): Attribute
     {
-        return $query->where('status', $status);
+        return Attribute::make(
+            get: function () {
+                if (is_null($this->http_code)) {
+                    return 'No Response (N/A)';
+                }
+
+                $statusTexts = [
+                    200 => '200 OK',
+                    301 => '301 Moved Permanently',
+                    302 => '302 Found',
+                    400 => '400 Bad Request',
+                    401 => '401 Unauthorized',
+                    403 => '403 Forbidden',
+                    404 => '404 Not Found',
+                    500 => '500 Internal Server Error',
+                    502 => '502 Bad Gateway',
+                    503 => '503 Service Unavailable',
+                    504 => '504 Gateway Timeout',
+                ];
+
+                return $statusTexts[$this->http_code] ?? "{$this->http_code} Unknown Status";
+            }
+        );
     }
 
     /**
-     * Scope untuk mengambil log dalam rentang waktu tertentu.
+     * Label Badge Warna Bootstrap / Tailwind berdasarkan status
+     * Contoh panggil di Blade: $log->status_badge_class
      */
-    public function scopeCheckedBetween($query, $startDate, $endDate)
+    protected function statusBadgeClass(): Attribute
     {
-        return $query->whereBetween('checked_at', [$startDate, $endDate]);
+        return Attribute::make(
+            get: fn () => match ($this->status) {
+                'online'    => 'bg-success text-white',
+                'warning'   => 'bg-warning text-dark',
+                'down'      => 'bg-danger text-white',
+                'ssl_error' => 'bg-secondary text-white',
+                default     => 'bg-light text-dark',
+            }
+        );
+    }
+
+    /**
+     * Label Status Manusiawi untuk Header UI
+     * Contoh: "Online", "Slow Response (Warning)", "Down / Offline"
+     */
+    protected function statusLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => match ($this->status) {
+                'online'    => 'Online',
+                'warning'   => 'Slow Response',
+                'down'      => 'Down / Offline',
+                'ssl_error' => 'SSL Invalid / Expired',
+                default     => 'Unknown',
+            }
+        );
+    }
+
+    /**
+     * Ringkasan Pesan Error yang Bersih & Aman untuk UI
+     */
+    protected function displayError(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (empty($this->error_message)) {
+                    return 'Tidak ada error';
+                }
+
+                // Potong pesan error yang terlalu panjang jika melebihi 80 karakter
+                return \Illuminate\Support\Str::limit($this->error_message, 80);
+            }
+        );
     }
 }

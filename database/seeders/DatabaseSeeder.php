@@ -18,6 +18,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             WebsiteSeeder::class,
+            MonitoringSettingSeeder::class,
+            WebsiteFactorySeeder::class,
+            IncidentSeeder::class,
+            IncidentNoteSeeder::class,
         ]);
     }
 }

@@ -11,11 +11,11 @@
   <div class="menu-list">
     <div class="menu-title">Menu Utama</div>
     
-    <a href="#" class="nav-item active menu-link">
+    <a href="{{ route('dashboard') }}" class="nav-item active menu-link">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       <span>Dashboard</span>
     </a>
-    <a href="#" class="nav-item menu-link">
+    <a href="{{ route('websites.index') }}" class="nav-item menu-link">
       <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 0 1 9-9"/></svg>
       <span>Website Management</span>
     </a>

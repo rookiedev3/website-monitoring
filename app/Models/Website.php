@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Website extends Model
 {
@@ -27,19 +28,38 @@ class Website extends Model
         'timeout_seconds' => 'integer',
     ];
 
+    /* ==========================================
+     | RELATIONS
+     ========================================== */
+
+    /**
+     * Relasi ke seluruh riwayat log pengecekan.
+     */
     public function monitoringLogs(): HasMany
     {
         return $this->hasMany(MonitoringLog::class);
     }
 
+    /**
+     * Relasi untuk mengambil 1 log TERBARU dari tabel monitoring_logs.
+     */
+    public function latestLog(): HasOne
+    {
+        return $this->hasOne(MonitoringLog::class)->latestOfMany('checked_at');
+    }
+
+    /**
+     * Relasi ke seluruh riwayat insiden.
+     */
     public function incidents(): HasMany
     {
         return $this->hasMany(Incident::class);
     }
 
-    /**
-     * Scope query untuk mengambil website dengan status active
-     */
+    /* ==========================================
+     | SCOPES
+     ========================================== */
+
     public function scopeActive($query)
     {
         return $query->where('monitoring_status', 'active');
