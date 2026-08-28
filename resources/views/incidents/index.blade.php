@@ -441,15 +441,14 @@
       transition: all 0.2s ease;
     }
 
-    .btn-page:hover:not(.disabled) {
+    .btn-page:hover:not(:disabled) {
       background: var(--card-hover);
       color: #fff;
       border-color: var(--muted);
     }
 
-    .btn-page.disabled {
+    .btn-page:disabled {
       opacity: 0.4;
-      pointer-events: none;
       cursor: not-allowed;
     }
 
@@ -471,7 +470,6 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      text-decoration: none;
       transition: all 0.2s ease;
     }
 
@@ -557,24 +555,23 @@
         <p style="color: var(--red); margin-bottom: 12px; font-size: 13px;">{{ session('error') }}</p>
       @endif
 
-      <form method="GET" action="{{ route('incidents.index') }}" class="filter-bar">
-        <input type="text" name="search" value="{{ request('search') }}" class="search-input"
-          placeholder="Cari website atau jenis error...">
-        <select name="status" class="filter-select" onchange="this.form.submit()">
+      {{-- Filter bar: realtime AJAX (client-side), tidak lagi submit/reload halaman --}}
+      <div class="filter-bar">
+        <input type="text" id="search-input" class="search-input"
+          placeholder="Cari website, domain, atau jenis error...">
+        <select id="status-filter" class="filter-select">
           <option value="">Status: Semua</option>
-          <option value="open" @selected(request('status') === 'open')>Open</option>
-          <option value="on_progress" @selected(request('status') === 'on_progress')>On Progress</option>
-          <option value="solved" @selected(request('status') === 'solved')>Solved</option>
+          <option value="open">Open</option>
+          <option value="on_progress">On Progress</option>
+          <option value="solved">Solved</option>
         </select>
-        <select name="pic" class="filter-select" onchange="this.form.submit()">
+        <select id="pic-filter" class="filter-select">
           <option value="">PIC: Semua</option>
           @foreach($picOptions as $pic)
-            <option value="{{ $pic->id }}" @selected((string) request('pic') === (string) $pic->id)>{{ $pic->name }}
-            </option>
+            <option value="{{ $pic->id }}">{{ $pic->name }}</option>
           @endforeach
         </select>
-        <button type="submit" class="btn-action">Cari</button>
-      </form>
+      </div>
 
       <div class="card">
         <div class="table-responsive">
@@ -589,101 +586,27 @@
                 <th>Aksi</th>
               </tr>
             </thead>
-            <tbody>
-              @forelse($incidents as $incident)
-                <tr>
-                  <td>
-                    <b>{{ $incident->website->website_name }}</b><br>
-                    <small style="color:var(--muted)">{{ $incident->website->customer_name }}</small>
-                  </td>
-                  <td><span style="color:var(--red)">{{ $incident->type_label }}</span></td>
-                  <td>{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M, H:i') }} WIB</td>
-                  <td>
-                    @if($incident->assignedUser)
-                      {{ $incident->assignedUser->name }}
-                      @if(Auth::user()->role === 'super_admin')
-                        <br>
-                        <button class="assign-btn" style="margin-top:4px; padding:3px 8px; font-size:10px;"
-                          onclick="openAssignModal({{ $incident->id }}, '{{ $incident->website->website_name }}', {{ $incident->assigned_to }})">
-                          Ganti PIC
-                        </button>
-                      @endif
-                    @elseif($incident->status === 'solved')
-                      <span style="color: var(--green);">Auto-resolved</span>
-                    @else
-                      @if(Auth::user()->role === 'super_admin')
-                        <button class="assign-btn"
-                          onclick="openAssignModal({{ $incident->id }}, '{{ $incident->website->website_name }}', null)">
-                          + Tugaskan PIC
-                        </button>
-                      @else
-                        <span style="color: var(--muted);">Belum ditugaskan</span>
-                      @endif
-                    @endif
-                  </td>
-                  <td><span
-                      class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
-                  </td>
-                  <td>
-                    <a href="{{ route('incidents.show', $incident->id) }}" class="btn-action">Detail & Update</a>
-                  </td>
-                </tr>
-              @empty
-                <tr>
-                  <td colspan="6" style="text-align:center; color: var(--muted); padding: 30px;">Belum ada incident.</td>
-                </tr>
-              @endforelse
+            <tbody id="incident-table-body">
+              <tr>
+                <td colspan="6" style="text-align:center; color: var(--muted); padding: 30px;">Memuat data...</td>
+              </tr>
             </tbody>
           </table>
         </div>
 
-        {{-- ===== Pagination bergaya Dashboard ===== --}}
+        {{-- ===== Pagination client-side, gaya sama dengan Dashboard ===== --}}
         <div class="pagination-container">
-          <div class="pagination-info">
-            Menampilkan {{ $incidents->firstItem() ?? 0 }} - {{ $incidents->lastItem() ?? 0 }} dari
-            {{ $incidents->total() }} data
+          <div class="pagination-info" id="pagination-info">
+            Menampilkan 0 - 0 dari 0 data
           </div>
           <div class="pagination-buttons">
-            <a href="{{ $incidents->onFirstPage() ? '#' : $incidents->previousPageUrl() }}"
-              class="btn-page {{ $incidents->onFirstPage() ? 'disabled' : '' }}">
+            <button id="btn-prev" class="btn-page" disabled>
               <i class="bi bi-chevron-left"></i> Prev
-            </a>
-
-            <div class="page-numbers">
-              @php
-                $current = $incidents->currentPage();
-                $last = $incidents->lastPage();
-                $start = max(1, $current - 1);
-                $end = min($last, $current + 1);
-              @endphp
-
-              @if($start > 1)
-                <a href="{{ $incidents->url(1) }}" class="page-num">1</a>
-                @if($start > 2)
-                  <span class="page-dots">...</span>
-                @endif
-              @endif
-
-              @for($p = $start; $p <= $end; $p++)
-                @if($p == $current)
-                  <span class="page-num active">{{ $p }}</span>
-                @else
-                  <a href="{{ $incidents->url($p) }}" class="page-num">{{ $p }}</a>
-                @endif
-              @endfor
-
-              @if($end < $last)
-                @if($end < $last - 1)
-                  <span class="page-dots">...</span>
-                @endif
-                <a href="{{ $incidents->url($last) }}" class="page-num">{{ $last }}</a>
-              @endif
-            </div>
-
-            <a href="{{ $incidents->hasMorePages() ? $incidents->nextPageUrl() : '#' }}"
-              class="btn-page {{ !$incidents->hasMorePages() ? 'disabled' : '' }}">
+            </button>
+            <div id="page-numbers" class="page-numbers"></div>
+            <button id="btn-next" class="btn-page" disabled>
               Next <i class="bi bi-chevron-right"></i>
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -723,8 +646,233 @@
         </form>
       </div>
     </div>
+  @endif
 
-    <script>
+  <!-- JAVASCRIPT: REAL-TIME AJAX SEARCH, FILTER & PAGINATION -->
+  <script>
+    const userRole = "{{ Auth::user()->role }}";
+
+    let rawIncidentsData = [];
+    let currentPage = 1;
+    const perPage = 10; // samakan dengan paginate(10) versi server sebelumnya
+
+    function fetchRealtimeData() {
+      fetch("{{ route('api.incidents.status') }}")
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.incidents) {
+            rawIncidentsData = data.incidents;
+            renderTable();
+          }
+        })
+        .catch(error => console.error('Error fetching incidents data:', error));
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Format ke gaya "d M, H:i" WIB, sama seperti versi Blade sebelumnya
+    function formatStartedAt(isoString) {
+      if (!isoString) return '-';
+      const date = new Date(isoString);
+      const formatter = new Intl.DateTimeFormat('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Jakarta',
+      });
+      return formatter.format(date) + ' WIB';
+    }
+
+    function badgeLabel(status) {
+      return status.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('incident-table-body');
+      const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+      const statusFilter = document.getElementById('status-filter').value;
+      const picFilter = document.getElementById('pic-filter').value;
+
+      if (!tbody) return;
+
+      const filteredIncidents = rawIncidentsData.filter(incident => {
+        const matchesSearch = !searchQuery ||
+          incident.website_name.toLowerCase().includes(searchQuery) ||
+          (incident.domain || '').toLowerCase().includes(searchQuery) ||
+          incident.incident_type.toLowerCase().includes(searchQuery);
+
+        const matchesStatus = !statusFilter || incident.status === statusFilter;
+        const matchesPic = !picFilter || String(incident.assigned_to) === String(picFilter);
+
+        return matchesSearch && matchesStatus && matchesPic;
+      });
+
+      const totalItems = filteredIncidents.length;
+      const totalPages = Math.ceil(totalItems / perPage) || 1;
+
+      if (currentPage > totalPages) {
+        currentPage = totalPages;
+      }
+
+      if (totalItems === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--muted); padding: 30px;">Tidak ada incident yang sesuai pencarian/filter.</td></tr>`;
+        renderPaginationControls(0, 1);
+        return;
+      }
+
+      const startIndex = (currentPage - 1) * perPage;
+      const endIndex = startIndex + perPage;
+      const paginatedItems = filteredIncidents.slice(startIndex, endIndex);
+
+      let html = '';
+
+      paginatedItems.forEach(incident => {
+        // Kolom PIC — tombol assign/ganti PIC HANYA muncul kalau incident
+        // belum solved. Incident yang sudah solved statusnya final, jadi
+        // PIC tidak bisa diubah lagi dari sini.
+        let picHtml = '';
+        if (incident.assigned_user_name) {
+          picHtml = `${escapeHtml(incident.assigned_user_name)}`;
+          if (userRole === 'super_admin' && incident.status !== 'solved') {
+            picHtml += `<br><button class="assign-btn" style="margin-top:4px; padding:3px 8px; font-size:10px;"
+              data-action="assign" data-id="${incident.id}"
+              data-name="${escapeHtml(incident.website_name)}" data-pic="${incident.assigned_to ?? ''}">
+              Ganti PIC
+            </button>`;
+          }
+        } else if (incident.status === 'solved') {
+          picHtml = `<span style="color: var(--green);">Auto-resolved</span>`;
+        } else {
+          if (userRole === 'super_admin') {
+            picHtml = `<button class="assign-btn"
+              data-action="assign" data-id="${incident.id}"
+              data-name="${escapeHtml(incident.website_name)}" data-pic="">
+              + Tugaskan PIC
+            </button>`;
+          } else {
+            picHtml = `<span style="color: var(--muted);">Belum ditugaskan</span>`;
+          }
+        }
+
+        html += `
+        <tr>
+          <td>
+            <b>${escapeHtml(incident.website_name)}</b><br>
+            <small style="color:var(--muted)">${escapeHtml(incident.customer_name)}</small>
+          </td>
+          <td><span style="color:var(--red)">${escapeHtml(incident.type_label)}</span></td>
+          <td>${formatStartedAt(incident.started_at)}</td>
+          <td>${picHtml}</td>
+          <td><span class="badge ${incident.badge_class}">${badgeLabel(incident.status)}</span></td>
+          <td>
+            <a href="${incident.show_url}" class="btn-action">Detail & Update</a>
+          </td>
+        </tr>
+      `;
+      });
+
+      tbody.innerHTML = html;
+      renderPaginationControls(totalItems, totalPages, startIndex + 1, Math.min(endIndex, totalItems));
+    }
+
+    function renderPaginationControls(totalItems, totalPages, from = 0, to = 0) {
+      const infoEl = document.getElementById('pagination-info');
+      const prevBtn = document.getElementById('btn-prev');
+      const nextBtn = document.getElementById('btn-next');
+      const pageNumbersEl = document.getElementById('page-numbers');
+
+      if (infoEl) {
+        infoEl.innerText = totalItems > 0
+          ? `Menampilkan ${from} - ${to} dari ${totalItems} data`
+          : 'Menampilkan 0 - 0 dari 0 data';
+      }
+
+      if (prevBtn) prevBtn.disabled = currentPage <= 1;
+      if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+      if (!pageNumbersEl) return;
+
+      let pagesHtml = '';
+      const side = 1;
+      const start = Math.max(1, currentPage - side);
+      const end = Math.min(totalPages, currentPage + side);
+
+      if (start > 1) {
+        pagesHtml += `<button class="page-num" onclick="goToPage(1)">1</button>`;
+        if (start > 2) pagesHtml += `<span class="page-dots">...</span>`;
+      }
+
+      for (let p = start; p <= end; p++) {
+        if (p === currentPage) {
+          pagesHtml += `<span class="page-num active">${p}</span>`;
+        } else {
+          pagesHtml += `<button class="page-num" onclick="goToPage(${p})">${p}</button>`;
+        }
+      }
+
+      if (end < totalPages) {
+        if (end < totalPages - 1) pagesHtml += `<span class="page-dots">...</span>`;
+        pagesHtml += `<button class="page-num" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      pageNumbersEl.innerHTML = pagesHtml;
+    }
+
+    function goToPage(page) {
+      currentPage = page;
+      renderTable();
+    }
+
+    document.getElementById('btn-prev').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      }
+    });
+
+    document.getElementById('btn-next').addEventListener('click', () => {
+      currentPage++;
+      renderTable();
+    });
+
+    document.getElementById('search-input').addEventListener('input', () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    document.getElementById('status-filter').addEventListener('change', () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    document.getElementById('pic-filter').addEventListener('change', () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    fetchRealtimeData();
+    setInterval(fetchRealtimeData, 5000);
+
+    @if(Auth::user()->role === 'super_admin')
+      // Delegated click handler buat tombol "Tugaskan PIC" / "Ganti PIC"
+      // yang di-generate lewat JS (karena barisnya dibuat dinamis, bukan Blade lagi)
+      document.getElementById('incident-table-body').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action="assign"]');
+        if (!btn) return;
+        const picId = btn.dataset.pic ? Number(btn.dataset.pic) : null;
+        openAssignModal(btn.dataset.id, btn.dataset.name, picId);
+      });
+
       const assignModal = document.getElementById('assignModal');
       const modalWebsiteName = document.getElementById('modalWebsiteName');
       const assignForm = document.getElementById('assignForm');
@@ -744,8 +892,8 @@
       window.addEventListener('click', (e) => {
         if (e.target === assignModal) closeAssignModal();
       });
-    </script>
-  @endif
+    @endif
+  </script>
 
 </body>
 

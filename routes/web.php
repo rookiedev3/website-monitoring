@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('incidents', IncidentController::class)->only(['index', 'show', 'update']);
     Route::post('/incidents/{incident}/take', [IncidentController::class, 'take'])->name('incidents.take');
     Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])->name('incidents.notes.store');
+    Route::get('/api/incidents/status', [IncidentController::class, 'apiStatus'])
+    ->name('api.incidents.status');
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');

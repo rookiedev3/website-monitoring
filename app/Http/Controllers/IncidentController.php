@@ -7,6 +7,7 @@ use App\Models\IncidentNote;
 use App\Models\MonitoringLog;
 use App\Models\User;
 use App\Notifications\WebsiteUpNotification;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -35,6 +36,37 @@ class IncidentController extends Controller
         $picOptions = User::where('role', 'programmer')->orderBy('name')->get();
 
         return view('incidents.index', compact('incidents', 'picOptions'));
+    }
+
+    /**
+     * Endpoint JSON untuk pencarian & filter realtime (AJAX) di halaman index,
+     * sama gayanya dengan api.dashboard.status. Mengembalikan SELURUH incident
+     * (tanpa filter di server) — pencarian, filter status/PIC, dan pagination
+     * dilakukan sepenuhnya di client (JS), sesuai gaya dashboard.
+     */
+    public function apiStatus(): JsonResponse
+    {
+        $incidents = Incident::with(['website', 'assignedUser'])
+            ->latest('started_at')
+            ->get()
+            ->map(function (Incident $incident) {
+                return [
+                    'id' => $incident->id,
+                    'website_name' => $incident->website->website_name,
+                    'customer_name' => $incident->website->customer_name,
+                    'domain' => $incident->website->domain,
+                    'incident_type' => $incident->incident_type,
+                    'type_label' => $incident->type_label,
+                    'started_at' => $incident->started_at->toIso8601String(),
+                    'status' => $incident->status,
+                    'badge_class' => $incident->badge_class,
+                    'assigned_to' => $incident->assigned_to,
+                    'assigned_user_name' => $incident->assignedUser?->name,
+                    'show_url' => route('incidents.show', $incident->id),
+                ];
+            });
+
+        return response()->json(['incidents' => $incidents]);
     }
 
     public function show(Incident $incident): View
