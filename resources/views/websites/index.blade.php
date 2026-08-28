@@ -182,7 +182,7 @@
               <td>
                 <div class="action-btns">
                   <button class="btn-icon">Check</button>
-                  <button class="btn-icon">Edit</button>
+<a href="{{ route('websites.edit', 1) }}" class="btn-icon">Edit</a>                  <button class="btn-icon danger">Hapus</button>
                   <button class="btn-icon danger">Hapus</button>
                 </div>
               </td>
@@ -199,7 +199,7 @@
               <td>
                 <div class="action-btns">
                   <button class="btn-icon">Check</button>
-                  <button class="btn-icon">Edit</button>
+<a href="{{ route('websites.edit', 1) }}" class="btn-icon">Edit</a>                  <button class="btn-icon danger">Hapus</button>
                   <button class="btn-icon danger">Hapus</button>
                 </div>
               </td>
@@ -216,8 +216,7 @@
               <td>
                 <div class="action-btns">
                   <button class="btn-icon">Check</button>
-                  <button class="btn-icon">Edit</button>
-                  <button class="btn-icon danger">Hapus</button>
+<a href="{{ route('websites.edit', 1) }}" class="btn-icon">Edit</a>                  <button class="btn-icon danger">Hapus</button>
                 </div>
               </td>
             </tr>

@@ -50,3 +50,53 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard.index');
     })->name('dashboard');
+
+    // Dashboard Utama dengan nama route
+Route::get('/', function () {
+    return view('dashboard.index');
+})->name('dashboard');
+
+// Website Management
+Route::get('/websites', function () {
+    return view('websites.index');
+})->name('websites.index');
+
+// Halaman Form Tambah Website
+    Route::get('/websites/create', function () {
+        return view('websites.create');
+    })->name('websites.create');
+
+    // Proses Simpan Data Website (Backend Target)
+    Route::post('/websites', function () {
+        // Logic simpan data oleh backend
+    })->name('websites.store');
+
+    //edit
+    Route::get('/websites/edit', function () {
+        return view('websites.edit');
+    })->name('websites.edit');
+
+    // Halaman List Incidents / Errors
+    Route::get('/incidents', function () {
+        return view('incidents.index');
+    })->name('incidents.index');
+
+    // Halaman Detail Incident & Form Update Penanganan (Programmer)
+    Route::get('/incidents/{id}', function ($id) {
+        return view('incidents.show', ['id' => $id]);
+    })->name('incidents.show');
+
+    // Halaman List Incidents / Errors
+    Route::get('/incidents', function () {
+        return view('incidents.index');
+    })->name('incidents.index');
+
+    // Halaman Detail Incident & Form Update (Programmer)
+    Route::get('/incidents/{id}', function ($id) {
+        return view('incidents.show', ['id' => $id]);
+    })->name('incidents.show');
+
+    // Proses Simpan Update Penanganan Incident (Backend Target)
+    Route::patch('/incidents/{id}', function ($id) {
+        // Logic update oleh backend
+    })->name('incidents.update');
