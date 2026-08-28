@@ -43,3 +43,9 @@ Route::get('/', function () {
 // Route::resource('/pengguna', UserController::class)->names('user');
         Route::resource('/users', UserController::class);
 
+//ROUTE CHYNTIA
+
+// Route langsung memanggil view dashboard tanpa Controller
+Route::get('/', function () {
+    return view('dashboard.index');
+});
