@@ -17,9 +17,6 @@ class CheckWebsiteJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Set timeout eksekusi Job di Queue Worker (dalam detik)
-     */
     public $timeout = 30;
 
     public function __construct(public Website $website) {}
@@ -28,7 +25,6 @@ class CheckWebsiteJob implements ShouldQueue
     {
         $startTime = microtime(true);
         $url = $this->website->url;
-        // Ambil timeout khusus dari database website (default 10s jika kosong)
         $timeoutSeconds = $this->website->timeout_seconds ?? 10;
         
         $status = 'online';
@@ -39,12 +35,16 @@ class CheckWebsiteJob implements ShouldQueue
 
         // --- 1. PROSES PENGECEKAN HTTP CLIENT ---
         try {
-            $response = Http::timeout($timeoutSeconds)->get($url);
+            // bypass SSL verify di cURL agar error SSL ditangani terpisah
+            $response = Http::timeout($timeoutSeconds)
+                ->withOptions(['verify' => false])
+                ->get($url);
+
             $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
             $httpCode = $response->status();
 
             if ($response->successful()) {
-                if ($responseTimeMs > 3000) { // Threshold 3 detik (Slow)
+                if ($responseTimeMs > 3000) {
                     $status = 'warning';
                     $incidentType = 'slow';
                 }
@@ -58,7 +58,6 @@ class CheckWebsiteJob implements ShouldQueue
             $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
             $status = 'down';
             
-            // Deteksi jenis error: Timeout vs Gagal Koneksi
             if (str_contains(strtolower($e->getMessage()), 'timed out')) {
                 $incidentType = 'timeout';
                 $errorType = 'CONNECTION_TIMEOUT';
@@ -77,11 +76,13 @@ class CheckWebsiteJob implements ShouldQueue
 
         // --- 2. CEK SSL CERTIFICATE (JIKA TIDAK DOWN) ---
         $sslInfo = $this->checkSslCertificate($url);
-        if (!$sslInfo['valid'] && $status !== 'down') {
+        
+        // Pemicu SSL Error jika Kadaluwarsa ATAU Sisa Hari <= 7 Hari
+        if ((!$sslInfo['valid'] || $sslInfo['days_left'] <= 7) && $status !== 'down') {
             $status = 'ssl_error';
             $incidentType = 'ssl';
             $errorType = 'SSL_INVALID';
-            $errorMessage = $sslInfo['error'];
+            $errorMessage = $sslInfo['error'] ?? "SSL Kadaluwarsa dalam {$sslInfo['days_left']} hari";
         }
 
         $now = Carbon::now();
@@ -100,16 +101,12 @@ class CheckWebsiteJob implements ShouldQueue
             'checked_at'       => $now,
         ]);
 
-        // Perbarui timestamp updated_at pada master website
         $this->website->touch();
 
         // --- 4. OTOMATISASI INCIDENT LIFECYCLE ---
         $this->handleIncidentLifecycle($status, $incidentType, $now);
     }
 
-    /**
-     * Memeriksa Keabsahan dan Masa Berlaku Sertifikat SSL
-     */
     private function checkSslCertificate(string $url): array
     {
         $host = parse_url($url, PHP_URL_HOST) ?? $url;
@@ -121,20 +118,23 @@ class CheckWebsiteJob implements ShouldQueue
             return [
                 'valid'      => false,
                 'expired_at' => null,
-                'days_left'  => null,
+                'days_left'  => 0,
                 'error'      => $errstr ?: 'Gagal terhubung ke port SSL 443',
             ];
         }
 
         $cont = stream_context_get_params($client);
-        $cert = openssl_x509_parse($cont["options"]["ssl"]["peer_certificate"]);
-        fclose($client);
+        $cert = isset($cont["options"]["ssl"]["peer_certificate"]) 
+            ? openssl_x509_parse($cont["options"]["ssl"]["peer_certificate"]) 
+            : null;
+            
+        fclose($client); // Tutup socket selalu dipanggil di sini
 
         if (!$cert) {
             return [
                 'valid'      => false,
                 'expired_at' => null,
-                'days_left'  => null,
+                'days_left'  => 0,
                 'error'      => 'Sertifikat SSL tidak valid / tidak terbaca',
             ];
         }
@@ -150,18 +150,14 @@ class CheckWebsiteJob implements ShouldQueue
         ];
     }
 
-    /**
-     * Otomatis membuat insiden baru jika down/ssl_error & menutup insiden jika web kembali normal
-     */
     private function handleIncidentLifecycle(string $status, ?string $incidentType, Carbon $now): void
     {
-        // Cari insiden aktif yang belum selesai
         $activeIncident = Incident::where('website_id', $this->website->id)
             ->whereIn('status', ['open', 'on_progress'])
             ->latest()
             ->first();
 
-        // 1. Jika Web bermasalah & belum ada insiden aktif -> Buat Insiden Baru
+        // Jika Web bermasalah (down / ssl_error) & belum ada insiden aktif
         if (in_array($status, ['down', 'ssl_error']) && !$activeIncident) {
             Incident::create([
                 'website_id'    => $this->website->id,
@@ -170,7 +166,7 @@ class CheckWebsiteJob implements ShouldQueue
                 'started_at'    => $now,
             ]);
         } 
-        // 2. Jika Web kembali normal & ada insiden aktif -> Auto Solve & Hitung Durasi (detik)
+        // Jika Web kembali normal & ada insiden aktif
         elseif ($status === 'online' && $activeIncident) {
             $durationInSeconds = $activeIncident->started_at->diffInSeconds($now);
 

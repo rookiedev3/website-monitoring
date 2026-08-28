@@ -69,4 +69,5 @@ class MonitoringController extends Controller
             'websites' => $websites
         ]);
     }
+    
 }

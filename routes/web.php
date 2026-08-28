@@ -59,5 +59,5 @@ Route::get('/monitoring', [MonitoringController::class, 'index'])->name('monitor
 
 // Detail Monitoring & Log per Website
 Route::get('/monitoring/{website}', [MonitoringController::class, 'show'])->name('monitoring.show');
-
+Route::get('/websites', [MonitoringController::class, 'websites'])->name('websites.index');
 Route::get('/api/monitoring/status', [MonitoringController::class, 'apiStatus'])->name('api.monitoring.status');
