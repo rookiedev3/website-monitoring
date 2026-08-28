@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // BUAT YANG BELUM LOGIN
@@ -38,3 +39,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Route::resource('/pengguna', UserController::class)->names('user');
+        Route::resource('/users', UserController::class);
+
