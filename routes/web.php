@@ -36,16 +36,17 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::get('/', function () {
-    return view('welcome');
-});
+////// PERCOBAAN ROUTE (NANTI MASUKIN KE USER WOIII)
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 // Route::resource('/pengguna', UserController::class)->names('user');
         Route::resource('/users', UserController::class);
 
 //ROUTE CHYNTIA
 
-// Route langsung memanggil view dashboard tanpa Controller
-Route::get('/', function () {
-    return view('dashboard.index');
-});
+    // dashboard sama buat semua role (data-nya sama, kata Chyntia)
+    Route::get('/dashboard', function () {
+        return view('dashboard.index');
+    })->name('dashboard');
