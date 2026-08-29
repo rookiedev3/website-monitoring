@@ -77,15 +77,15 @@ Route::get('/websites', function () {
         // Logic simpan data oleh backend
     })->name('websites.store');
 
-    //edit
-    Route::get('/websites/edit', function () {
-        return view('websites.edit');
-    })->name('websites.edit');
+    // //edit
+    // Route::get('/websites/edit', function () {
+    //     return view('websites.edit');
+    // })->name('websites.edit');
 
-    // Halaman List Incidents / Errors
-    Route::get('/incidents', function () {
-        return view('incidents.index');
-    })->name('incidents.index');
+    // // Halaman List Incidents / Errors
+    // Route::get('/incidents', function () {
+    //     return view('incidents.index');
+    // })->name('incidents.index');
 
     // Halaman Detail Incident & Form Update Penanganan (Programmer)
     // Route::get('/incidents/{id}', function ($id) {
@@ -113,3 +113,31 @@ Route::get('/websites', function () {
 
     Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])
     ->name('incidents.notes.store');
+
+    // Route::patch('/incidents/{id}', function ($id) {
+    //     // Logic update oleh backend
+    // })->name('incidents.update');
+
+    // // Halaman Analytics
+    // Route::get('/analytics', function () {
+    //     return view('analytics.index');
+    // })->name('analytics.index');
+
+    // // Halaman Settings
+    // Route::get('/settings', function () {
+    //     return view('settings.index');
+    // })->name('settings.index');
+
+    // // Proses Simpan Settings
+    // Route::post('/settings', function () {
+    //     // Logic simpan pengaturan oleh backend
+    // })->name('settings.update');
+
+    // // Halaman daftar & tambah user (khusus Super Admin)
+    // Route::get('/users', function () {
+    //     return view('users.index');
+    // })->name('users.index');
+
+    // Route::post('/users', function () {
+    //     // Logic menyimpan user baru
+    // })->name('users.store');
