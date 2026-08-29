@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IncidentController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\MonitoringSettingController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,12 +22,12 @@ Route::middleware('auth')->group(function () {
     // Route::get('/dashboard', function () {
     //     return view('dashboard'); // ganti sesuai view kamu
     // })->name('dashboard');
-    // 
+    //
     Route::resource('incidents', IncidentController::class)
-    ->only(['index', 'show', 'update']);
+        ->only(['index', 'show', 'update']);
 
     Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])
-    ->name('incidents.notes.store');
+        ->name('incidents.notes.store');
 
     Route::resource('incidents', IncidentController::class)->only(['index', 'show', 'update']);
     Route::post('/incidents/{incident}/take', [IncidentController::class, 'take'])->name('incidents.take');
@@ -41,7 +41,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/settings', [MonitoringSettingController::class, 'edit'])->name('settings.index');
         Route::put('/settings', [MonitoringSettingController::class, 'update'])->name('settings.update');
 
- 
     });
 
     // BUAT PROGRAMMER
@@ -56,7 +55,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-////// PERCOBAAN ROUTE (NANTI MASUKIN KE USER WOIII)
+// //// PERCOBAAN ROUTE (NANTI MASUKIN KE USER WOIII)
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -64,9 +63,9 @@ Route::middleware('auth')->group(function () {
 // Route::resource('/pengguna', UserController::class)->names('user');
 Route::resource('/users', UserController::class);
 
-//ROUTE CHYNTIA
+// ROUTE CHYNTIA
 
-    // dashboard sama buat semua role (data-nya sama, kata Chyntia)
+// dashboard sama buat semua role (data-nya sama, kata Chyntia)
 // Website Management
 Route::get('/websites', function () {
     return view('websites.index');
@@ -82,29 +81,18 @@ Route::post('/websites', function () {
     // Logic simpan data oleh backend
 })->name('websites.store');
 
-//edit
+// edit
 Route::get('/websites/edit', function () {
     return view('websites.edit');
 })->name('websites.edit');
 
-// 
-    // Halaman Analytics
-    Route::get('/analytics', function () {
-        return view('analytics.index');
-    })->name('analytics.index');
+//
+// Halaman Analytics
+Route::get('/analytics', function () {
+    return view('analytics.index');
+})->name('analytics.index');
 
-    // Halaman daftar & tambah user (khusus Super Admin)
-    Route::get('/users', function () {
-        return view('users.index');
-    })->name('users.index');
-
-    Route::post('/users', function () {
-        // Logic menyimpan user baru
-    })->name('users.store');
-
-
-
-//route ridho
+// route ridho
 // Dashboard Monitoring
 Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');
 

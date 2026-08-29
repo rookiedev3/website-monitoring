@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Website;
-use App\Models\MonitoringLog;
 use App\Models\Incident;
-use Illuminate\Http\Request;
+use App\Models\Website;
 
 class MonitoringController extends Controller
 {
@@ -22,14 +20,14 @@ class MonitoringController extends Controller
         // 2. Ambil ringkasan statistik status terkini
         $stats = [
             'total' => $websites->count(),
-            'online' => $websites->filter(fn($w) => optional($w->latestLog)->status === 'online')->count(),
-            'warning' => $websites->filter(fn($w) => optional($w->latestLog)->status === 'warning')->count(),
-            'down' => $websites->filter(fn($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
+            'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
+            'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
+            'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
         ];
 
         // 3. Ambil insiden aktif (Open / On Progress)
         $activeIncidents = Incident::with(['website', 'assignedUser'])
-            ->whereIn('status', ['open', 'in_progress']) 
+            ->whereIn('status', ['open', 'in_progress'])
             ->latest()
             ->get();
 
@@ -43,7 +41,7 @@ class MonitoringController extends Controller
     {
         $logs = $website->monitoringLogs()
             ->latest('checked_at')
-            ->paginate(15);
+            ->paginate(10);
 
         $incidents = $website->incidents()
             ->with(['assignedUser', 'notes.user'])
@@ -59,15 +57,14 @@ class MonitoringController extends Controller
 
         $stats = [
             'total' => $websites->count(),
-            'online' => $websites->filter(fn($w) => optional($w->latestLog)->status === 'online')->count(),
-            'warning' => $websites->filter(fn($w) => optional($w->latestLog)->status === 'warning')->count(),
-            'down' => $websites->filter(fn($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
+            'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
+            'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
+            'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
         ];
 
         return response()->json([
             'stats' => $stats,
-            'websites' => $websites
+            'websites' => $websites,
         ]);
     }
-
 }
