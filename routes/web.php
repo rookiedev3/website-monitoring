@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // BUAT YANG BELUM LOGIN
 Route::middleware('guest')->group(function () {
     Route::controller(AuthController::class)->group(function () {
-        Route::get('/login', 'index')->name('login');
+        Route::get('/', 'index')->name('login');
         Route::post('/login', 'login')->name('login.proses');
     });
 });
@@ -15,10 +16,17 @@ Route::middleware('guest')->group(function () {
 // BUAT YANG SUDAH LOGIN
 Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', function () {
+        return view('dashboard.index');
+    })->name('dashboard');
 
     // Route::get('/dashboard', function () {
     //     return view('dashboard'); // ganti sesuai view kamu
     // })->name('dashboard');
+
+    Route::resource('incidents', IncidentController::class)->only(['index', 'show', 'update']);
+    Route::post('/incidents/{incident}/take', [IncidentController::class, 'take'])->name('incidents.take');
+    Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])->name('incidents.notes.store');
 
     // BUAT SUPER ADMIN
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {
@@ -47,14 +55,12 @@ Route::middleware('auth')->group(function () {
 //ROUTE CHYNTIA
 
     // dashboard sama buat semua role (data-nya sama, kata Chyntia)
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+
 
     // Dashboard Utama dengan nama route
-Route::get('/', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+// Route::get('/', function () {
+//     return view('dashboard.index');
+// })->name('dashboard');
 
 // Website Management
 Route::get('/websites', function () {
@@ -82,21 +88,28 @@ Route::get('/websites', function () {
     })->name('incidents.index');
 
     // Halaman Detail Incident & Form Update Penanganan (Programmer)
-    Route::get('/incidents/{id}', function ($id) {
-        return view('incidents.show', ['id' => $id]);
-    })->name('incidents.show');
+    // Route::get('/incidents/{id}', function ($id) {
+    //     return view('incidents.show', ['id' => $id]);
+    // })->name('incidents.show');
 
-    // Halaman List Incidents / Errors
-    Route::get('/incidents', function () {
-        return view('incidents.index');
-    })->name('incidents.index');
+    // // Halaman List Incidents / Errors
+    // Route::get('/incidents', function () {
+    //     return view('incidents.index');
+    // })->name('incidents.index');
 
-    // Halaman Detail Incident & Form Update (Programmer)
-    Route::get('/incidents/{id}', function ($id) {
-        return view('incidents.show', ['id' => $id]);
-    })->name('incidents.show');
+    // // Halaman Detail Incident & Form Update (Programmer)
+    // Route::get('/incidents/{id}', function ($id) {
+    //     return view('incidents.show', ['id' => $id]);
+    // })->name('incidents.show');
 
     // Proses Simpan Update Penanganan Incident (Backend Target)
-    Route::patch('/incidents/{id}', function ($id) {
-        // Logic update oleh backend
-    })->name('incidents.update');
+    // Route::patch('/incidents/{id}', function ($id) {
+    //     // Logic update oleh backend
+    // })->name('incidents.update');
+
+
+    Route::resource('incidents', IncidentController::class)
+    ->only(['index', 'show', 'update']);
+
+    Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])
+    ->name('incidents.notes.store');
