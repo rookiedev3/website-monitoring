@@ -67,31 +67,26 @@ class Incident extends Model
         return $this->hasMany(IncidentNote::class);
     }
 
-    /* ==========================================
-     | SCOPES
-     ========================================== */
-
-    /**
-     * Scope untuk menyaring insiden yang masih aktif (belum selesai).
-     */
-    public function scopeActive($query)
+        // app/Models/Incident.php — tambahin dua method ini
+    public function getTypeLabelAttribute(): string
     {
-        return $query->whereIn('status', ['open', 'on_progress']);
+        return match ($this->incident_type) {
+            'down'        => 'Website Down',
+            'timeout'     => 'Connection Timeout',
+            'http_error'  => 'HTTP Error',
+            'ssl'         => 'SSL Certificate Error',
+            'slow'        => 'Slow Response',
+            default       => ucfirst($this->incident_type),
+        };
     }
 
-    /**
-     * Scope untuk menyaring insiden yang sudah teratasi.
-     */
-    public function scopeSolved($query)
+    public function getBadgeClassAttribute(): string
     {
-        return $query->where('status', 'solved');
-    }
-
-    /**
-     * Scope berdasarkan jenis insiden.
-     */
-    public function scopeOfType($query, string $type)
-    {
-        return $query->where('incident_type', $type);
+        return match ($this->status) {
+            'open'        => 'open',
+            'on_progress' => 'progress',
+            'solved'      => 'solved',
+            default       => 'open',
+        };
     }
 }

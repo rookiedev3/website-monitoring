@@ -4,16 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | IT Solution - Guest Registration System</title>
+    <title>Login | Website Monitoring IT Solution</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+        :root {
+            --bg: #0b120f;
+            --card: #111b16;
+            --card-hover: #17231d;
+            --ink: #dce9e1;
+            --muted: #82988c;
+            --line: #1b2a22;
+            --green: #0f9f6e;
+            --green-soft: rgba(15, 159, 110, 0.15);
+            --red: #d94c4c;
+            --red-soft: rgba(217, 76, 76, 0.15);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
         * {
             box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -24,98 +38,127 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f8fafc;
+            background-color: var(--bg);
+            color: var(--ink);
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Container Card Full Layar dengan Layout Grid */
-        .login-wrapper {
-            width: 100vw;
-            min-height: 100vh;
-            background: #ffffff;
+        /* Background Glow Ambient ala Referensi */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(15, 159, 110, 0.12) 0%, rgba(11, 18, 15, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        /* Container Card Besar di Tengah (Floating Card) */
+        .login-card-container {
+            width: 90%;
+            max-width: 1050px;
+            min-height: 580px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
             display: grid;
-            grid-template-columns: 1.1fr 1.3fr;
-            box-sizing: border-box;
+            grid-template-columns: 1.1fr 1fr;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
         }
 
-        /* Sisi Kiri: Branding Perusahaan */
-        .login-brand-side {
-            background: linear-gradient(145deg, #01281b 0%, #013220 40%, #006B3F 100%);
-            color: white;
-            padding: 70px 50px 50px 50px;
+        /* Sisi Kiri: Ilustrasi & Branding Area (Latar Putih/Soft Sesuai Referensi) */
+        .login-illustration-side {
+            background: #ffffff;
+            color: #0b120f;
+            padding: 45px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-sizing: border-box;
             position: relative;
             overflow: hidden;
         }
 
-        /* Lingkaran / Bola-Bola Besar Transparan di Latar Belakang */
-        .login-brand-side::before {
+        /* Bentuk organik latar belakang ilustrasi sisi kiri */
+        .login-illustration-side::before {
             content: '';
             position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 350px;
-            height: 350px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background: rgba(15, 159, 110, 0.08);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
             pointer-events: none;
         }
 
-        .login-brand-side::after {
-            content: '';
-            position: absolute;
-            bottom: -100px;
-            left: -100px;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        /* Header Branding */
-        .brand-header {
-            margin-top: 15px; 
-        }
-
-        /* Ukuran Gambar Logo Diperkecil & Transparan Putih */
-        .logo-box-img {
+        .brand-logo-area img {
             max-height: 28px;
             width: auto;
-            margin-bottom: 16px;
             display: block;
-            filter: brightness(0) invert(1);
         }
 
-        /* Container Visual Ilustrasi di Tengah */
-        .brand-illustration {
-            position: relative;
-            z-index: 2;
+        /* Area Ilustrasi Server / Monitoring Center */
+        .illustration-box {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            margin: 20px 0;
+            justify-content: center;
+            text-align: center;
+            margin: auto 0;
+            padding: 20px 0;
         }
 
-        .brand-illustration img {
-            width: 100%;
-            max-width: 280px;
-            height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.25));
+        .server-art {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(135deg, #0f9f6e, #075c3f);
+            border-radius: 24px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 56px;
+            box-shadow: 0 15px 30px rgba(15, 159, 110, 0.3);
+            margin-bottom: 20px;
+            position: relative;
         }
 
-        /* Sisi Kanan: Form Login */
+        /* Indikator Titik Hijau Berdenyut */
+        .server-art::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 14px;
+            height: 14px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        /* Sisi Kanan: Form Input Login (Dark Theme) */
         .login-form-side {
-            padding: 40px 80px;
+            padding: 50px 45px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            box-sizing: border-box;
-            background: #ffffff;
+            background: var(--card);
+        }
+
+        .form-label {
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            color: var(--muted) !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px !important;
         }
 
         .input-group-custom {
@@ -126,33 +169,31 @@
 
         .input-icon {
             position: absolute;
-            left: 18px;
-            color: #94a3b8;
-            font-size: 17px;
+            left: 16px;
+            color: var(--muted);
+            font-size: 16px;
             z-index: 10;
         }
 
         .form-control {
             border-radius: 12px;
-            padding: 13px 18px 13px 50px;
-            font-size: 14.5px;
-            border: 1px solid #d1d9e2;
-            background-color: #fbfcfe;
-            color: #172033;
+            padding: 12px 16px 12px 46px;
+            font-size: 14px;
+            border: 1px solid var(--line);
+            background-color: var(--bg);
+            color: var(--ink);
             transition: all 0.2s ease;
         }
 
         .form-control:focus {
-            border-color: #006B3F;
-            box-shadow: 0 0 0 4px rgba(0, 107, 63, 0.1);
-            background-color: #fff;
+            border-color: var(--green);
+            box-shadow: 0 0 0 4px var(--green-soft);
+            background-color: var(--card-hover);
+            color: #fff;
         }
 
-        .form-label {
-            font-size: 13px !important;
-            font-weight: 700 !important;
-            color: #172033 !important;
-            margin-bottom: 6px !important;
+        .form-control::placeholder {
+            color: var(--muted);
         }
 
         input[type="password"]::-ms-reveal,
@@ -172,10 +213,10 @@
 
         .password-toggle-btn {
             position: absolute;
-            right: 16px;
+            right: 14px;
             background: transparent;
             border: none;
-            color: #64748b;
+            color: var(--muted);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -185,35 +226,35 @@
         }
 
         .password-toggle-btn:hover {
-            color: #006B3F;
+            color: var(--green);
         }
 
         .btn-custom-login {
-            background-color: #006B3F;
+            background-color: var(--green);
             color: #fff;
             border: none;
             border-radius: 12px;
-            padding: 14px;
+            padding: 13px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14.5px;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0, 107, 63, 0.25);
+            box-shadow: 0 8px 20px rgba(15, 159, 110, 0.25);
         }
 
         .btn-custom-login:hover {
-            background-color: #005431;
+            background-color: #0d8a5f;
             color: #fff;
             transform: translateY(-1px);
         }
 
         .btn-back-home {
-            background: #f8fafc;
-            color: #475569;
-            border: 1px solid #e2e8f0;
+            background: var(--bg);
+            color: var(--ink);
+            border: 1px solid var(--line);
             border-radius: 12px;
-            padding: 13px 16px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 11px 16px;
+            font-size: 13px;
+            font-weight: 600;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -224,22 +265,22 @@
         }
 
         .btn-back-home:hover {
-            background: #f1f5f9;
-            color: #1e293b;
+            background: var(--card-hover);
+            color: #fff;
+            border-color: var(--green);
         }
 
         @media (max-width: 991px) {
-            .login-wrapper {
-                grid-template-columns: 1fr !important;
+            .login-card-container {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+                margin: 20px;
             }
-            .login-brand-side {
-                padding: 40px 30px !important;
-            }
-            .brand-illustration {
-                display: none;
+            .login-illustration-side {
+                display: none; /* Sembunyikan sisi ilustrasi di layar kecil agar pas */
             }
             .login-form-side {
-                padding: 40px 30px !important;
+                padding: 40px 30px;
             }
         }
     </style>
@@ -247,38 +288,43 @@
 
 <body>
 
-    <div class="login-wrapper">
+    <div class="login-card-container">
         
-        <!-- Sisi Kiri -->
-        <div class="login-brand-side">
-            <div class="brand-header" style="position: relative; z-index: 2;">
-                <!-- Logo Perusahaan -->
-                <img src="{{ asset('images/foto-perusahaan.jpg') }}" alt="Logo Perusahaan" class="logo-box-img">
-                
-                <p class="text-white-50 mb-0" style="font-size: 13.5px; line-height: 1.6;">Sistem Buku Tamu & Registrasi Kunjungan Digital Perusahaan.</p>
+        <!-- Sisi Kiri: Ilustrasi & Identitas Sistem (Gaya Referensi) -->
+        <div class="login-illustration-side">
+            <div class="brand-logo-area">
+                <img src="{{ asset('images/foto-perusahaan.jpg') }}" alt="Logo Perusahaan">
             </div>
 
+            <div class="illustration-box">
+                <div class="server-art">
+                    <i class="bi bi-hdd-rack"></i>
+                </div>
+                <h5 class="fw-bold mb-1" style="color: #0b120f; font-size: 18px;">IT Solution Monitoring</h5>
+                <p class="text-secondary mb-0" style="font-size: 12.5px; max-width: 260px;">Pusat kontrol pemantauan server dan infrastruktur uptime jaringan secara real-time.</p>
+            </div>
 
-
-            <div style="position: relative; z-index: 2;">
-                <p class="text-white-50 mb-0" style="font-size: 12px;">&copy; {{ date('Y') }} IT Solution Corp. All rights reserved.</p>
+            <div style="font-size: 11.5px; color: #64748b;">
+                &copy; {{ date('Y') }} IT Solution Corp. All rights reserved.
             </div>
         </div>
 
-        <!-- Sisi Kanan -->
+        <!-- Sisi Kanan: Form Login (Fungsionalitas Asli Dipertahankan) -->
         <div class="login-form-side">
             
-            <h3 class="fw-bold mb-1" style="color: #172033; font-size: 26px; letter-spacing: -0.5px;">Selamat Datang! </h3>
-            <p class="text-secondary mb-4" style="font-size: 14px;">Silakan masukkan akun Anda untuk melanjutkan ke sistem.</p>
+            <div class="mb-4">
+                <h3 class="fw-bold mb-1" style="color: #fff; font-size: 24px; letter-spacing: -0.3px;">Login Admin</h3>
+                <p class="mb-0" style="font-size: 13px; color: var(--muted);">Masukkan kredensial Anda untuk masuk ke sistem.</p>
+            </div>
 
             @if (session('success'))
-                <div style="background-color: #e6f4ea; color: #15803d; padding: 12px 14px; border-radius: 12px; font-size: 13px; margin-bottom: 20px; border: 1px solid #c8e6d3; font-weight: 600;">
+                <div style="background-color: var(--green-soft); color: var(--green); padding: 10px 14px; border-radius: 10px; font-size: 12.5px; margin-bottom: 16px; border: 1px solid rgba(15,159,110,0.3); font-weight: 600;">
                     <i class="bi bi-check-circle-fill me-1"></i> {{ session('success') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div style="background-color: #fef2f2; color: #991b1b; padding: 12px 14px; border-radius: 12px; font-size: 13px; margin-bottom: 20px; border: 1px solid #fecaca; font-weight: 600;">
+                <div style="background-color: var(--red-soft); color: var(--red); padding: 10px 14px; border-radius: 10px; font-size: 12.5px; margin-bottom: 16px; border: 1px solid rgba(217,76,76,0.3); font-weight: 600;">
                     <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ $errors->first() }}
                 </div>
             @endif
@@ -287,10 +333,10 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label class="form-label">Alamat Email</label>
+                    <label class="form-label">Username / Email</label>
                     <div class="input-group-custom">
                         <i class="bi bi-envelope input-icon"></i>
-                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required placeholder="Masukkan alamat email" autocomplete="email">
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required placeholder="Enter your email" autocomplete="email">
                     </div>
                 </div>
 
@@ -298,38 +344,32 @@
                     <label class="form-label">Password</label>
                     <div class="password-container">
                         <i class="bi bi-lock input-icon"></i>
-                        <input type="password" name="password" id="password" class="form-control" required placeholder="Masukkan password Anda">
+                        <input type="password" name="password" id="password" class="form-control" required placeholder="Enter your password">
                         <button type="button" class="password-toggle-btn" id="togglePassword">
                             <i class="bi bi-eye-slash" id="eyeIcon"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-4" style="font-size: 14px;">
+                <div class="d-flex justify-content-between align-items-center mb-4" style="font-size: 13px;">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember" style="cursor: pointer; width: 18px; height: 18px; margin-top: 2px;">
-                        <label class="form-check-label ms-1" for="remember" style="color: #64748b; font-weight: 600; cursor: pointer;">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember" style="cursor: pointer; width: 16px; height: 16px; margin-top: 2px; background-color: var(--bg); border-color: var(--line);">
+                        <label class="form-check-label ms-1" for="remember" style="color: var(--muted); font-weight: 600; cursor: pointer;">
                             Ingat Saya
                         </label>
                     </div>
-                    {{-- <a href="{{ route('password.request') }}" style="color: #006B3F; text-decoration: none; font-weight: 700;">Lupa Password?</a> --}}
                 </div>
 
                 <button type="submit" class="btn btn-custom-login w-100 shadow-sm mb-3">
-                    Masuk ke Sistem
+                    Login to System
                 </button>
             </form>
 
-            <div class="mb-4">
+            <div>
                 <a href="{{ url('/') }}" class="btn-back-home shadow-sm">
-                    <span style="font-size: 16px; line-height: 1; color: #475569;">&#8592;</span> Kembali ke Beranda
+                    <span style="font-size: 14px; line-height: 1; color: var(--muted);">&#8592;</span> Kembali ke Beranda
                 </a>
             </div>
-
-            {{-- <div class="text-center" style="font-size: 14px; color: #64748b;">
-                Belum punya akun? 
-                <a href="{{ route('register') }}" style="color: #006B3F; text-decoration: none; font-weight: 700;">Daftar Sekarang</a>
-            </div> --}}
 
         </div>
 
