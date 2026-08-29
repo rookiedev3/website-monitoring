@@ -102,44 +102,64 @@ class IncidentController extends Controller
     }
 
     public function update(Request $request, Incident $incident): RedirectResponse
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if ($user->role === 'super_admin') {
-            // admin CUMA boleh ubah PIC
-            $data = $request->validate([
-                'assigned_to' => 'nullable|exists:users,id',
-            ]);
+    if ($user->role === 'super_admin') {
+        $data = $request->validate([
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
 
-            if (! empty($data['assigned_to']) && $incident->status === 'open') {
-                $data['status'] = 'on_progress';
-            }
-
-        } elseif ($user->role === 'programmer') {
-            // programmer WAJIB PIC dirinya sendiri, nggak boleh ubah assigned_to ke orang lain
-            if ($incident->assigned_to !== $user->id) {
-                abort(403, 'Anda bukan PIC incident ini.');
-            }
-
-            $data = $request->validate([
-                'status'     => ['required', Rule::in(['on_progress', 'solved'])],
-                'root_cause' => 'nullable|string',
-                'resolution' => 'nullable|string',
-            ], [
-                'status.required' => 'Status wajib dipilih',
-            ]);
-
-            if ($data['status'] === 'solved' && $incident->status !== 'solved') {
-                $data['resolved_at']      = now();
-                $data['duration_seconds'] = abs(now()->diffInSeconds($incident->started_at));
-            }
-
-        } else {
-            abort(403, 'Anda tidak punya akses untuk mengubah incident.');
+        if (! empty($data['assigned_to']) && $incident->status === 'open') {
+            $data['status'] = 'on_progress';
         }
 
         $incident->update($data);
 
         return back()->with('success', 'Incident berhasil diperbarui.');
+
+    } elseif ($user->role === 'programmer') {
+        if ($incident->assigned_to !== $user->id) {
+            abort(403, 'Anda bukan PIC incident ini.');
+        }
+
+        if ($incident->status === 'solved') {
+            abort(403, 'Incident ini sudah selesai dan tidak dapat diubah.');
+        }
+
+        if ($incident->root_cause) {
+            abort(403, 'Penanganan untuk incident ini sudah dikirim sebelumnya.');
+        }
+
+        $data = $request->validate([
+            'root_cause' => 'required|string',
+            'resolution' => 'nullable|string',
+            'note'       => 'nullable|string',
+        ], [
+            'root_cause.required' => 'Root cause wajib diisi',
+        ]);
+
+        $note = $data['note'] ?? null;
+        unset($data['note']);
+
+        $data['status']           = 'solved';
+        $data['resolved_at']      = now();
+        $data['duration_seconds'] = abs(now()->diffInSeconds($incident->started_at));
+
+        $incident->update($data);
+
+        if ($note) {
+            IncidentNote::create([
+                'incident_id' => $incident->id,
+                'user_id'     => $user->id,
+                'note'        => $note,
+            ]);
+        }
+
+        return back()->with('success', 'Incident berhasil diselesaikan.');
+
+    } else {
+        abort(403, 'Anda tidak punya akses untuk mengubah incident.');
     }
+}
 }

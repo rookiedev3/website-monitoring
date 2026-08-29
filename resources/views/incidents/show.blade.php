@@ -80,8 +80,8 @@
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); }
     .card-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
     .info-list { display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
-    .info-item { display: flex; justify-content: space-between; }
-    .info-label { color: var(--muted); }
+    .info-item { display: flex; justify-content: space-between; gap: 12px; }
+    .info-label { color: var(--muted); flex-shrink: 0; }
     .info-value { color: #fff; font-weight: 600; text-align: right; }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
@@ -93,6 +93,7 @@
     .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
     .badge.open { background: var(--red-soft); color: var(--red); }
     .badge.progress { background: var(--amber-soft); color: var(--amber); }
+    .badge.solved { background: var(--green-soft); color: var(--green); }
     .timeline { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
     .timeline-item { background: var(--bg); border: 1px solid var(--line); padding: 12px 14px; border-radius: 10px; font-size: 12px; }
     .timeline-header { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--muted); font-weight: 600; }
@@ -122,199 +123,177 @@
       @if(session('success'))
         <p style="color: var(--green); margin-bottom: 16px; font-size: 13px;">{{ session('success') }}</p>
       @endif
+      @if(session('error'))
+        <p style="color: var(--red); margin-bottom: 16px; font-size: 13px;">{{ session('error') }}</p>
+      @endif
+      @if($errors->any())
+        <p style="color: var(--red); margin-bottom: 16px; font-size: 13px;">{{ $errors->first() }}</p>
+      @endif
 
-      <div class="grid-2">
+      @php $user = Auth::user(); @endphp
 
+      <div class="grid-2" @if($user->role !== 'programmer') style="grid-template-columns: 1fr; max-width: 520px;" @endif>
+
+        <!-- Kolom 1: Informasi Gangguan (semua role lihat, read-only) -->
         <div class="card">
-  <div class="card-title">Informasi Gangguan</div>
-  <div class="info-list">
-    <div class="info-item">
-      <span class="info-label">Website / Domain</span>
-      <span class="info-value">{{ $incident->website->domain }}</span>
-    </div>
-    <div class="info-item">
-      <span class="info-label">Customer</span>
-      <span class="info-value">{{ $incident->website->customer_name }}</span>
-    </div>
-    <div class="info-item">
-      <span class="info-label">Jenis Error</span>
-      <span class="info-value" style="color:var(--red)">{{ $incident->type_label }}</span>
-    </div>
-    <div class="info-item">
-      <span class="info-label">HTTP Code</span>
-      <span class="info-value">{{ $latestLog->http_code ?? '-' }}</span>
-    </div>
-    <div class="info-item">
-      <span class="info-label">Response Time</span>
-      <span class="info-value">{{ $latestLog->response_time_ms ?? '-' }} ms</span>
-    </div>
-    <div class="info-item">
-      <span class="info-label">Mulai Error</span>
-      <span class="info-value">{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</span>
-    </div>
-    <div class="info-item">
-      <span class="info-label">Durasi Gangguan</span>
-      <span class="info-value">
-        @if($incident->status === 'solved')
-          {{ gmdate('H \j\a\m i \m\e\n\i\t', $incident->duration_seconds) }}
-        @else
-          {{ gmdate('H \j\a\m i \m\e\n\i\t', now()->diffInSeconds($incident->started_at)) }} (berjalan)
-        @endif
-      </span>
-    </div>
+          <div class="card-title">Informasi Gangguan</div>
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">Website / Domain</span>
+              <span class="info-value">{{ $incident->website->domain }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Customer</span>
+              <span class="info-value">{{ $incident->website->customer_name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Jenis Error</span>
+              <span class="info-value" style="color:var(--red)">{{ $incident->type_label }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">HTTP Code</span>
+              <span class="info-value">{{ $latestLog->http_code ?? '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Response Time</span>
+              <span class="info-value">{{ $latestLog->response_time_ms ?? '-' }} ms</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Mulai Error</span>
+              <span class="info-value">{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Durasi Gangguan</span>
+              <span class="info-value">
+                @if($incident->status === 'solved')
+                  {{ gmdate('H \j\a\m i \m\e\n\i\t', $incident->duration_seconds) }}
+                @else
+                  {{ gmdate('H \j\a\m i \m\e\n\i\t', now()->diffInSeconds($incident->started_at)) }} (berjalan)
+                @endif
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">PIC</span>
+              <span class="info-value">{{ $incident->assignedUser->name ?? 'Belum ditugaskan' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Status Pekerjaan</span>
+              <span class="info-value">
+                <span class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
+              </span>
+            </div>
+          </div>
 
-    {{-- TAMBAHAN BARU DI SINI --}}
-    @if($incident->resolution)
-    <div class="info-item">
-      <span class="info-label">Resolution</span>
-      <span class="info-value">{{ $incident->resolution }}</span>
-    </div>
-    @endif
-
-  </div> {{-- penutup .info-list --}}
-</div> {{-- penutup .card --}}
-
-        <div class="card">
-          <div class="card-title">Update Penanganan</div>
-
-          @php $user = Auth::user(); @endphp
-
-          {{-- ADMIN: cuma bisa assign/ganti PIC --}}
-          @if($user->role === 'super_admin')
-            <form action="{{ route('incidents.update', $incident->id) }}" method="POST">
-              @csrf
-              @method('PATCH')
-              <div class="form-group">
-                <label>PIC (Penanggung Jawab)</label>
-                <select name="assigned_to" class="form-control">
-                  <option value="">Belum ditugaskan</option>
-                  @foreach($picOptions as $pic)
-                    <option value="{{ $pic->id }}" @selected($incident->assigned_to === $pic->id)>
-                      {{ $pic->name }}
-                    </option>
-                  @endforeach
-                </select>
-              </div>
-              <button type="submit" class="btn-primary">Simpan Penugasan</button>
-            </form>
-
-            <p style="font-size: 12px; color: var(--muted); margin-top: 12px;">
-              Status, root cause, dan resolution diisi oleh programmer yang bertugas.
+          @if($incident->root_cause || $incident->resolution)
+          <div style="margin-top: 8px; padding-top: 14px; border-top: 1px dashed var(--line);">
+            <p style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
+              Hasil Investigasi
             </p>
-
-          {{-- PROGRAMMER --}}
-          @elseif($user->role === 'programmer')
-
-            @if($incident->status === 'open')
-              {{-- belum di-assign siapa-siapa -> programmer bisa ambil sendiri --}}
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                Incident ini belum ditangani siapa pun.
-              </p>
-              <form action="{{ route('incidents.take', $incident->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-primary">Ambil Incident Ini</button>
-              </form>
-
-            @elseif($incident->assigned_to === $user->id)
-              {{-- programmer ini adalah PIC-nya -> boleh isi form lengkap --}}
-              <form action="{{ route('incidents.update', $incident->id) }}" method="POST">
-                @csrf
-                @method('PATCH')
-
-                <div class="form-group">
-                  <label>Ubah Status Pekerjaan</label>
-                  <select name="status" class="form-control" required>
-                    <option value="on_progress" @selected($incident->status === 'on_progress')>On Progress (Sedang Dikerjakan)</option>
-                    <option value="solved" @selected($incident->status === 'solved')>Solved (Selesai / Normal Kembali)</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Root Cause</label>
-                  <textarea name="root_cause" class="form-control" placeholder="Contoh: Plugin conflict setelah update">{{ old('root_cause', $incident->root_cause) }}</textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Resolution</label>
-                  <textarea name="resolution" class="form-control" placeholder="Contoh: Rollback plugin dan update versi stabil">{{ old('resolution', $incident->resolution) }}</textarea>
-                </div>
-
-                <button type="submit" class="btn-primary">Simpan Pembaruan</button>
-              </form>
-
-            @else
-              {{-- di-assign ke programmer LAIN -> read only --}}
-              <p style="font-size: 13px; color: var(--muted);">
-                Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser->name }}</b>.
-              </p>
+            @if($incident->root_cause)
+            <div class="info-item">
+              <span class="info-label">Root Cause</span>
+              <span class="info-value">{{ $incident->root_cause }}</span>
+            </div>
             @endif
-
-          {{-- VIEWER / role lain: cuma lihat --}}
-          @else
-            <p style="font-size: 13px; color: var(--muted);">
-              PIC: <b style="color: #fff;">{{ $incident->assignedUser->name ?? 'Belum ditugaskan' }}</b><br>
-              Status: <b style="color: #fff;">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</b><br>
-              Root Cause: {{ $incident->root_cause ?? '-' }}<br>
-              Resolution: {{ $incident->resolution ?? '-' }}
-            </p>
+            @if($incident->resolution)
+            <div class="info-item" style="margin-top: 8px;">
+              <span class="info-label">Resolution</span>
+              <span class="info-value">{{ $incident->resolution }}</span>
+            </div>
+            @endif
+          </div>
           @endif
         </div>
 
-            <div class="form-group">
-              <label>Ubah Status Pekerjaan</label>
-              <select name="status" class="form-control" required>
-                <option value="open" @selected($incident->status === 'open')>Open (Belum Ditangani)</option>
-                <option value="on_progress" @selected($incident->status === 'on_progress')>On Progress (Sedang Dikerjakan)</option>
-                <option value="solved" @selected($incident->status === 'solved')>Solved (Selesai / Normal Kembali)</option>
-              </select>
-            </div>
+        {{-- Kolom 2: Update Penanganan — HANYA untuk programmer --}}
+        @if($user->role === 'programmer')
+        <div class="card">
+          <div class="card-title">Update Penanganan</div>
 
-            <div class="form-group">
-              <label>Catatan Perbaikan / Root Cause</label>
-              <textarea name="root_cause" class="form-control" placeholder="Tuliskan kendala, hasil investigasi, atau langkah perbaikan...">{{ old('root_cause', $incident->root_cause) }}</textarea>
-            </div>
+          @if($incident->status === 'open')
+            <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
+              Incident ini belum ditangani siapa pun.
+            </p>
+            <form action="{{ route('incidents.take', $incident->id) }}" method="POST">
+              @csrf
+              <button type="submit" class="btn-primary">Ambil Incident Ini</button>
+            </form>
 
-            <button type="submit" class="btn-primary">Simpan Pembaruan</button>
-          </form>
+          @elseif($incident->assigned_to !== $user->id)
+            <p style="font-size: 13px; color: var(--muted);">
+              Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser->name }}</b>.
+            </p>
+
+          @elseif($incident->status === 'solved')
+            {{-- TERKUNCI TOTAL: sudah selesai, tidak ada input/tombol apapun --}}
+            <p style="font-size: 13px; color: var(--muted);">
+              Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" sebelah kiri.
+            </p>
+            <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">✓ Incident sudah selesai ditangani.</p>
+
+          @else
+            {{-- SATU-SATUNYA form aktif: Root Cause + Resolution + Catatan, SATU tombol --}}
+            <form
+              action="{{ route('incidents.update', $incident->id) }}"
+              method="POST"
+              onsubmit="return confirm('Setelah dikirim, data ini tidak bisa diubah lagi dan incident akan ditandai Solved. Lanjutkan?');"
+            >
+              @csrf
+              @method('PATCH')
+
+              <div class="form-group">
+                <label>Akar Masalah</label>
+                <textarea name="root_cause" class="form-control" placeholder="Contoh: Plugin conflict setelah update" required>{{ old('root_cause') }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Penyelesaian</label>
+                <textarea name="resolution" class="form-control" placeholder="Contoh: Rollback plugin dan update versi stabil">{{ old('resolution') }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Catatan</label>
+                <textarea name="note" class="form-control" placeholder="Contoh: Website kembali normal pukul 10:22">{{ old('note') }}</textarea>
+              </div>
+
+              <p style="font-size: 11px; color: var(--amber); margin-bottom: 12px;">
+                ⚠ Data ini hanya bisa dikirim SEKALI. Setelah dikirim, incident langsung ditandai Solved.
+              </p>
+
+              <button type="submit" class="btn-primary">Simpan & Selesaikan</button>
+            </form>
+          @endif
         </div>
+        @endif
 
       </div>
 
+      <!-- Riwayat Catatan Penanganan — read-only untuk SEMUA role, tanpa form input -->
       <div class="card">
-  <div class="card-title">Riwayat Catatan Penanganan</div>
-
-  <form action="{{ route('incidents.notes.store', $incident->id) }}" method="POST" style="margin-bottom: 20px;">
-    @csrf
-    <div class="form-group">
-      <label>Tambah Catatan</label>
-      <textarea name="note" class="form-control" placeholder="Tulis update progres penanganan..." required></textarea>
-    </div>
-    <button type="submit" class="btn-primary" style="width: auto; padding: 8px 16px;">Kirim Catatan</button>
-  </form>
-
-  <div class="timeline">
-    @forelse($incident->notes()->latest()->get() as $note)
-      <div class="timeline-item">
-        <div class="timeline-header">
-          <span><b>{{ $note->user->name }}</b> ({{ ucfirst($note->user->role) }})</span>
-          <span>{{ $note->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</span>
+        <div class="card-title">Riwayat Catatan Penanganan</div>
+        <div class="timeline">
+          @forelse($incident->notes()->latest()->get() as $note)
+            <div class="timeline-item">
+              <div class="timeline-header">
+                <span><b>{{ $note->user->name }}</b> ({{ ucfirst($note->user->role) }})</span>
+                <span>{{ $note->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</span>
+              </div>
+              <div class="timeline-body">{{ $note->note }}</div>
+            </div>
+          @empty
+            <p style="color: var(--muted); font-size: 12px;">Belum ada catatan tambahan.</p>
+          @endforelse
+          <div class="timeline-item" style="border-style: dashed; opacity: 0.7;">
+            <div class="timeline-header">
+              <span>Sistem Monitoring</span>
+              <span>{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</span>
+            </div>
+            <div class="timeline-body">
+              Incident otomatis dibuat oleh sistem.
+            </div>
+          </div>
         </div>
-        <div class="timeline-body">{{ $note->note }}</div>
       </div>
-    @empty
-      <p style="color: var(--muted); font-size: 12px;">Belum ada catatan tambahan.</p>
-    @endforelse
-    <div class="timeline-item" style="border-style: dashed; opacity: 0.7;">
-      <div class="timeline-header">
-        <span>Sistem Monitoring</span>
-        <span>{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</span>
-      </div>
-      <div class="timeline-body">
-        Incident otomatis dibuat oleh sistem.
-      </div>
-    </div>
-  </div>
-</div>
 
     </div>
   </main>
