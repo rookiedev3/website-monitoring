@@ -20,7 +20,6 @@
       --sidebar-width: 260px;
       --sidebar-collapsed: 76px;
     }
-
     * { box-sizing: border-box; transition: width 0.3s ease, padding 0.3s ease; }
     body {
       margin: 0;
@@ -32,8 +31,6 @@
       overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
-
-    /* STYLE SIDEBAR (Konsisten) */
     aside {
       position: fixed; top: 0; left: 0; height: 100vh;
       width: var(--sidebar-width); background: var(--card);
@@ -52,8 +49,6 @@
     .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
-    
-    /* USER PROFILE & POPUP LOGOUT (Sesuai Standar Halaman Lain) */
     .user-profile-container { position: relative; border-top: 1px solid var(--line); padding: 12px; }
     .user-profile-btn { width: 100%; background: transparent; border: none; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; cursor: pointer; color: var(--ink); text-align: left; white-space: nowrap; overflow: hidden; }
     .user-profile-btn:hover { background: var(--card-hover); }
@@ -62,171 +57,189 @@
     .user-info h4 { font-size: 12px; margin: 0; color: #fff; text-overflow: ellipsis; overflow: hidden; }
     .user-info p { font-size: 10px; margin: 0; color: var(--muted); text-overflow: ellipsis; overflow: hidden; }
     aside.collapsed .user-info { display: none; }
-    
     .user-popup-menu { position: absolute; bottom: 70px; left: 12px; right: 12px; background: #16241d; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
     .user-popup-menu.show { display: flex; }
     .popup-item { padding: 10px 14px; font-size: 12px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; }
     .popup-item:hover { background: #1f3328; color: #fff; }
     .popup-item.danger { color: var(--red); }
-
     .sidebar-toggle-bar { border-top: 1px solid var(--line); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: rgba(0,0,0,0.1); font-size: 11px; color: var(--muted); }
     .sidebar-toggle-bar:hover { background: var(--card-hover); color: #fff; }
     aside.collapsed .sidebar-toggle-text { display: none; }
     aside.collapsed .sidebar-toggle-bar { justify-content: center; }
-
-    /* STYLE MAIN CONTENT */
     main { margin-left: var(--sidebar-width); flex: 1; padding: 30px; min-width: 0; }
     aside.collapsed ~ main { margin-left: var(--sidebar-collapsed); }
     .container { max-width: 900px; margin: 0 auto; }
-    
     .page-header { margin-bottom: 24px; }
     .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
     .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
-
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
     .card-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
     .card-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
-
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+    .form-group small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
     .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; }
     .form-control:focus { border-color: var(--green); }
-
-    /* SLIDER & INTERVAL STYLE */
+    .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
+    .error-text { color: var(--red); font-size: 12px; margin-top: 4px; }
     .slider-container { margin: 20px 0 30px; }
     .range-slider { width: 100%; accent-color: var(--green); cursor: pointer; height: 6px; background: var(--line); border-radius: 3px; }
     .slider-marks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; padding: 0 4px; }
     .slider-marks span.active { color: var(--green); font-weight: bold; }
-
-    /* LOCATION BOX */
-    .location-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border: 1px solid var(--line); padding: 12px 16px; border-radius: 12px; margin-top: 8px; }
-    .location-left { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: #fff; }
-    .btn-add-loc { background: var(--green-soft); border: 1px solid rgba(15, 159, 110, 0.3); color: var(--green); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
-    .btn-add-loc:hover { background: rgba(15, 159, 110, 0.25); }
-
-    /* ACCORDION / COLLAPSIBLE MENU */
-    .accordion-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; }
-    .accordion-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .accordion-item:first-of-type { padding-top: 0; }
-    .accordion-item:hover { color: var(--green); }
-
-    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
-    .toggle-row:last-child { border-bottom: none; }
-
+    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .coming-soon-badge { display: inline-block; background: var(--amber); color: #1a1006; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-left: 8px; text-transform: uppercase; }
     .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
     .btn-primary:hover { opacity: 0.9; }
+    @media (max-width: 640px) {
+      .grid-2col { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- MEMANGGIL SIDEBAR -->
   @include('layouts.sidebar')
 
-  <!-- MAIN CONTENT -->
   <main>
     <div class="container">
-      
-      <!-- PAGE HEADER -->
+
       <div class="page-header">
         <h2>System Settings</h2>
-        <p>Kelola parameter interval monitoring, notifikasi WhatsApp, dan preferensi pelacakan server.</p>
+        <p>Kelola parameter default monitoring: interval pengecekan, timeout, threshold, dan peringatan SSL.</p>
       </div>
 
-      <!-- FORM SETTINGS -->
+      @if(session('success'))
+        <p style="color: var(--green); margin-bottom: 16px; font-size: 13px;">{{ session('success') }}</p>
+      @endif
+
+      @php $isAdmin = Auth::user()->role === 'super_admin'; @endphp
+
       <form action="{{ route('settings.update') }}" method="POST">
         @csrf
+        @method('PUT')
 
         <!-- PENGATURAN MONITORING -->
         <div class="card">
-          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">Konfigurasi Umum & Monitoring</div>
-          
-          <div class="form-group">
-            <label>Nama Aplikasi / Instance</label>
-            <input type="text" name="app_name" class="form-control" value="IT Solution Monitoring System">
-          </div>
+          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">Konfigurasi Monitoring</div>
 
-          <div style="margin-top: 20px;">
-            <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px;">Monitor interval</div>
+          <!-- Monitor Interval (slider, sesuai desain asli) -->
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px;">Default Monitor Interval</div>
             <div class="card-desc">
-              Your monitor will be checked every <b>5 minutes</b>.
+              Setiap website akan dicek setiap <b id="intervalLabel">{{ $setting->default_interval_minutes }} menit</b> secara default.
             </div>
 
             <div class="slider-container">
-              <input type="range" min="1" max="5" value="2" class="range-slider">
+              <input
+                type="range"
+                name="default_interval_minutes"
+                min="1" max="60" step="1"
+                value="{{ old('default_interval_minutes', $setting->default_interval_minutes) }}"
+                class="range-slider"
+                oninput="document.getElementById('intervalLabel').innerText = this.value + ' menit'"
+                @unless($isAdmin) disabled @endunless
+              >
               <div class="slider-marks">
                 <span>1m</span>
-                <span class="active">5m</span>
                 <span>15m</span>
                 <span>30m</span>
-                <span>1h</span>
+                <span>45m</span>
+                <span>60m</span>
               </div>
             </div>
+            @error('default_interval_minutes') <span class="error-text">{{ $message }}</span> @enderror
           </div>
 
-          <!-- Location to Monitor From -->
-          <div style="margin-top: 28px;">
-            <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px;">Location to monitor from</div>
-            <div class="location-box">
-              <div class="location-left">
-                <span>🌐</span> Default Server Node (Local Network)
-              </div>
-              <button type="button" class="btn-add-loc">+ Add location</button>
+          <!-- Field lain dari tabel monitoring_settings -->
+          <div class="grid-2col" style="margin-top: 24px;">
+            <div class="form-group">
+              <label>Timeout (detik)</label>
+              <input
+                type="number"
+                name="timeout_seconds"
+                value="{{ old('timeout_seconds', $setting->timeout_seconds) }}"
+                class="form-control"
+                min="1" max="120"
+                @unless($isAdmin) disabled @endunless
+                required
+              >
+              <small>Batas waktu tunggu sebelum request dianggap gagal.</small>
+              @error('timeout_seconds') <span class="error-text">{{ $message }}</span> @enderror
             </div>
-          </div>
 
-          <!-- SSL & Advanced Settings Accordion -->
-          <div style="margin-top: 28px; border-top: 1px solid var(--line); padding-top: 20px;">
-            <div class="accordion-item">
-              <span>🔒 SSL certificate and Domain checks</span>
-              <span>&rsaquo;</span>
+            <div class="form-group">
+              <label>Slow Threshold (ms)</label>
+              <input
+                type="number"
+                name="slow_threshold_ms"
+                value="{{ old('slow_threshold_ms', $setting->slow_threshold_ms) }}"
+                class="form-control"
+                min="100" max="60000"
+                @unless($isAdmin) disabled @endunless
+                required
+              >
+              <small>Response time di atas ini dianggap "warning".</small>
+              @error('slow_threshold_ms') <span class="error-text">{{ $message }}</span> @enderror
             </div>
-            <div class="accordion-item" style="margin-top: 12px;">
-              <span>⚙️ Advanced settings</span>
-              <span>&rsaquo;</span>
+
+            <div class="form-group">
+              <label>Max Parallel Jobs</label>
+              <input
+                type="number"
+                name="max_parallel_jobs"
+                value="{{ old('max_parallel_jobs', $setting->max_parallel_jobs) }}"
+                class="form-control"
+                min="1" max="50"
+                @unless($isAdmin) disabled @endunless
+                required
+              >
+              <small>Jumlah pengecekan paralel maksimal.</small>
+              @error('max_parallel_jobs') <span class="error-text">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+              <label>SSL Warning (hari)</label>
+              <input
+                type="number"
+                name="ssl_warning_days"
+                value="{{ old('ssl_warning_days', $setting->ssl_warning_days) }}"
+                class="form-control"
+                min="1" max="90"
+                @unless($isAdmin) disabled @endunless
+                required
+              >
+              <small>Peringatan jika SSL akan expired dalam sekian hari.</small>
+              @error('ssl_warning_days') <span class="error-text">{{ $message }}</span> @enderror
             </div>
           </div>
         </div>
 
-        <!-- PENGATURAN NOTIFIKASI WHATSAPP & URL -->
+        <!-- NOTIFIKASI WHATSAPP — belum ada tabel penyimpanannya -->
         <div class="card">
-          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">Notifikasi & Alert WhatsApp</div>
-          
-          <div class="form-group">
-            <label>Webhook / API Endpoint URL</label>
-            <input type="url" name="webhook_url" class="form-control" placeholder="https://your-domain.com/api/v1/webhook" required>
+          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">
+            Notifikasi & Alert WhatsApp
+            <span class="coming-soon-badge">Belum Aktif</span>
           </div>
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">
+            Fitur ini masih dalam tahap desain — tabel penyimpanan untuk pengaturan WhatsApp belum tersedia di database, jadi input di bawah belum bisa disimpan.
+          </p>
 
           <div class="form-group">
-            <label>WhatsApp API Gateway URL / Endpoint</label>
-            <input type="url" name="wa_endpoint" class="form-control" placeholder="https://api.whatsapp-gateway.id/send" required>
+            <label>WhatsApp API Gateway URL</label>
+            <input type="url" class="form-control" placeholder="https://api.whatsapp-gateway.id/send" disabled>
           </div>
-
-          <div class="form-group">
-            <label>WhatsApp API Token / Key</label>
-            <input type="text" name="wa_token" class="form-control" placeholder="Bearer token_secret_xyz...">
-          </div>
-
           <div class="form-group">
             <label>Nomor WhatsApp / Group ID Penerima Alert</label>
-            <input type="text" name="wa_target" class="form-control" placeholder="6281234567890 atau ID Grup">
-          </div>
-
-          <div style="margin-top: 14px;">
-            <div class="toggle-row">
-              <span>Kirim WhatsApp saat Website DOWN</span>
-              <input type="checkbox" checked style="accent-color: var(--green); width: 16px; height: 16px;">
-            </div>
-            <div class="toggle-row">
-              <span>Kirim WhatsApp saat Website kembali ONLINE (Recovered)</span>
-              <input type="checkbox" checked style="accent-color: var(--green); width: 16px; height: 16px;">
-            </div>
+            <input type="text" class="form-control" placeholder="6281234567890 atau ID Grup" disabled>
           </div>
         </div>
 
-        <!-- Tombol Simpan -->
-        <div style="display: flex; justify-content: flex-end;">
-          <button type="submit" class="btn-primary">Simpan Perubahan</button>
-        </div>
+        @if($isAdmin)
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn-primary">Simpan Perubahan</button>
+          </div>
+        @else
+          <p style="color: var(--muted); font-size: 12px; text-align: right;">Hanya Super Admin yang dapat mengubah pengaturan ini.</p>
+        @endif
 
       </form>
 
