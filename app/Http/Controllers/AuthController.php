@@ -52,9 +52,9 @@ class AuthController extends Controller
         // 'super_admin' => 'super_admin.dashboard',
         // 'programmer'  => 'programmer.dashboard',
         // 'viewer'      => 'viewer.dashboard',
-        'super_admin' => 'dashboard',
-        'programmer'  => 'dashboard',
-        'viewer'      => 'dashboard',
+        'super_admin' => 'dashboard.index',
+        'programmer'  => 'dashboard.index',
+        'viewer'      => 'dashboard.index',
         default       => 'login',
         };
     }
