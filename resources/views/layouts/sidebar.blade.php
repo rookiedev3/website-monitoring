@@ -1,9 +1,10 @@
 <!-- SIDEBAR -->
 <style>
   :root {
-    /* PENYESUAIAN UKURAN SIDEBAR */
-    --sidebar-width: 215px;      /* Sebelumnya 260px (Lebih ramping) */
-    --sidebar-collapsed: 62px;   /* Sebelumnya 76px */
+    --sidebar-width: 215px;      
+    --sidebar-collapsed: 62px;   
+
+    --line: #2e4a3b;
   }
 
   aside#sidebar {
@@ -19,7 +20,7 @@
     padding: 12px 14px; 
     display: flex; 
     align-items: center; 
-    gap: 10px; 
+    gap: 12px; 
     border-bottom: 1px solid var(--line); 
     overflow: hidden; 
     white-space: nowrap; 
@@ -27,15 +28,28 @@
   .logo { 
     width: 32px; 
     height: 32px; 
-    border-radius: 8px; 
-    background: linear-gradient(135deg, #17231d, #24372d); 
-    border: 1px solid var(--line); 
-    display: grid; 
-    place-items: center; 
-    font-weight: 800; 
-    font-size: 13px;
-    color: var(--green); 
+    border-radius: 8px; /* Mengubah bentuk kotak menjadi bulat sempurna */   
+    background: #fff; /* Ubah jadi transparan jika logo sudah ada background-nya */
+    display: flex; 
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0; 
+    overflow: hidden; /* Agar gambar ikut melengkung sesuai sudut kotak */
+    border: 1px solid var(--line); /* Opsional: memberikan garis tepi tipis agar lebih tegas */
+  }
+  
+  .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Memastikan gambar menutupi seluruh area lingkaran dengan pas */  }
+
+  /* Mengatur teks brand agar bisa disembunyikan saat sidebar collapsed */
+  .brand-text {
+    transition: opacity 0.2s ease;
+  }
+
+  aside#sidebar.collapsed .brand-text { 
+    display: none; /* Otomatis hilang saat sidebar diperkecil */
   }
   .brand-text h1 { font-size: 13px; margin: 0; color: #fff; font-weight: 700; }
   .brand-text small { font-size: 10px; color: var(--muted); display: block; }
@@ -73,9 +87,20 @@
     font-weight: 600; 
     white-space: nowrap; 
     cursor: pointer; 
+    text-decoration: none;
   }
-  .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
-  .nav-item svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+/* Saat kursor diarahkan ke menu */
+  .nav-item:hover { 
+    background: #1f3328; 
+    color: #fff; 
+  }
+
+  /* Saat menu tersebut sedang aktif / dibuka */
+  .nav-item.active { 
+    background: #183828; /* Warna hijau terang khas tombol utama agar sangat mencolok */
+    color: #4ade80; 
+    font-weight: 700;
+  }  .nav-item svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
   aside#sidebar.collapsed .nav-item span { display: none; }
 
   /* User Profile Section */
@@ -108,7 +133,7 @@
     font-size: 11px; 
     flex-shrink: 0; 
   }
-  .user-info flex: 1; overflow: hidden;
+  .user-info { flex: 1; overflow: hidden; }
   .user-info h4 { font-size: 11px; margin: 0; color: #fff; text-overflow: ellipsis; overflow: hidden; }
   .user-info p { font-size: 9px; margin: 0; color: var(--muted); text-overflow: ellipsis; overflow: hidden; }
   aside#sidebar.collapsed .user-info { display: none; }
@@ -120,7 +145,9 @@
     display: none; flex-direction: column; overflow: hidden; z-index: 10; 
   }
   .user-popup-menu.show { display: flex; }
-  .popup-item { padding: 8px 12px; font-size: 11px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; }
+  .popup-item { padding: 8px 12px; font-size: 11px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; text-decoration: none; }
+  .popup-item.danger { color: var(--red); }
+  .popup-item:hover { background: #1f3328; color: #fff; }
 
   /* Toggle Bar */
   .sidebar-toggle-bar { 
@@ -140,8 +167,11 @@
 </style>
 
 <aside id="sidebar">
-  <div class="brand-area">
-    <div class="logo">WM</div>
+ <div class="brand-area">
+    <div class="logo">
+      <!-- Ganti path asset dengan lokasi gambar logo kamu -->
+      <img src="{{ asset('img/logo.jpeg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 6px;">
+    </div>
     <div class="brand-text">
       <h1>IT Solution</h1>
       <small>Monitoring System</small>
@@ -151,31 +181,47 @@
   <div class="menu-list">
     <div class="menu-title">Menu Utama</div>
     
-    <a href="{{ route('dashboard.index') }}" class="nav-item active menu-link">
+    <!-- Dashboard -->
+    <a href="{{ route('dashboard.index') }}" class="nav-item {{ request()->routeIs('dashboard.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       <span>Dashboard</span>
     </a>
-    <a href="{{ route('websites.index') }}" class="nav-item menu-link">
+
+    <!-- Websites -->
+    <a href="{{ route('websites.index') }}" class="nav-item {{ request()->routeIs('websites.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 0 1 9-9"/></svg>
       <span>Websites</span>
     </a>
-   <a href="{{ route('incidents.index') }}" class="nav-item menu-link">
-  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-  <span>Incidents & Errors</span>
-</a>
-   <a href="{{ route('analytics.index') }}" class="nav-item menu-link">
-  <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-  <span>Analytics</span>
-</a>
-   <a href="{{ route('settings.index') }}" class="nav-item menu-link">
-  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.31.4 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09c-.2.6-.82 1-1.51 1z"/></svg>
-  <span>Settings</span>
-</a>
 
-<a href="{{ route('users.index') }}" class="nav-item menu-link">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-  <span>Manajemen User</span>
-</a>
+    <!-- Incidents & Errors -->
+    <a href="{{ route('incidents.index') }}" class="nav-item {{ request()->routeIs('incidents.*') ? 'active' : '' }} menu-link">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>Incidents & Errors</span>
+    </a>
+
+    <!-- Analytics -->
+    @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'viewer']))  
+    <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }} menu-link">
+      <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      <span>Analytics</span>
+    </a>
+    @endif
+
+    <!-- Settings -->
+    @if(auth()->user()->role == 'super_admin')
+    <a href="{{ route('settings.index') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }} menu-link">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.31.4 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09c-.2.6-.82 1-1.51 1z"/></svg>
+      <span>Settings</span>
+    </a>
+    @endif
+
+    <!-- Manajemen User -->
+    @if(auth()->user()->role == 'super_admin')
+    <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }} menu-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      <span>Manajemen User</span>
+    </a>
+    @endif
   </div>
 
   <div class="user-profile-container">
@@ -185,9 +231,9 @@
         Profil User
       </button>
       <a href="{{ route('logout') }}" class="popup-item danger">
-  <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-  Logout
-</a>
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </a>
     </div>
 
     <button class="user-profile-btn" id="userProfileBtn" title="Akun">
