@@ -33,7 +33,7 @@ class MonitoringController extends Controller
             ->latest()
             ->get();
 
-        return view('monitoring.index', compact('websites', 'stats', 'activeIncidents'));
+        return view('dashboard.index', compact('websites', 'stats', 'activeIncidents'));
     }
 
     /**
@@ -50,7 +50,7 @@ class MonitoringController extends Controller
             ->latest()
             ->get();
 
-        return view('monitoring.show', compact('website', 'logs', 'incidents'));
+        return view('dashboard.show', compact('website', 'logs', 'incidents'));
     }
 
     public function apiStatus()
