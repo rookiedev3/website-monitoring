@@ -80,6 +80,18 @@ class Incident extends Model
         };
     }
 
+    /* ==========================================
+ | SCOPES
+ ========================================== */
+
+/**
+ * Scope untuk insiden yang masih aktif (Open / On Progress).
+ */
+public function scopeActive($query)
+{
+    return $query->whereIn('status', ['open', 'on_progress']);
+}
+
     public function getBadgeClassAttribute(): string
     {
         return match ($this->status) {
