@@ -5,12 +5,14 @@ namespace App\Jobs;
 use App\Models\Website;
 use App\Models\MonitoringLog;
 use App\Models\Incident;
+use App\Models\MonitoringSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
 
 class CheckWebsiteJob implements ShouldQueue
@@ -19,14 +21,32 @@ class CheckWebsiteJob implements ShouldQueue
 
     public $timeout = 30;
 
-    public function __construct(public Website $website) {}
+    public function __construct(public Website $website)
+    {
+    }
 
     public function handle(): void
     {
+        // 0. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM)
+        $settings = Cache::remember('global_monitoring_settings', 3600, function () {
+            return MonitoringSetting::first();
+        });
+
+        // Tentukan batas threshold dinamis (dengan fallback default jika DB kosong)
+        $slowThreshold = $settings->slow_threshold_ms ?? 2000;
+        $sslWarningDays = $settings->ssl_warning_days ?? 14;
+        // Mengambil timeout kustom milik website, jika null pakai global setting
+        $timeoutSeconds = $this->website->timeout_seconds ?? ($settings->timeout_seconds ?? 10);
+
+
         $startTime = microtime(true);
         $url = $this->website->url;
-        $timeoutSeconds = $this->website->timeout_seconds ?? 10;
-        
+
+        // Digunakan sebagai batas HTTP Client Request
+        $response = Http::timeout($timeoutSeconds)
+            ->withOptions(['verify' => false])
+            ->get($url);
+
         $status = 'online';
         $incidentType = null;
         $httpCode = null;
@@ -44,7 +64,8 @@ class CheckWebsiteJob implements ShouldQueue
             $httpCode = $response->status();
 
             if ($response->successful()) {
-                if ($responseTimeMs > 3000) {
+                // Menggunakan slow_threshold_ms dinamis dari MonitoringSetting
+                if ($responseTimeMs > $slowThreshold) {
                     $status = 'warning';
                     $incidentType = 'slow';
                 }
@@ -57,7 +78,7 @@ class CheckWebsiteJob implements ShouldQueue
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
             $status = 'down';
-            
+
             if (str_contains(strtolower($e->getMessage()), 'timed out')) {
                 $incidentType = 'timeout';
                 $errorType = 'CONNECTION_TIMEOUT';
@@ -76,9 +97,9 @@ class CheckWebsiteJob implements ShouldQueue
 
         // --- 2. CEK SSL CERTIFICATE (JIKA TIDAK DOWN) ---
         $sslInfo = $this->checkSslCertificate($url);
-        
-        // Pemicu SSL Error jika Kadaluwarsa ATAU Sisa Hari <= 7 Hari
-        if ((!$sslInfo['valid'] || $sslInfo['days_left'] <= 7) && $status !== 'down') {
+
+        // Menggunakan ssl_warning_days dinamis dari MonitoringSetting
+        if ((!$sslInfo['valid'] || $sslInfo['days_left'] <= $sslWarningDays) && $status !== 'down') {
             $status = 'ssl_error';
             $incidentType = 'ssl';
             $errorType = 'SSL_INVALID';
@@ -89,16 +110,16 @@ class CheckWebsiteJob implements ShouldQueue
 
         // --- 3. REKAM HASIL KE TABEL monitoring_logs ---
         MonitoringLog::create([
-            'website_id'       => $this->website->id,
-            'status'           => $status,
-            'http_code'        => $httpCode,
+            'website_id' => $this->website->id,
+            'status' => $status,
+            'http_code' => $httpCode,
             'response_time_ms' => $responseTimeMs,
-            'ssl_valid'        => $sslInfo['valid'],
-            'ssl_expired_at'   => $sslInfo['expired_at'],
-            'ssl_days_left'    => $sslInfo['days_left'],
-            'error_type'       => $errorType,
-            'error_message'    => $errorMessage,
-            'checked_at'       => $now,
+            'ssl_valid' => $sslInfo['valid'],
+            'ssl_expired_at' => $sslInfo['expired_at'],
+            'ssl_days_left' => $sslInfo['days_left'],
+            'error_type' => $errorType,
+            'error_message' => $errorMessage,
+            'checked_at' => $now,
         ]);
 
         $this->website->touch();
@@ -110,32 +131,32 @@ class CheckWebsiteJob implements ShouldQueue
     private function checkSslCertificate(string $url): array
     {
         $host = parse_url($url, PHP_URL_HOST) ?? $url;
-        
+
         $gcontext = stream_context_create(["ssl" => ["capture_peer_cert" => true]]);
         $client = @stream_socket_client("ssl://{$host}:443", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $gcontext);
 
         if (!$client) {
             return [
-                'valid'      => false,
+                'valid' => false,
                 'expired_at' => null,
-                'days_left'  => 0,
-                'error'      => $errstr ?: 'Gagal terhubung ke port SSL 443',
+                'days_left' => 0,
+                'error' => $errstr ?: 'Gagal terhubung ke port SSL 443',
             ];
         }
 
         $cont = stream_context_get_params($client);
-        $cert = isset($cont["options"]["ssl"]["peer_certificate"]) 
-            ? openssl_x509_parse($cont["options"]["ssl"]["peer_certificate"]) 
+        $cert = isset($cont["options"]["ssl"]["peer_certificate"])
+            ? openssl_x509_parse($cont["options"]["ssl"]["peer_certificate"])
             : null;
-            
-        fclose($client); // Tutup socket selalu dipanggil di sini
+
+        fclose($client);
 
         if (!$cert) {
             return [
-                'valid'      => false,
+                'valid' => false,
                 'expired_at' => null,
-                'days_left'  => 0,
-                'error'      => 'Sertifikat SSL tidak valid / tidak terbaca',
+                'days_left' => 0,
+                'error' => 'Sertifikat SSL tidak valid / tidak terbaca',
             ];
         }
 
@@ -143,10 +164,10 @@ class CheckWebsiteJob implements ShouldQueue
         $daysLeft = (int) Carbon::now()->diffInDays($validTo, false);
 
         return [
-            'valid'      => $daysLeft > 0,
+            'valid' => $daysLeft > 0,
             'expired_at' => $validTo,
-            'days_left'  => $daysLeft,
-            'error'      => $daysLeft <= 0 ? 'Sertifikat SSL telah kadaluwarsa' : null,
+            'days_left' => $daysLeft,
+            'error' => $daysLeft <= 0 ? 'Sertifikat SSL telah kadaluwarsa' : null,
         ];
     }
 
@@ -160,19 +181,19 @@ class CheckWebsiteJob implements ShouldQueue
         // Jika Web bermasalah (down / ssl_error) & belum ada insiden aktif
         if (in_array($status, ['down', 'ssl_error']) && !$activeIncident) {
             Incident::create([
-                'website_id'    => $this->website->id,
+                'website_id' => $this->website->id,
                 'incident_type' => $incidentType ?? 'down',
-                'status'        => 'open',
-                'started_at'    => $now,
+                'status' => 'open',
+                'started_at' => $now,
             ]);
-        } 
+        }
         // Jika Web kembali normal & ada insiden aktif
         elseif ($status === 'online' && $activeIncident) {
             $durationInSeconds = $activeIncident->started_at->diffInSeconds($now);
 
             $activeIncident->update([
-                'status'           => 'solved',
-                'resolved_at'      => $now,
+                'status' => 'solved',
+                'resolved_at' => $now,
                 'duration_seconds' => $durationInSeconds,
             ]);
         }

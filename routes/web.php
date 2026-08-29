@@ -32,35 +32,18 @@ Route::middleware('auth')->group(function () {
 
     // BUAT SUPER ADMIN
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {
-        // route khusus super_admin
-        // Dashboard Monitoring
-        Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');
-
-        // Detail Monitoring & Log per Website
-        Route::get('/dashboard/{website}', [MonitoringController::class, 'show'])->name('dashboard.show');
-        Route::get('/api/dashboard/status', [MonitoringController::class, 'apiStatus'])->name('api.dashboard.status');
+        // route khusus super_admin;
     });
 
     // BUAT PROGRAMMER
     Route::middleware('role:programmer')->prefix('programmer')->group(function () {
         // route khusus programmer
         // Dashboard Monitoring
-        Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');
-
-        // Detail Monitoring & Log per Website
-        Route::get('/dashboard/{website}', [MonitoringController::class, 'show'])->name('dashboard.show');
-        Route::get('/api/dashboard/status', [MonitoringController::class, 'apiStatus'])->name('api.dashboard.status');
     });
 
     // BUAT VIEWER
     Route::middleware('role:viewer')->prefix('viewer')->group(function () {
         // route khusus viewer
-        // Dashboard Monitoring
-        Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');
-
-        // Detail Monitoring & Log per Website
-        Route::get('/dashboard/{website}', [MonitoringController::class, 'show'])->name('dashboard.show');
-        Route::get('/api/dashboard/status', [MonitoringController::class, 'apiStatus'])->name('api.dashboard.status');
     });
 });
 

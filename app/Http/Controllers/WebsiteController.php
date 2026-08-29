@@ -26,17 +26,29 @@ class WebsiteController extends Controller
         return view('websites.create');
     }
 
-    public function store(WebsiteRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->validated();
-        // Otomatis mengambil domain dari URL
-        $data['domain'] = parse_url($request->url, PHP_URL_HOST);
+        $validated = $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'website_name' => 'required|string|max:255',
+            'url' => 'required|url|max:255',
+            'category' => 'nullable|string|max:255',
+            'check_interval' => 'required|integer|min:1',
+            'timeout_seconds' => 'required|integer|min:1|max:60',
+            'monitoring_status' => 'required|in:active,paused',
+            'notes' => 'nullable|string',
+        ]);
 
-        Website::create($data);
+        // Ekstrak hostname domain otomatis dari URL
+        $parsedHost = parse_url($validated['url'], PHP_URL_HOST);
+        $validated['domain'] = $parsedHost ?? $validated['url'];
 
-        return redirect()->route('websites.index')->with('success', 'Website berhasil ditambahkan ke sistem pemantauan.');
+        Website::create($validated);
+
+        return redirect()
+            ->route('websites.index')
+            ->with('success', 'Website berhasil ditambahkan ke sistem pemantauan.');
     }
-
     public function edit(Website $website)
     {
         return view('websites.edit', compact('website'));

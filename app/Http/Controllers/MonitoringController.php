@@ -29,7 +29,7 @@ class MonitoringController extends Controller
 
         // 3. Ambil insiden aktif (Open / On Progress)
         $activeIncidents = Incident::with(['website', 'assignedUser'])
-            ->active()
+            ->whereIn('status', ['open', 'in_progress']) 
             ->latest()
             ->get();
 
@@ -69,5 +69,5 @@ class MonitoringController extends Controller
             'websites' => $websites
         ]);
     }
-    
+
 }

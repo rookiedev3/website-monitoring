@@ -33,7 +33,7 @@
     }
     a { color: inherit; text-decoration: none; }
 
-    /* STYLE SIDEBAR (Konsisten) */
+    /* STYLE SIDEBAR */
     aside {
       position: fixed; top: 0; left: 0; height: 100vh;
       width: var(--sidebar-width); background: var(--card);
@@ -52,50 +52,43 @@
     .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
-    
-    .user-profile-container { position: relative; border-top: 1px solid var(--line); padding: 12px; }
-    .user-profile-btn { width: 100%; background: transparent; border: none; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; cursor: pointer; color: var(--ink); text-align: left; white-space: nowrap; overflow: hidden; }
-    .user-profile-btn:hover { background: var(--card-hover); }
-    .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: #24372d; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
-    .user-info { flex: 1; overflow: hidden; }
-    .user-info h4 { font-size: 12px; margin: 0; color: #fff; text-overflow: ellipsis; overflow: hidden; }
-    .user-info p { font-size: 10px; margin: 0; color: var(--muted); text-overflow: ellipsis; overflow: hidden; }
-    aside.collapsed .user-info { display: none; }
-    
-    .user-popup-menu { position: absolute; bottom: 70px; left: 12px; right: 12px; background: #16241d; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
-    .user-popup-menu.show { display: flex; }
-    .popup-item { padding: 10px 14px; font-size: 12px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; }
-    .popup-item:hover { background: #1f3328; color: #fff; }
-    .popup-item.danger { color: var(--red); }
-
-    .sidebar-toggle-bar { border-top: 1px solid var(--line); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: rgba(0,0,0,0.1); font-size: 11px; color: var(--muted); }
-    .sidebar-toggle-bar:hover { background: var(--card-hover); color: #fff; }
-    aside.collapsed .sidebar-toggle-text { display: none; }
-    aside.collapsed .sidebar-toggle-bar { justify-content: center; }
 
     /* STYLE MAIN CONTENT */
     main { margin-left: var(--sidebar-width); flex: 1; padding: 30px; min-width: 0; }
     aside.collapsed ~ main { margin-left: var(--sidebar-collapsed); }
     .container { max-width: 800px; margin: 0 auto; }
-    
+
     .page-header { margin-bottom: 24px; }
     .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
     .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
 
-    /* Form Card Styling */
+    .alert-error {
+      background: var(--red-soft);
+      border: 1px solid var(--red);
+      color: var(--red);
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); }
-    
+
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: .05em; }
-    
+
     .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 13px; outline: none; }
     .form-control:focus { border-color: var(--green); }
     .form-control::placeholder { color: var(--muted); }
+    .form-control.is-invalid { border-color: var(--red); }
+
+    .error-text { display: block; color: var(--red); font-size: 11px; margin-top: 6px; font-weight: 600; }
 
     .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 
     .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; }
-    
+
     .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .btn-secondary:hover { color: #fff; background: var(--card-hover); }
 
@@ -109,76 +102,168 @@
 </head>
 <body>
 
-  <!-- MEMANGGIL SIDEBAR -->
+  <!-- SIDEBAR -->
   @include('layouts.sidebar')
 
   <!-- MAIN CONTENT -->
   <main>
     <div class="container">
-      
+
       <!-- PAGE HEADER -->
       <div class="page-header">
         <h2>Tambah Website Baru</h2>
         <p>Daftarkan website atau aplikasi customer baru ke dalam sistem pemantauan.</p>
       </div>
 
+      <!-- ALERT ERROR -->
+      @if ($errors->any())
+        <div class="alert-error">
+          Terdapat {{ $errors->count() }} kesalahan pada form, silakan periksa kembali isian di bawah.
+        </div>
+      @endif
+
       <!-- FORM CARD -->
       <div class="card">
-        <form action="#" method="POST">
+        <form action="{{ route('websites.store') }}" method="POST">
           @csrf
 
+          <!-- NAMA CUSTOMER & NAMA WEBSITE -->
           <div class="form-row">
             <div class="form-group">
-              <label>Nama Customer / Perusahaan</label>
-              <input type="text" class="form-control" placeholder="Contoh: PT Maju Jaya" required>
+              <label for="customer_name">Nama Customer / Perusahaan *</label>
+              <input
+                type="text"
+                id="customer_name"
+                name="customer_name"
+                class="form-control @error('customer_name') is-invalid @enderror"
+                placeholder="Contoh: PT Maju Jaya"
+                value="{{ old('customer_name') }}"
+                required>
+              @error('customer_name')
+                <span class="error-text">{{ $message }}</span>
+              @enderror
             </div>
+
             <div class="form-group">
-              <label>Nama / Label Project</label>
-              <input type="text" class="form-control" placeholder="Contoh: Client One Portal" required>
+              <label for="website_name">Nama Website / Label *</label>
+              <input
+                type="text"
+                id="website_name"
+                name="website_name"
+                class="form-control @error('website_name') is-invalid @enderror"
+                placeholder="Contoh: Client One Portal"
+                value="{{ old('website_name') }}"
+                required>
+              @error('website_name')
+                <span class="error-text">{{ $message }}</span>
+              @enderror
             </div>
           </div>
 
+          <!-- URL TARGET -->
           <div class="form-group">
-            <label>Domain / URL Website</label>
-            <input type="url" class="form-control" placeholder="https://client-one.com" required>
+            <label for="url">URL Website *</label>
+            <input
+              type="url"
+              id="url"
+              name="url"
+              class="form-control @error('url') is-invalid @enderror"
+              placeholder="https://client-one.com"
+              value="{{ old('url') }}"
+              required>
+            @error('url')
+              <span class="error-text">{{ $message }}</span>
+            @enderror
           </div>
 
+          <!-- KATEGORI & INTERVAL PENGECEKAN -->
           <div class="form-row">
             <div class="form-group">
-              <label>Kategori Website</label>
-              <select class="form-control" required>
-                <option value="">Pilih Kategori...</option>
-                <option value="ecommerce">E-Commerce</option>
-                <option value="company">Company Profile</option>
-                <option value="portal">Portal Berita / Blog</option>
-                <option value="webapp">Web Application</option>
+              <label for="category">Kategori Website</label>
+              <select
+                id="category"
+                name="category"
+                class="form-control @error('category') is-invalid @enderror">
+                <option value="" {{ old('category') ? '' : 'selected' }}>Pilih Kategori (Opsional)...</option>
+                <option value="ecommerce" {{ old('category') == 'ecommerce' ? 'selected' : '' }}>E-Commerce</option>
+                <option value="company" {{ old('category') == 'company' ? 'selected' : '' }}>Company Profile</option>
+                <option value="portal" {{ old('category') == 'portal' ? 'selected' : '' }}>Portal Berita / Blog</option>
+                <option value="webapp" {{ old('category') == 'webapp' ? 'selected' : '' }}>Web Application</option>
               </select>
+              @error('category')
+                <span class="error-text">{{ $message }}</span>
+              @enderror
             </div>
+
             <div class="form-group">
-              <label>Interval Pengecekan</label>
-              <select class="form-control" required>
-                <option value="5">Setiap 5 Menit</option>
-                <option value="10">Setiap 10 Menit</option>
-                <option value="15">Setiap 15 Menit</option>
-                <option value="30">Setiap 30 Menit</option>
+              <label for="check_interval">Interval Pengecekan *</label>
+              <select
+                id="check_interval"
+                name="check_interval"
+                class="form-control @error('check_interval') is-invalid @enderror"
+                required>
+                <option value="1" {{ old('check_interval') == 1 ? 'selected' : '' }}>Setiap 1 Menit</option>
+                <option value="5" {{ old('check_interval', 5) == 5 ? 'selected' : '' }}>Setiap 5 Menit</option>
+                <option value="10" {{ old('check_interval') == 10 ? 'selected' : '' }}>Setiap 10 Menit</option>
+                <option value="15" {{ old('check_interval') == 15 ? 'selected' : '' }}>Setiap 15 Menit</option>
+                <option value="30" {{ old('check_interval') == 30 ? 'selected' : '' }}>Setiap 30 Menit</option>
               </select>
+              @error('check_interval')
+                <span class="error-text">{{ $message }}</span>
+              @enderror
             </div>
           </div>
 
+          <!-- TIMEOUT & STATUS MONITORING -->
           <div class="form-row">
             <div class="form-group">
-              <label>Penanggung Jawab (PIC Internal)</label>
-              <input type="text" class="form-control" placeholder="Contoh: Budi (DevOps)" required>
+              <label for="timeout_seconds">Timeout Request (Detik) *</label>
+              <input
+                type="number"
+                id="timeout_seconds"
+                name="timeout_seconds"
+                class="form-control @error('timeout_seconds') is-invalid @enderror"
+                placeholder="10"
+                min="1"
+                max="60"
+                value="{{ old('timeout_seconds', 10) }}"
+                required>
+              @error('timeout_seconds')
+                <span class="error-text">{{ $message }}</span>
+              @enderror
             </div>
+
             <div class="form-group">
-              <label>Status Monitoring Awal</label>
-              <select class="form-control" required>
-                <option value="active">Active (Langsung Dipantau)</option>
-                <option value="paused">Paused (Ditunda)</option>
+              <label for="monitoring_status">Status Monitoring Awal *</label>
+              <select
+                id="monitoring_status"
+                name="monitoring_status"
+                class="form-control @error('monitoring_status') is-invalid @enderror"
+                required>
+                <option value="active" {{ old('monitoring_status', 'active') == 'active' ? 'selected' : '' }}>Active (Langsung Dipantau)</option>
+                <option value="paused" {{ old('monitoring_status') == 'paused' ? 'selected' : '' }}>Paused (Ditunda)</option>
               </select>
+              @error('monitoring_status')
+                <span class="error-text">{{ $message }}</span>
+              @enderror
             </div>
           </div>
 
+          <!-- NOTES / PIC -->
+          <div class="form-group">
+            <label for="notes">Catatan Tambahan</label>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="3"
+              class="form-control @error('notes') is-invalid @enderror"
+              placeholder="Contoh: PIC DevOps: Budi (0812xxx), Server Nginx AWS Singapore">{{ old('notes') }}</textarea>
+            @error('notes')
+              <span class="error-text">{{ $message }}</span>
+            @enderror
+          </div>
+
+          <!-- ACTIONS -->
           <div class="form-actions">
             <a href="{{ route('websites.index') }}" class="btn-secondary">Batal</a>
             <button type="submit" class="btn-primary">Simpan Website</button>

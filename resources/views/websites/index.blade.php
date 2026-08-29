@@ -436,6 +436,7 @@
 
     table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       text-align: left;
       font-size: 13px;
@@ -447,6 +448,7 @@
       text-transform: uppercase;
       padding: 10px 12px;
       border-bottom: 1px solid var(--line);
+      white-space: nowrap;
     }
 
     td {
@@ -454,6 +456,8 @@
       border-bottom: 1px solid var(--line);
       color: var(--ink);
       vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     tr:last-child td {
@@ -702,13 +706,13 @@
           <table>
             <thead>
               <tr>
-                <th>Customer & Website</th>
-                <th>Domain / URL</th>
-                <th>Kategori</th>
-                <th>Interval Check</th>
-                <th>Status Pemantauan</th>
-                <th>Status Terakhir</th>
-                <th>Aksi</th>
+                <th style="width: 22%;">Customer & Website</th>
+                <th style="width: 16%;">Domain / URL</th>
+                <th style="width: 12%;">Kategori</th>
+                <th style="width: 12%;">Interval Check</th>
+                <th style="width: 14%;">Status Pemantauan</th>
+                <th style="width: 14%;">Status Terakhir</th>
+                <th style="width: 10%; text-align: center;">Aksi</th>
               </tr>
             </thead>
             <tbody id="website-table-body">
@@ -747,8 +751,8 @@
                       <span class="badge-status none">⚪ Belum Dicek</span>
                     @endif
                   </td>
-                  <td>
-                    <div class="action-btns">
+                  <td style="text-align: center;">
+                    <div class="action-btns" style="justify-content: center;">
                       <a href="{{ route('websites.edit', $site) }}" class="btn-icon">Edit</a>
 
                       <form action="{{ route('websites.destroy', $site) }}" method="POST"
@@ -905,8 +909,8 @@
               </form>
             </td>
             <td>${lastStatusHtml}</td>
-            <td>
-              <div class="action-btns">
+            <td style="text-align: center;">
+              <div class="action-btns" style="justify-content: center;">
                 <a href="${editUrl}" class="btn-icon">Edit</a>
                 <form action="${destroyUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
                   <input type="hidden" name="_token" value="${csrfToken}">
