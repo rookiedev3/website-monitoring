@@ -21,7 +21,7 @@
       --sidebar-collapsed: 76px;
     }
 
-    * { box-sizing: border-box; transition: width 0.3s ease, padding 0.3s ease; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -39,6 +39,7 @@
       width: var(--sidebar-width); background: var(--card);
       border-right: 1px solid var(--line); display: flex;
       flex-direction: column; z-index: 100; box-shadow: var(--shadow);
+      transition: width 0.3s ease;
     }
     aside.collapsed { width: var(--sidebar-collapsed); }
     .brand-area { padding: 20px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); overflow: hidden; white-space: nowrap; }
@@ -53,10 +54,20 @@
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
 
-    /* STYLE MAIN CONTENT */
-    main { margin-left: var(--sidebar-width); flex: 1; padding: 30px; min-width: 0; }
-    aside.collapsed ~ main { margin-left: var(--sidebar-collapsed); }
-    .container { max-width: 800px; margin: 0 auto; }
+    /* STYLE MAIN CONTENT & RESPONSIF SIDEBAR */
+    main { 
+      margin-left: var(--sidebar-width); 
+      flex: 1; 
+      padding: 30px; 
+      min-width: 0; 
+      width: calc(100% - var(--sidebar-width));
+      transition: margin-left 0.3s ease, width 0.3s ease;
+    }
+    aside.collapsed ~ main { 
+      margin-left: var(--sidebar-collapsed); 
+      width: calc(100% - var(--sidebar-collapsed));
+    }
+    .container { max-width: 800px; margin: 0 auto; width: 100%; }
 
     .page-header { margin-bottom: 24px; }
     .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
@@ -78,7 +89,7 @@
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: .05em; }
 
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 13px; outline: none; }
+    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
     .form-control:focus { border-color: var(--green); }
     .form-control::placeholder { color: var(--muted); }
     .form-control.is-invalid { border-color: var(--red); }
@@ -87,16 +98,38 @@
 
     .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 
-    .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; flex-wrap: wrap; }
 
-    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; display: inline-flex; align-items: center; justify-content: center; }
     .btn-secondary:hover { color: #fff; background: var(--card-hover); }
 
-    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-primary:hover { opacity: 0.9; }
 
+    /* ==========================================================
+       MEDIA QUERY: RESPONSIF UNTUK LAYAR HP & TABLET (Max 768px)
+       ========================================================== */
     @media (max-width: 768px) {
-      .form-row { grid-template-columns: 1fr; }
+      main { 
+        margin-left: 0 !important; 
+        width: 100% !important; 
+        padding: 16px;
+        padding-top: 60px; /* Ruang untuk tombol toggle sidebar di mobile */
+      }
+      .card {
+        padding: 16px;
+      }
+      .form-row { 
+        grid-template-columns: 1fr; /* Mengubah form 2 kolom menjadi 1 kolom vertikal */
+        gap: 0;
+      }
+      .form-actions {
+        flex-direction: column-reverse;
+        gap: 10px;
+      }
+      .btn-primary, .btn-secondary {
+        width: 100%;
+      }
     }
   </style>
 </head>
