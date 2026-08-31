@@ -11,7 +11,7 @@
       --card-hover: #17231d;
       --ink: #dce9e1;
       --muted: #82988c;
-      --line: #1b2a22;
+      --line: #2e4a3b;
       --green: #0f9f6e;
       --green-soft: rgba(15, 159, 110, 0.12);
       --red: #d94c4c;
@@ -19,10 +19,10 @@
       --amber: #d98b1d;
       --amber-soft: rgba(217, 139, 29, 0.12);
       --shadow: 0 10px 30px rgba(0,0,0,.3);
-      --sidebar-width: 260px;
-      --sidebar-collapsed: 76px;
+      --sidebar-width: 215px;
+      --sidebar-collapsed: 62px;
     }
-    * { box-sizing: border-box; transition: width 0.3s ease, padding 0.3s ease; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -51,55 +51,80 @@
     .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
-    .user-profile-container { position: relative; border-top: 1px solid var(--line); padding: 12px; }
-    .user-profile-btn { width: 100%; background: transparent; border: none; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; cursor: pointer; color: var(--ink); text-align: left; white-space: nowrap; overflow: hidden; }
-    .user-profile-btn:hover { background: var(--card-hover); }
-    .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: #24372d; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
-    .user-info { flex: 1; overflow: hidden; }
-    .user-info h4 { font-size: 12px; margin: 0; color: #fff; text-overflow: ellipsis; overflow: hidden; }
-    .user-info p { font-size: 10px; margin: 0; color: var(--muted); text-overflow: ellipsis; overflow: hidden; }
-    aside.collapsed .user-info { display: none; }
-    .user-popup-menu { position: absolute; bottom: 70px; left: 12px; right: 12px; background: #16241d; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
-    .user-popup-menu.show { display: flex; }
-    .popup-item { padding: 10px 14px; font-size: 12px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; }
-    .popup-item:hover { background: #1f3328; color: #fff; }
-    .popup-item.danger { color: var(--red); }
-    .sidebar-toggle-bar { border-top: 1px solid var(--line); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: rgba(0,0,0,0.1); font-size: 11px; color: var(--muted); }
-    .sidebar-toggle-bar:hover { background: var(--card-hover); color: #fff; }
-    aside.collapsed .sidebar-toggle-text { display: none; }
-    aside.collapsed .sidebar-toggle-bar { justify-content: center; }
-    main { margin-left: var(--sidebar-width); flex: 1; padding: 30px; min-width: 0; }
-    aside.collapsed ~ main { margin-left: var(--sidebar-collapsed); }
-    .container { max-width: 1000px; margin: 0 auto; }
+
+    /* ==========================================================
+       KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
+       ========================================================== */
+    main { 
+      margin-left: var(--sidebar-width); 
+      flex: 1; 
+      padding: 24px; 
+      min-width: 0; 
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      width: calc(100% - var(--sidebar-width));
+    }
+    aside#sidebar.collapsed ~ main { 
+      margin-left: var(--sidebar-collapsed); 
+      width: calc(100% - var(--sidebar-collapsed));
+    }
+    .container { max-width: 1000px; margin: 0 auto; width: 100%; }
+
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px; }
     .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
     .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
-    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
     .btn-secondary:hover { color: #fff; background: var(--card-hover); }
+
+    /* ==========================================================
+       KODE RESPONSIF: GRID 2 KOLOM
+       ========================================================== */
     .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 24px; }
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); }
+    
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); overflow: hidden; }
     .card-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+    
     .info-list { display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
-    .info-item { display: flex; justify-content: space-between; gap: 12px; }
+    .info-item { display: flex; justify-content: space-between; gap: 12px; word-break: break-word; }
     .info-label { color: var(--muted); flex-shrink: 0; }
     .info-value { color: #fff; font-weight: 600; text-align: right; }
+
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; }
+    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
     .form-control:focus { border-color: var(--green); }
     textarea.form-control { resize: vertical; min-height: 90px; }
+
     .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; }
     .btn-primary:hover { opacity: 0.9; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; }
     .badge.open { background: var(--red-soft); color: var(--red); }
     .badge.progress { background: var(--amber-soft); color: var(--amber); }
     .badge.solved { background: var(--green-soft); color: var(--green); }
+
     .timeline { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
-    .timeline-item { background: var(--bg); border: 1px solid var(--line); padding: 12px 14px; border-radius: 10px; font-size: 12px; }
-    .timeline-header { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--muted); font-weight: 600; }
+    .timeline-item { background: var(--bg); border: 1px solid var(--line); padding: 12px 14px; border-radius: 10px; font-size: 12px; word-break: break-word; }
+    .timeline-header { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--muted); font-weight: 600; flex-wrap: wrap; gap: 6px; }
     .timeline-body { color: var(--ink); }
+
+    /* ==========================================================
+       KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+       ========================================================== */
     @media (max-width: 768px) {
-      .grid-2 { grid-template-columns: 1fr; }
+      main { 
+        margin-left: 0 !important; 
+        width: 100% !important; 
+        padding: 14px;
+        padding-top: 60px; /* Ruang untuk tombol navigasi toggle sidebar */
+      }
+      .grid-2 { 
+        grid-template-columns: 1fr !important; /* Memaksa kolom ganda menjadi 1 kolom vertikal */
+      }
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -134,7 +159,7 @@
 
       <div class="grid-2" @if($user->role !== 'programmer') style="grid-template-columns: 1fr; max-width: 520px;" @endif>
 
-        <!-- Kolom 1: Informasi Gangguan (semua role lihat, read-only) -->
+        <!-- Kolom 1: Informasi Gangguan -->
         <div class="card">
           <div class="card-title">Informasi Gangguan</div>
           <div class="info-list">
@@ -185,7 +210,7 @@
           </div>
 
           @if($incident->root_cause || $incident->resolution)
-          <div style="margin-top: 8px; padding-top: 14px; border-top: 1px dashed var(--line);">
+          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);">
             <p style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
               Hasil Investigasi
             </p>
@@ -225,14 +250,12 @@
             </p>
 
           @elseif($incident->status === 'solved')
-            {{-- TERKUNCI TOTAL: sudah selesai, tidak ada input/tombol apapun --}}
             <p style="font-size: 13px; color: var(--muted);">
               Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" sebelah kiri.
             </p>
             <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">✓ Incident sudah selesai ditangani.</p>
 
           @else
-            {{-- SATU-SATUNYA form aktif: Root Cause + Resolution + Catatan, SATU tombol --}}
             <form
               action="{{ route('incidents.update', $incident->id) }}"
               method="POST"
@@ -248,7 +271,7 @@
 
               <div class="form-group">
                 <label>Penyelesaian</label>
-                <textarea name="resolution" class="form-control" placeholder="Contoh: Rollback plugin dan update versi stabil">{{ old('resolution') }}</textarea>
+                <textarea name="resolution" class="form-control" placeholder="Contoh: Rollback plugin dan update versi stabil" required>{{ old('resolution') }}</textarea>
               </div>
 
               <div class="form-group">
@@ -268,7 +291,7 @@
 
       </div>
 
-      <!-- Riwayat Catatan Penanganan — read-only untuk SEMUA role, tanpa form input -->
+      <!-- Riwayat Catatan Penanganan -->
       <div class="card">
         <div class="card-title">Riwayat Catatan Penanganan</div>
         <div class="timeline">
