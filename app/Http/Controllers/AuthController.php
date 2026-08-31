@@ -12,7 +12,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-        public function login(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'email' => 'required',
@@ -49,13 +49,13 @@ class AuthController extends Controller
     private function dashboardRouteFor(string $role): string
     {
         return match ($role) {
-        // 'super_admin' => 'super_admin.dashboard',
-        // 'programmer'  => 'programmer.dashboard',
-        // 'viewer'      => 'viewer.dashboard',
-        'super_admin' => 'dashboard.index',
-        'programmer'  => 'dashboard.index',
-        'viewer'      => 'dashboard.index',
-        default       => 'login',
+            // 'super_admin' => 'super_admin.dashboard',
+            // 'programmer'  => 'programmer.dashboard',
+            // 'viewer'      => 'viewer.dashboard',
+            'super_admin' => 'dashboard.index',
+            'programmer' => 'dashboard.index',
+            'viewer' => 'dashboard.index',
+            default => 'login',
         };
     }
 

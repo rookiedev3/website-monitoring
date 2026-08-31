@@ -34,8 +34,8 @@ class Incident extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'started_at'       => 'datetime',
-        'resolved_at'      => 'datetime',
+        'started_at' => 'datetime',
+        'resolved_at' => 'datetime',
         'duration_seconds' => 'integer',
     ];
 
@@ -67,16 +67,16 @@ class Incident extends Model
         return $this->hasMany(IncidentNote::class);
     }
 
-        // app/Models/Incident.php — tambahin dua method ini
+    // app/Models/Incident.php — tambahin dua method ini
     public function getTypeLabelAttribute(): string
     {
         return match ($this->incident_type) {
-            'down'        => 'Website Down',
-            'timeout'     => 'Connection Timeout',
-            'http_error'  => 'HTTP Error',
-            'ssl'         => 'SSL Certificate Error',
-            'slow'        => 'Slow Response',
-            default       => ucfirst($this->incident_type),
+            'down' => 'Website Down',
+            'timeout' => 'Connection Timeout',
+            'http_error' => 'HTTP Error',
+            'ssl' => 'SSL Certificate Error',
+            'slow' => 'Slow Response',
+            default => ucfirst($this->incident_type),
         };
     }
 
@@ -84,21 +84,21 @@ class Incident extends Model
  | SCOPES
  ========================================== */
 
-/**
- * Scope untuk insiden yang masih aktif (Open / On Progress).
- */
-public function scopeActive($query)
-{
-    return $query->whereIn('status', ['open', 'on_progress']);
-}
+    /**
+     * Scope untuk insiden yang masih aktif (Open / On Progress).
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', ['open', 'on_progress']);
+    }
 
     public function getBadgeClassAttribute(): string
     {
         return match ($this->status) {
-            'open'        => 'open',
+            'open' => 'open',
             'on_progress' => 'progress',
-            'solved'      => 'solved',
-            default       => 'open',
+            'solved' => 'solved',
+            default => 'open',
         };
     }
 }

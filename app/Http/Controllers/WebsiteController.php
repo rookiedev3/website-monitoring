@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Website;
 use App\Http\Requests\WebsiteRequest;
+use App\Models\MonitoringSetting;
+use App\Models\Website;
 use Illuminate\Http\Request;
 
 class WebsiteController extends Controller
@@ -23,7 +24,12 @@ class WebsiteController extends Controller
 
     public function create()
     {
-        return view('websites.create');
+        $setting = MonitoringSetting::first() ?? (object) [
+            'default_interval_minutes' => 5,
+            'timeout_seconds' => 10,
+        ];
+
+        return view('websites.create', compact('setting'));
     }
 
     public function store(Request $request)
@@ -49,6 +55,7 @@ class WebsiteController extends Controller
             ->route('websites.index')
             ->with('success', 'Website berhasil ditambahkan ke sistem pemantauan.');
     }
+
     public function edit(Website $website)
     {
         return view('websites.edit', compact('website'));

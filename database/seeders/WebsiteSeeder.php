@@ -78,7 +78,7 @@ class WebsiteSeeder extends Seeder
                 'notes' => 'Target pengujian status Slow / Warning (> 3000ms)',
             ],
 
-                // Alternatif Seeder untuk Uji SLOW / WARNING (Delay 4 Detik)
+            // Alternatif Seeder untuk Uji SLOW / WARNING (Delay 4 Detik)
             [
                 'customer_name' => 'Client Response Slow',
                 'website_name' => 'Delay Response 4s',
@@ -91,7 +91,7 @@ class WebsiteSeeder extends Seeder
                 'notes' => 'Target pengujian status Slow / Warning (> 3000ms)',
             ],
 
-                // Alternatif Seeder untuk Uji HTTP ERROR 500
+            // Alternatif Seeder untuk Uji HTTP ERROR 500
             [
                 'customer_name' => 'Client Mock Server',
                 'website_name' => 'HTTP Status Error 500',

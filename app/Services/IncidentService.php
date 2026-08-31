@@ -17,20 +17,21 @@ class IncidentService
         if ($currentStatus !== 'online') {
             if (! $openIncident) {
                 Incident::create([
-                    'website_id'    => $website->id,
+                    'website_id' => $website->id,
                     'incident_type' => $this->mapIncidentType($currentStatus),
-                    'status'        => 'open',
-                    'started_at'    => now(),
+                    'status' => 'open',
+                    'started_at' => now(),
                 ]);
             }
+
             return;
         }
 
         if ($openIncident) {
             $openIncident->update([
-                'resolved_at'      => now(),
+                'resolved_at' => now(),
                 'duration_seconds' => abs(now()->diffInSeconds($openIncident->started_at)),
-                'status'           => 'solved',
+                'status' => 'solved',
             ]);
         }
     }
@@ -38,10 +39,10 @@ class IncidentService
     private function mapIncidentType(string $status): string
     {
         return match ($status) {
-            'down'      => 'down',
-            'warning'   => 'slow',
+            'down' => 'down',
+            'warning' => 'slow',
             'ssl_error' => 'ssl',
-            default     => 'http_error',
+            default => 'http_error',
         };
     }
 }

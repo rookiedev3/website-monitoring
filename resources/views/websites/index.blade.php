@@ -685,7 +685,7 @@
           <div class="filter-dropdown">
             <select id="category-filter">
               <option value="all">Semua Kategori</option>
-              @foreach($categories as $cat)
+              @foreach($categories ?? [] as $cat)
                 <option value="{{ $cat }}">{{ $cat }}</option>
               @endforeach
             </select>

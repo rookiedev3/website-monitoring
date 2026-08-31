@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class MonitoringLog extends Model
 {
@@ -28,13 +29,13 @@ class MonitoringLog extends Model
     ];
 
     protected $casts = [
-        'ssl_valid'        => 'boolean',
-        'ssl_expired_at'   => 'datetime',
-        'ssl_days_left'    => 'integer',
-        'http_code'        => 'integer',
+        'ssl_valid' => 'boolean',
+        'ssl_expired_at' => 'datetime',
+        'ssl_days_left' => 'integer',
+        'http_code' => 'integer',
         'response_time_ms' => 'integer',
-        'checked_at'       => 'datetime',
-        'created_at'       => 'datetime',
+        'checked_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     /* ==========================================
@@ -89,11 +90,11 @@ class MonitoringLog extends Model
     {
         return Attribute::make(
             get: fn () => match ($this->status) {
-                'online'    => 'bg-success text-white',
-                'warning'   => 'bg-warning text-dark',
-                'down'      => 'bg-danger text-white',
+                'online' => 'bg-success text-white',
+                'warning' => 'bg-warning text-dark',
+                'down' => 'bg-danger text-white',
                 'ssl_error' => 'bg-secondary text-white',
-                default     => 'bg-light text-dark',
+                default => 'bg-light text-dark',
             }
         );
     }
@@ -106,11 +107,11 @@ class MonitoringLog extends Model
     {
         return Attribute::make(
             get: fn () => match ($this->status) {
-                'online'    => 'Online',
-                'warning'   => 'Slow Response',
-                'down'      => 'Down / Offline',
+                'online' => 'Online',
+                'warning' => 'Slow Response',
+                'down' => 'Down / Offline',
                 'ssl_error' => 'SSL Invalid / Expired',
-                default     => 'Unknown',
+                default => 'Unknown',
             }
         );
     }
@@ -127,7 +128,7 @@ class MonitoringLog extends Model
                 }
 
                 // Potong pesan error yang terlalu panjang jika melebihi 80 karakter
-                return \Illuminate\Support\Str::limit($this->error_message, 80);
+                return Str::limit($this->error_message, 80);
             }
         );
     }

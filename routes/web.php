@@ -19,10 +19,17 @@ Route::middleware('guest')->group(function () {
 // BUAT YANG SUDAH LOGIN
 Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard'); // ganti sesuai view kamu
-    // })->name('dashboard');
-    //
+
+    // Dashboard Monitoring
+    Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');
+
+    // Detail Monitoring & Log per Website
+    Route::get('/dashboard/{website}', [MonitoringController::class, 'show'])->name('dashboard.show');
+    Route::get('/api/dashboard/status', [MonitoringController::class, 'apiStatus'])->name('api.dashboard.status');
+
+    Route::resource('websites', WebsiteController::class);
+    Route::patch('websites/{website}/toggle-status', [WebsiteController::class, 'toggleStatus'])->name('websites.toggle-status');
+
     Route::resource('incidents', IncidentController::class)
         ->only(['index', 'show', 'update']);
 
@@ -63,29 +70,6 @@ Route::middleware('auth')->group(function () {
 // Route::resource('/pengguna', UserController::class)->names('user');
 Route::resource('/users', UserController::class);
 
-// ROUTE CHYNTIA
-
-// dashboard sama buat semua role (data-nya sama, kata Chyntia)
-// Website Management
-Route::get('/websites', function () {
-    return view('websites.index');
-})->name('websites.index');
-
-// Halaman Form Tambah Website
-Route::get('/websites/create', function () {
-    return view('websites.create');
-})->name('websites.create');
-
-// Proses Simpan Data Website (Backend Target)
-Route::post('/websites', function () {
-    // Logic simpan data oleh backend
-})->name('websites.store');
-
-// edit
-Route::get('/websites/edit', function () {
-    return view('websites.edit');
-})->name('websites.edit');
-
 //
 // Halaman Analytics
 Route::get('/analytics', function () {
@@ -93,12 +77,3 @@ Route::get('/analytics', function () {
 })->name('analytics.index');
 
 // route ridho
-// Dashboard Monitoring
-Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');
-
-// Detail Monitoring & Log per Website
-Route::get('/dashboard/{website}', [MonitoringController::class, 'show'])->name('dashboard.show');
-Route::get('/api/dashboard/status', [MonitoringController::class, 'apiStatus'])->name('api.dashboard.status');
-
-Route::resource('websites', WebsiteController::class);
-Route::patch('websites/{website}/toggle-status', [WebsiteController::class, 'toggleStatus'])->name('websites.toggle-status');

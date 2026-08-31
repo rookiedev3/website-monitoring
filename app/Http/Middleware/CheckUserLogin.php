@@ -12,20 +12,20 @@ class CheckUserLogin
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, ...$role): Response
     {
-    $user = Auth::user();
+        $user = Auth::user();
 
-    if (!$user) {
-    return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-    }
+        if (! $user) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
 
-    if (in_array($user->role, $role, true)) {
-    return $next($request);
-    }
+        if (in_array($user->role, $role, true)) {
+            return $next($request);
+        }
 
-    abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     }
 }

@@ -1,9 +1,7 @@
 <?php
 
-use App\Models\Website;
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
 use App\Jobs\CheckWebsiteJob;
+use App\Models\Website;
 
 // Running setiap menit via Cron Job
 Schedule::call(function () {
@@ -16,7 +14,7 @@ Schedule::call(function () {
         $lastChecked = $website->updated_at; // atau kolom checked_at di log terakhir
 
         // Cek apakah selisih menit terakhir cek sudah >= check_interval milik website ini
-        if (!$lastChecked || $lastChecked->diffInMinutes($now) >= $website->check_interval) {
+        if (! $lastChecked || $lastChecked->diffInMinutes($now) >= $website->check_interval) {
             CheckWebsiteJob::dispatch($website);
         }
     }

@@ -2,18 +2,19 @@
 
 namespace App\Jobs;
 
-use App\Models\Website;
-use App\Models\MonitoringLog;
 use App\Models\Incident;
+use App\Models\MonitoringLog;
 use App\Models\MonitoringSetting;
+use App\Models\Website;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class CheckWebsiteJob implements ShouldQueue
 {
@@ -21,37 +22,32 @@ class CheckWebsiteJob implements ShouldQueue
 
     public $timeout = 30;
 
-    public function __construct(public Website $website)
-    {
-    }
+    public function __construct(public Website $website) {}
 
     public function handle(): void
     {
-        // 0. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM)
+        // 0. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM) - Simpan sebagai Array agar aman dari issue unserialize Eloquent Model
         $settings = Cache::remember('global_monitoring_settings', 3600, function () {
-            return MonitoringSetting::first();
+            $setting = MonitoringSetting::first();
+
+            return $setting ? $setting->toArray() : null;
         });
 
         // Tentukan batas threshold dinamis (dengan fallback default jika DB kosong)
-        $slowThreshold = $settings->slow_threshold_ms ?? 2000;
-        $sslWarningDays = $settings->ssl_warning_days ?? 14;
+        $slowThreshold = $settings['slow_threshold_ms'] ?? 2000;
+        $sslWarningDays = $settings['ssl_warning_days'] ?? 14;
         // Mengambil timeout kustom milik website, jika null pakai global setting
-        $timeoutSeconds = $this->website->timeout_seconds ?? ($settings->timeout_seconds ?? 10);
-
+        $timeoutSeconds = $this->website->timeout_seconds ?? ($settings['timeout_seconds'] ?? 10);
 
         $startTime = microtime(true);
         $url = $this->website->url;
-
-        // Digunakan sebagai batas HTTP Client Request
-        $response = Http::timeout($timeoutSeconds)
-            ->withOptions(['verify' => false])
-            ->get($url);
 
         $status = 'online';
         $incidentType = null;
         $httpCode = null;
         $errorType = null;
         $errorMessage = null;
+        $responseTimeMs = null;
 
         // --- 1. PROSES PENGECEKAN HTTP CLIENT ---
         try {
@@ -75,7 +71,7 @@ class CheckWebsiteJob implements ShouldQueue
                 $errorType = 'HTTP_SERVER_ERROR';
                 $errorMessage = "Server merespons dengan HTTP status: {$httpCode}";
             }
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
             $status = 'down';
 
@@ -87,7 +83,7 @@ class CheckWebsiteJob implements ShouldQueue
                 $errorType = 'CONNECTION_FAILED';
             }
             $errorMessage = $e->getMessage();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
             $status = 'down';
             $incidentType = 'down';
@@ -99,7 +95,7 @@ class CheckWebsiteJob implements ShouldQueue
         $sslInfo = $this->checkSslCertificate($url);
 
         // Menggunakan ssl_warning_days dinamis dari MonitoringSetting
-        if ((!$sslInfo['valid'] || $sslInfo['days_left'] <= $sslWarningDays) && $status !== 'down') {
+        if ($sslInfo['valid'] !== null && (! $sslInfo['valid'] || $sslInfo['days_left'] <= $sslWarningDays) && $status !== 'down') {
             $status = 'ssl_error';
             $incidentType = 'ssl';
             $errorType = 'SSL_INVALID';
@@ -130,12 +126,23 @@ class CheckWebsiteJob implements ShouldQueue
 
     private function checkSslCertificate(string $url): array
     {
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        if (strtolower($scheme ?? '') !== 'https') {
+            return [
+                'valid' => null,
+                'expired_at' => null,
+                'days_left' => null,
+                'error' => null,
+            ];
+        }
+
         $host = parse_url($url, PHP_URL_HOST) ?? $url;
+        $port = parse_url($url, PHP_URL_PORT) ?? 443;
 
-        $gcontext = stream_context_create(["ssl" => ["capture_peer_cert" => true]]);
-        $client = @stream_socket_client("ssl://{$host}:443", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $gcontext);
+        $gcontext = stream_context_create(['ssl' => ['capture_peer_cert' => true]]);
+        $client = @stream_socket_client("ssl://{$host}:{$port}", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $gcontext);
 
-        if (!$client) {
+        if (! $client) {
             return [
                 'valid' => false,
                 'expired_at' => null,
@@ -145,13 +152,13 @@ class CheckWebsiteJob implements ShouldQueue
         }
 
         $cont = stream_context_get_params($client);
-        $cert = isset($cont["options"]["ssl"]["peer_certificate"])
-            ? openssl_x509_parse($cont["options"]["ssl"]["peer_certificate"])
+        $cert = isset($cont['options']['ssl']['peer_certificate'])
+            ? openssl_x509_parse($cont['options']['ssl']['peer_certificate'])
             : null;
 
         fclose($client);
 
-        if (!$cert) {
+        if (! $cert) {
             return [
                 'valid' => false,
                 'expired_at' => null,
@@ -179,7 +186,7 @@ class CheckWebsiteJob implements ShouldQueue
             ->first();
 
         // Jika Web bermasalah (down / ssl_error) & belum ada insiden aktif
-        if (in_array($status, ['down', 'ssl_error']) && !$activeIncident) {
+        if (in_array($status, ['down', 'ssl_error']) && ! $activeIncident) {
             Incident::create([
                 'website_id' => $this->website->id,
                 'incident_type' => $incidentType ?? 'down',
