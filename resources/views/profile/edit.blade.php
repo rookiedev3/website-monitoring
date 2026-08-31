@@ -53,7 +53,7 @@
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
 
-    /* STYLE MAIN CONTENT */
+    /* STYLE MAIN CONTENT & PERGESERAN SIDEBAR RESPONSIF */
     main { 
       margin-left: var(--sidebar-width); 
       flex: 1; 
@@ -101,6 +101,7 @@
       position: relative;
       display: flex;
       align-items: center;
+      width: 100%;
     }
     .form-control { 
       width: 100%; 
@@ -124,21 +125,34 @@
 
     .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; flex-wrap: wrap; }
     
-    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; display: inline-flex; align-items: center; justify-content: center; }
     .btn-secondary:hover { color: #fff; background: var(--card-hover); }
 
-    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-primary:hover { opacity: 0.9; }
 
+    /* ==========================================================
+       MEDIA QUERY: RESPONSIF UNTUK LAYAR TABLET & HP (Max 768px)
+       ========================================================== */
     @media (max-width: 768px) {
       main { 
         margin-left: 0 !important; 
         width: 100% !important; 
         padding: 14px;
-        padding-top: 60px;
+        padding-top: 60px; /* Menyediakan ruang untuk toggle bar di mobile */
       }
-      .form-actions { flex-direction: column-reverse; width: 100%; }
-      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+      .card {
+        padding: 16px; /* Mengurangi padding card agar pas di layar kecil */
+      }
+      .form-actions { 
+        flex-direction: column-reverse; 
+        width: 100%; 
+        gap: 10px;
+      }
+      .btn-primary, .btn-secondary { 
+        width: 100%; 
+        justify-content: center; 
+      }
     }
   </style>
 </head>
@@ -209,7 +223,8 @@
 
           <!-- TOMBOL AKSI -->
           <div class="form-actions" style="margin-bottom: 0;">
-<a href="{{ route('profile.index') }}" class="btn-secondary">Batal</a>            <button type="submit" class="btn-primary">
+            <a href="{{ route('profile.index') }}" class="btn-secondary">Batal</a>
+            <button type="submit" class="btn-primary">
               <i class="bi bi-check-lg"></i> Simpan Perubahan
             </button>
           </div>

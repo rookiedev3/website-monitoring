@@ -54,7 +54,7 @@
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
 
-    /* STYLE MAIN CONTENT */
+    /* STYLE MAIN CONTENT & PERGESERAN SIDEBAR RESPONSIF */
     main { 
       margin-left: var(--sidebar-width); 
       flex: 1; 
@@ -137,6 +137,7 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 16px;
+      word-break: break-word;
     }
     .info-box-label {
       font-size: 10px;
@@ -167,24 +168,42 @@
       align-items: center;
       gap: 6px;
       transition: opacity 0.2s;
+      white-space: nowrap;
     }
     .btn-edit:hover { opacity: 0.9; }
 
-    /* RESPONSIF LAYAR HP & TABLET */
+    /* ==========================================================
+       MEDIA QUERY: RESPONSIF UNTUK LAYAR TABLET & HP (Max 900px)
+       ========================================================== */
     @media (max-width: 900px) {
-      .profile-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    @media (max-width: 600px) {
       main { 
         margin-left: 0 !important; 
         width: 100% !important; 
         padding: 14px;
-        padding-top: 60px;
+        padding-top: 60px; /* Ruang untuk toggle sidebar di mobile */
+      }
+      .profile-grid {
+        grid-template-columns: 1fr; /* Mengubah grid 2 kolom menjadi 1 kolom vertikal */
+      }
+    }
+
+    /* ==========================================================
+       MEDIA QUERY: KHUSUS LAYAR KECIL / HP (Max 600px)
+       ========================================================== */
+    @media (max-width: 600px) {
+      .card {
+        padding: 16px;
       }
       .info-boxes-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Kotak info di dalam card menjadi 1 kolom bertumpuk */
+      }
+      .card-header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .btn-edit {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -248,7 +267,6 @@
                 <i class="bi bi-key"></i>
                 <span>Keamanan & Password</span>
               </div>
-             
             </div>
 
             <div class="info-boxes-grid">
