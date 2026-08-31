@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MonitoringController;
@@ -72,8 +73,10 @@ Route::resource('/users', UserController::class);
 
 //
 // Halaman Analytics
-Route::get('/analytics', function () {
-    return view('analytics.index');
-})->name('analytics.index');
+// Route::get('/analytics', function () {
+//     return view('analytics.index');
+// })->name('analytics.index');
+
+   Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
 // route ridho
