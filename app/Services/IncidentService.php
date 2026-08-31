@@ -7,7 +7,7 @@ use App\Models\Website;
 
 class IncidentService
 {
-    public function evaluate(Website $website, string $currentStatus): void
+    public function evaluate(Website $website, string $currentStatus, ?string $incidentType = null): void
     {
         $openIncident = Incident::where('website_id', $website->id)
             ->whereIn('status', ['open', 'on_progress'])
@@ -18,7 +18,7 @@ class IncidentService
             if (! $openIncident) {
                 Incident::create([
                     'website_id'    => $website->id,
-                    'incident_type' => $this->mapIncidentType($currentStatus),
+                    'incident_type' => $incidentType ?? $this->mapIncidentType($currentStatus),
                     'status'        => 'open',
                     'started_at'    => now(),
                 ]);

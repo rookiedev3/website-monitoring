@@ -29,14 +29,18 @@ class CheckWebsiteJob implements ShouldQueue
     {
         // 0. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM)
         $settings = Cache::remember('global_monitoring_settings', 3600, function () {
-            return MonitoringSetting::first();
+            return MonitoringSetting::first()?->only([
+                'slow_threshold_ms',
+                'ssl_warning_days',
+                'timeout_seconds',
+            ]);
         });
 
         // Tentukan batas threshold dinamis (dengan fallback default jika DB kosong)
-        $slowThreshold = $settings->slow_threshold_ms ?? 2000;
-        $sslWarningDays = $settings->ssl_warning_days ?? 14;
+        $slowThreshold = $settings['slow_threshold_ms'] ?? 2000;
+        $sslWarningDays = $settings['ssl_warning_days'] ?? 14;
         // Mengambil timeout kustom milik website, jika null pakai global setting
-        $timeoutSeconds = $this->website->timeout_seconds ?? ($settings->timeout_seconds ?? 10);
+        $timeoutSeconds = $this->website->timeout_seconds ?? ($settings['timeout_seconds'] ?? 10);
 
 
         $startTime = microtime(true);
@@ -125,7 +129,7 @@ class CheckWebsiteJob implements ShouldQueue
         $this->website->touch();
 
         // --- 4. OTOMATISASI INCIDENT LIFECYCLE ---
-        $this->handleIncidentLifecycle($status, $incidentType, $now);
+        app(\App\Services\IncidentService::class)->evaluate($this->website, $status, $incidentType);
     }
 
     private function checkSslCertificate(string $url): array
@@ -169,33 +173,5 @@ class CheckWebsiteJob implements ShouldQueue
             'days_left' => $daysLeft,
             'error' => $daysLeft <= 0 ? 'Sertifikat SSL telah kadaluwarsa' : null,
         ];
-    }
-
-    private function handleIncidentLifecycle(string $status, ?string $incidentType, Carbon $now): void
-    {
-        $activeIncident = Incident::where('website_id', $this->website->id)
-            ->whereIn('status', ['open', 'on_progress'])
-            ->latest()
-            ->first();
-
-        // Jika Web bermasalah (down / ssl_error) & belum ada insiden aktif
-        if (in_array($status, ['down', 'ssl_error']) && !$activeIncident) {
-            Incident::create([
-                'website_id' => $this->website->id,
-                'incident_type' => $incidentType ?? 'down',
-                'status' => 'open',
-                'started_at' => $now,
-            ]);
-        }
-        // Jika Web kembali normal & ada insiden aktif
-        elseif ($status === 'online' && $activeIncident) {
-            $durationInSeconds = $activeIncident->started_at->diffInSeconds($now);
-
-            $activeIncident->update([
-                'status' => 'solved',
-                'resolved_at' => $now,
-                'duration_seconds' => $durationInSeconds,
-            ]);
-        }
     }
 }
