@@ -80,3 +80,11 @@ Route::resource('/users', UserController::class);
    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
 // route ridho
+
+
+//route chyntia
+// Route untuk halaman profil utama
+Route::view('/profile', 'profile.index')->name('profile.index');
+
+// Route untuk halaman form edit profil & password
+Route::view('/profile/edit', 'profile.edit')->name('profile.edit');
