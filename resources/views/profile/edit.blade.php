@@ -16,6 +16,7 @@
       --green: #0f9f6e;
       --green-soft: rgba(15, 159, 110, 0.12);
       --red: #d94c4c;
+      --red-soft: rgba(217, 76, 76, 0.12);
       --shadow: 0 10px 30px rgba(0,0,0,.3);
       --sidebar-width: 215px;
       --sidebar-collapsed: 62px;
@@ -115,6 +116,7 @@
       transition: border-color 0.2s ease; 
     }
     .form-control:focus { border-color: var(--green); }
+    .form-control.is-invalid { border-color: var(--red); }
     .input-icon-right {
       position: absolute;
       right: 14px;
@@ -122,6 +124,24 @@
       cursor: pointer;
     }
     .input-icon-right:hover { color: #fff; }
+
+    .invalid-feedback {
+      display: block;
+      font-size: 11px;
+      color: var(--red);
+      margin-top: 6px;
+    }
+
+    .alert-error {
+      background: var(--red-soft);
+      border: 1px solid var(--red);
+      color: var(--red);
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
 
     .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; flex-wrap: wrap; }
     
@@ -170,8 +190,16 @@
         <p>Perbarui informasi data diri atau ubah kata sandi akun Anda.</p>
       </div>
 
-      <form action="#" method="POST">
-        
+      @if($errors->any() && !$errors->has('current_password'))
+        <div class="alert-error">
+          Terjadi kesalahan, periksa kembali data yang Anda masukkan.
+        </div>
+      @endif
+
+      <form action="{{ route('profile.update') }}" method="POST">
+        @csrf
+        @method('PUT')
+
         <!-- KARTU: INFORMASI DATA DIRI -->
         <div class="card">
           <div class="card-title-group" style="margin-bottom: 20px;">
@@ -180,13 +208,31 @@
           </div>
 
           <div class="form-group">
-            <label>Nama Lengkap / Perusahaan</label>
-            <input type="text" class="form-control" value="PT Maju Sejahtera" required>
+            <label>Nama Lengkap</label>
+            <input
+              type="text"
+              name="name"
+              class="form-control @error('name') is-invalid @enderror"
+              value="{{ old('name', $user->name) }}"
+              required
+            >
+            @error('name')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
 
           <div class="form-group" style="margin-bottom: 0;">
             <label>Alamat Email</label>
-            <input type="email" class="form-control" value="admin@majusejahtera.com" required>
+            <input
+              type="email"
+              name="email"
+              class="form-control @error('email') is-invalid @enderror"
+              value="{{ old('email', $user->email) }}"
+              required
+            >
+            @error('email')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
 
@@ -196,27 +242,51 @@
             <i class="bi bi-key"></i>
             <span>Keamanan & Password</span>
           </div>
+          <p style="font-size: 11px; color: var(--muted); margin-top: -12px; margin-bottom: 20px;">
+            Kosongkan bagian ini jika Anda tidak ingin mengubah kata sandi.
+          </p>
 
           <div class="form-group">
             <label>Kata Sandi Saat Ini</label>
             <div class="input-wrapper">
-              <input type="password" class="form-control" placeholder="Masukkan kata sandi lama">
+              <input
+                type="password"
+                name="current_password"
+                class="form-control toggle-password @error('current_password') is-invalid @enderror"
+                placeholder="Masukkan kata sandi lama"
+              >
               <i class="bi bi-eye input-icon-right"></i>
             </div>
+            @error('current_password')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
 
           <div class="form-group">
             <label>Kata Sandi Baru</label>
             <div class="input-wrapper">
-              <input type="password" class="form-control" placeholder="Masukkan kata sandi baru">
+              <input
+                type="password"
+                name="new_password"
+                class="form-control toggle-password @error('new_password') is-invalid @enderror"
+                placeholder="Masukkan kata sandi baru (min. 8 karakter)"
+              >
               <i class="bi bi-eye input-icon-right"></i>
             </div>
+            @error('new_password')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
 
           <div class="form-group" style="margin-bottom: 0;">
             <label>Konfirmasi Kata Sandi Baru</label>
             <div class="input-wrapper">
-              <input type="password" class="form-control" placeholder="Ulangi kata sandi baru">
+              <input
+                type="password"
+                name="new_password_confirmation"
+                class="form-control toggle-password"
+                placeholder="Ulangi kata sandi baru"
+              >
               <i class="bi bi-eye input-icon-right"></i>
             </div>
           </div>
@@ -234,6 +304,21 @@
 
     </div>
   </main>
+
+  <script>
+    // Toggle show/hide untuk setiap input password yang punya ikon mata
+    document.querySelectorAll('.input-icon-right').forEach(function (icon) {
+      icon.addEventListener('click', function () {
+        const input = icon.previousElementSibling;
+        if (!input) return;
+
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        icon.classList.toggle('bi-eye');
+        icon.classList.toggle('bi-eye-slash');
+      });
+    });
+  </script>
 
 </body>
 </html>

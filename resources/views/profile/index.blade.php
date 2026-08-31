@@ -229,8 +229,6 @@
         </div>
       @endif
 
-      @php $user = Auth::user(); @endphp
-
       <div class="profile-grid">
         
         <!-- KOLOM KIRI (DATA DIRI & KEAMANAN PASSWORD) -->
@@ -300,12 +298,12 @@
                 </div>
               </div>
 
-              <div class="info-box-item">
-                <div class="info-box-label">TERAKHIR AKTIF</div>
-                <div class="info-box-value" style="font-size: 12px; color: var(--muted);">
-                  {{ $user->updated_at ? $user->updated_at->diffForHumans() : 'Baru saja' }}
-                </div>
+            <div class="info-box-item">
+              <div class="info-box-label">LOGIN TERAKHIR</div>
+              <div class="info-box-value" style="font-size: 12px; color: var(--muted);">
+                {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Belum pernah login' }}
               </div>
+            </div>
             </div>
 
           </div>

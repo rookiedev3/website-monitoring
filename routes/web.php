@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\MonitoringSettingController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('incidents', IncidentController::class)->only(['index', 'show', 'update']);
     Route::post('/incidents/{incident}/take', [IncidentController::class, 'take'])->name('incidents.take');
     Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])->name('incidents.notes.store');
+
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // BUAT SUPER ADMIN
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {
@@ -84,7 +89,7 @@ Route::resource('/users', UserController::class);
 
 //route chyntia
 // Route untuk halaman profil utama
-Route::view('/profile', 'profile.index')->name('profile.index');
+// Route::view('/profile', 'profile.index')->name('profile.index');
 
-// Route untuk halaman form edit profil & password
-Route::view('/profile/edit', 'profile.edit')->name('profile.edit');
+// // Route untuk halaman form edit profil & password
+// Route::view('/profile/edit', 'profile.edit')->name('profile.edit');
