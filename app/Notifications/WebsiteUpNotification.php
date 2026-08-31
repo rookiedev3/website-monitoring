@@ -55,7 +55,7 @@ class WebsiteUpNotification extends Notification
             'duration' => $this->duration,
             'incident_id' => $this->incident->id,
             'is_resolved' => true,
-            'action_url' => route('dashboard.show', $this->website->id),
+            'action_url' => route('incidents.show', $this->incident->id),
             'message' => "Website {$this->website->website_name} telah kembali normal.",
         ];
     }

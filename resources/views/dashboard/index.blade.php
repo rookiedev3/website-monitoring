@@ -677,7 +677,7 @@
                                             </td>
                                             <td><span class="badge badge-warning">{{ strtoupper($incident->status) }}</span>
                                             </td>
-                                            <td>{{ $incident->assignedUser->name ?? 'Belum Ditugaskan' }}</td>
+                                            <td>{{ $incident->assignedUser?->name ?? 'Belum Ditugaskan' }}</td>
                                             <td style="color:var(--muted); font-size:12px;">
                                                 {{ $incident->started_at->locale('id')->diffForHumans() }}
                                             </td>

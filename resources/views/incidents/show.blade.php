@@ -396,10 +396,9 @@
         /* Memaksa kolom ganda menjadi 1 kolom vertikal */
       }
 
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    .main-content,
+    main {
+      margin-top: var(--navbar-height, 60px);
     }
   </style>
 </head>
@@ -476,7 +475,7 @@
             </div>
             <div class="info-item">
               <span class="info-label">PIC</span>
-              <span class="info-value">{{ $incident->assignedUser->name ?? 'Belum ditugaskan' }}</span>
+              <span class="info-value">{{ $incident->assignedUser?->name ?? 'Belum ditugaskan' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Status Pekerjaan</span>
@@ -525,7 +524,7 @@
 
             @elseif($incident->assigned_to !== $user->id)
               <p style="font-size: 13px; color: var(--muted);">
-                Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser->name }}</b>.
+                Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'Pengguna lain' }}</b>.
               </p>
 
             @elseif($incident->status === 'solved')

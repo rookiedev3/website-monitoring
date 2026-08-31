@@ -195,8 +195,8 @@
   <!-- Pengecekan Akses: Hanya muncul untuk Super Admin dan Programmer -->
   @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'programmer']))
     @php
-      // Mengambil 10 notifikasi terbaru
-      $notifications = auth()->user()->notifications()->take(10)->get();
+      // Mengambil 10 notifikasi yang belum dibaca
+      $notifications = auth()->user()->unreadNotifications()->take(10)->get();
       $unreadCount = auth()->user()->unreadNotifications->count();
     @endphp
 
@@ -230,8 +230,10 @@
             @php
               $data = $notif->data;
               $isUnread = is_null($notif->read_at);
-              $colorClass = $data['color'] ?? ($data['type'] === 'website_down' ? 'danger' : 'success');
-              $targetUrl = $data['action_url'] ?? route('incidents.show', $data['incident_id'] ?? 0);
+              $colorClass = $data['color'] ?? (($data['type'] ?? '') === 'website_down' ? 'danger' : 'success');
+              $targetUrl = !empty($data['incident_id']) 
+                ? route('incidents.show', $data['incident_id']) 
+                : ($data['action_url'] ?? route('incidents.index'));
             @endphp
 
             <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}" 

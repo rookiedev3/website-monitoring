@@ -600,7 +600,7 @@
                   <td>{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M, H:i') }} WIB</td>
                   <td>
                     @if($incident->assignedUser)
-                      {{ $incident->assignedUser->name }}
+                      {{ $incident->assignedUser?->name ?? 'Belum ditugaskan' }}
                       @if(Auth::user()->role === 'super_admin')
                         <br>
                         <button class="assign-btn" style="margin-top:4px; padding:3px 8px; font-size:10px;"

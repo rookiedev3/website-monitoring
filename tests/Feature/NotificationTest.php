@@ -149,10 +149,10 @@ class NotificationTest extends TestCase
         $response = $this->actingAs($programmer)
             ->get(route('notifications.readAndRedirect', [
                 $notification->id,
-                'redirect' => route('dashboard.show', $website->id),
+                'redirect' => route('incidents.show', $incident->id),
             ]));
 
-        $response->assertRedirect(route('dashboard.show', $website->id));
+        $response->assertRedirect(route('incidents.show', $incident->id));
         $this->assertEquals(0, $programmer->fresh()->unreadNotifications->count());
     }
 
@@ -220,5 +220,51 @@ class NotificationTest extends TestCase
 
         // Notification must NOT be sent for SSL error / initial check
         Notification::assertNothingSent();
+    }
+
+    public function test_programmer_clicking_notification_for_unassigned_incident_does_not_error(): void
+    {
+        $programmer = User::factory()->create([
+            'role' => 'programmer',
+            'is_active' => true,
+        ]);
+
+        $website = Website::create([
+            'customer_name' => 'Client F',
+            'website_name' => 'Incident View Test',
+            'url' => 'https://incview-example.com',
+            'domain' => 'incview-example.com',
+            'check_interval' => 5,
+            'timeout_seconds' => 10,
+            'monitoring_status' => 'active',
+        ]);
+
+        $incident = Incident::create([
+            'website_id' => $website->id,
+            'incident_type' => 'down',
+            'status' => 'on_progress',
+            'assigned_to' => null,
+            'started_at' => now(),
+        ]);
+
+        $programmer->notify(new WebsiteDownNotification(
+            $website,
+            $incident,
+            'down',
+            now()->format('d M Y - H:i:s')
+        ));
+
+        $notification = $programmer->unreadNotifications->first();
+
+        $response = $this->actingAs($programmer)
+            ->get(route('notifications.readAndRedirect', [$notification->id]));
+
+        $response->assertRedirect(route('incidents.show', $incident->id));
+
+        $viewResponse = $this->actingAs($programmer)
+            ->get(route('incidents.show', $incident->id));
+
+        $viewResponse->assertStatus(200);
+        $viewResponse->assertSeeText('Detail & Penanganan Incident');
     }
 }

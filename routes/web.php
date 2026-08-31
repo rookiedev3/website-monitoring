@@ -46,7 +46,16 @@ Route::middleware('auth')->group(function () {
         $notification = auth()->user()->notifications()->findOrFail($id);
         $notification->markAsRead();
 
-        return redirect($request->query('redirect', route('incidents.index')));
+        $data = $notification->data;
+        $target = $request->query('redirect');
+
+        if (! empty($data['incident_id'])) {
+            $target = route('incidents.show', $data['incident_id']);
+        } elseif (empty($target)) {
+            $target = $data['action_url'] ?? route('incidents.index');
+        }
+
+        return redirect($target);
     })->name('notifications.readAndRedirect');
 
     // Tandai semua notifikasi dibaca
@@ -92,12 +101,11 @@ Route::resource('/users', UserController::class);
 //     return view('analytics.index');
 // })->name('analytics.index');
 
-   Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
 // route ridho
 
-
-//route chyntia
+// route chyntia
 // Route untuk halaman profil utama
 // Route::view('/profile', 'profile.index')->name('profile.index');
 

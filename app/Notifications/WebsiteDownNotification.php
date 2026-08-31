@@ -60,7 +60,7 @@ class WebsiteDownNotification extends Notification
             'error_type' => $this->errorType,
             'start_time' => $this->startTime,
             'incident_id' => $this->incident->id,
-            'action_url' => route('dashboard.show', $this->website->id),
+            'action_url' => route('incidents.show', $this->incident->id),
             'message' => "Website {$this->website->website_name} terdeteksi DOWN.",
         ];
     }
