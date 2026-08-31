@@ -664,13 +664,18 @@
       align-items: center;
       justify-content: center;
     }
+
+    .main-content,
+    main {
+      margin-top: var(--navbar-height, 60px);
+    }
   </style>
 </head>
 
 <body>
 
   <!-- MEMANGGIL SIDEBAR -->
-  @include('layouts.sidebar')
+  @include('layouts.navigation')
 
   <!-- MAIN CONTENT -->
   <main>

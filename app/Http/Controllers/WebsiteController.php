@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WebsiteRequest;
+use App\Jobs\CheckWebsiteJob;
 use App\Models\MonitoringSetting;
 use App\Models\Website;
 use Illuminate\Http\Request;
@@ -49,7 +50,11 @@ class WebsiteController extends Controller
         $parsedHost = parse_url($validated['url'], PHP_URL_HOST);
         $validated['domain'] = $parsedHost ?? $validated['url'];
 
-        Website::create($validated);
+        $website = Website::create($validated);
+
+        if ($website->monitoring_status === 'active') {
+            CheckWebsiteJob::dispatch($website);
+        }
 
         return redirect()
             ->route('websites.index')
@@ -64,7 +69,8 @@ class WebsiteController extends Controller
     public function update(WebsiteRequest $request, Website $website)
     {
         $data = $request->validated();
-        $data['domain'] = parse_url($request->url, PHP_URL_HOST);
+        $parsedHost = parse_url($data['url'], PHP_URL_HOST);
+        $data['domain'] = $parsedHost ?? $data['url'];
 
         $website->update($data);
 

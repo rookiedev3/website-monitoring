@@ -111,11 +111,16 @@
         grid-template-columns: 1fr; /* Mengubah form 2 kolom sejajar menjadi 1 kolom bertumpuk ke bawah di HP */
       }
     }
+
+    .main-content,
+    main {
+      margin-top: var(--navbar-height, 60px);
+    }
   </style>
 </head>
 <body>
 
-  @include('layouts.sidebar')
+  @include('layouts.navigation')
 
   <main>
     <div class="container">

@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 class WebsiteRequest extends FormRequest
 {
     /**
-     * Sesuaikan otorisasi ini kalau nanti pakai policy/role tertentu.
+     * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
@@ -17,8 +17,7 @@ class WebsiteRequest extends FormRequest
 
     public function rules(): array
     {
-        // Saat update, kolom unik (mis. url) tidak boleh bentrok dengan dirinya sendiri.
-        $websiteId = $this->route('website')?->id;
+        $websiteId = $this->route('website')?->id ?? $this->route('website');
 
         return [
             'customer_name' => ['required', 'string', 'max:255'],
@@ -29,10 +28,11 @@ class WebsiteRequest extends FormRequest
                 'max:255',
                 Rule::unique('websites', 'url')->ignore($websiteId),
             ],
-            'category' => ['required', 'string', Rule::in(['ecommerce', 'company', 'portal', 'webapp'])],
-            'check_interval' => ['required', 'integer', Rule::in([5, 10, 15, 30])],
-            'pic' => ['required', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:255'],
+            'check_interval' => ['required', 'integer', 'min:1', 'max:1440'],
+            'timeout_seconds' => ['required', 'integer', 'min:1', 'max:60'],
             'monitoring_status' => ['required', Rule::in(['active', 'paused'])],
+            'notes' => ['nullable', 'string'],
         ];
     }
 
@@ -44,10 +44,9 @@ class WebsiteRequest extends FormRequest
             'url.required' => 'Domain / URL website wajib diisi.',
             'url.url' => 'Format URL tidak valid, contoh: https://client-one.com',
             'url.unique' => 'URL ini sudah terdaftar di sistem pemantauan.',
-            'category.required' => 'Kategori website wajib dipilih.',
-            'check_interval.required' => 'Interval pengecekan wajib dipilih.',
-            'pic.required' => 'Penanggung jawab (PIC internal) wajib diisi.',
-            'monitoring_status.required' => 'Status monitoring awal wajib dipilih.',
+            'check_interval.required' => 'Interval pengecekan wajib diisi.',
+            'timeout_seconds.required' => 'Timeout request wajib diisi.',
+            'monitoring_status.required' => 'Status monitoring wajib dipilih.',
         ];
     }
 }

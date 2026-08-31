@@ -6,6 +6,7 @@ use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\MonitoringSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // BUAT YANG BELUM LOGIN
@@ -30,15 +31,24 @@ Route::middleware('auth')->group(function () {
     Route::resource('websites', WebsiteController::class);
     Route::patch('websites/{website}/toggle-status', [WebsiteController::class, 'toggleStatus'])->name('websites.toggle-status');
 
-    Route::resource('incidents', IncidentController::class)
-        ->only(['index', 'show', 'update']);
-
-    Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])
-        ->name('incidents.notes.store');
-
     Route::resource('incidents', IncidentController::class)->only(['index', 'show', 'update']);
     Route::post('/incidents/{incident}/take', [IncidentController::class, 'take'])->name('incidents.take');
     Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])->name('incidents.notes.store');
+
+    // Redirect & Tandai dibaca satu notifikasi
+    Route::get('/notifications/{id}/read', function ($id, Request $request) {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return redirect($request->query('redirect', route('incidents.index')));
+    })->name('notifications.readAndRedirect');
+
+    // Tandai semua notifikasi dibaca
+    Route::post('/notifications/mark-all-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+
+        return back()->with('success', 'Semua notifikasi telah ditandai dibaca.');
+    })->name('notifications.markAllRead');
 
     // BUAT SUPER ADMIN
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {

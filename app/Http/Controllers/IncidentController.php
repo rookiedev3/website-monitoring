@@ -6,9 +6,12 @@ use App\Models\Incident;
 use App\Models\IncidentNote;
 use App\Models\MonitoringLog;
 use App\Models\User;
+use App\Notifications\WebsiteUpNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class IncidentController extends Controller
@@ -122,7 +125,7 @@ class IncidentController extends Controller
                 abort(403, 'Anda bukan PIC incident ini.');
             }
 
-            if ($incident->status === 'solved') {
+            if (in_array($incident->status, ['solved', 'resolved'])) {
                 abort(403, 'Incident ini sudah selesai dan tidak dapat diubah.');
             }
 
@@ -141,9 +144,10 @@ class IncidentController extends Controller
             $note = $data['note'] ?? null;
             unset($data['note']);
 
+            $resolvedAt = now();
             $data['status'] = 'solved';
-            $data['resolved_at'] = now();
-            $data['duration_seconds'] = abs(now()->diffInSeconds($incident->started_at));
+            $data['resolved_at'] = $resolvedAt;
+            $data['duration_seconds'] = abs($resolvedAt->diffInSeconds($incident->started_at));
 
             $incident->update($data);
 
@@ -155,7 +159,25 @@ class IncidentController extends Controller
                 ]);
             }
 
-            return back()->with('success', 'Incident berhasil diselesaikan.');
+            // --- PERBAIKAN: KIRIM NOTIFIKASI SOLVED KE ADMIN ---
+            $durationFormatted = $incident->started_at->diffForHumans($resolvedAt, [
+                'syntax' => Carbon::DIFF_ABSOLUTE,
+                'parts' => 3,
+            ]);
+
+            $recipients = User::whereIn('role', ['super_admin', 'admin'])->get();
+
+            // 🟢 Kirim Notifikasi Recovery/Solved
+            Notification::send(
+                $recipients,
+                new WebsiteUpNotification(
+                    $incident->website,
+                    $incident,
+                    $durationFormatted
+                )
+            );
+
+            return back()->with('success', 'Incident berhasil diselesaikan dan notifikasi pemulihan telah dikirim.');
 
         } else {
             abort(403, 'Anda tidak punya akses untuk mengubah incident.');

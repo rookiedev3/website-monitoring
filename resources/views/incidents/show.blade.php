@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,11 +19,15 @@
       --red-soft: rgba(217, 76, 76, 0.12);
       --amber: #d98b1d;
       --amber-soft: rgba(217, 139, 29, 0.12);
-      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --shadow: 0 10px 30px rgba(0, 0, 0, .3);
       --sidebar-width: 215px;
       --sidebar-collapsed: 62px;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -32,95 +37,365 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    a { color: inherit; text-decoration: none; }
-    aside {
-      position: fixed; top: 0; left: 0; height: 100vh;
-      width: var(--sidebar-width); background: var(--card);
-      border-right: 1px solid var(--line); display: flex;
-      flex-direction: column; z-index: 100; box-shadow: var(--shadow);
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
-    aside.collapsed { width: var(--sidebar-collapsed); }
-    .brand-area { padding: 20px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); overflow: hidden; white-space: nowrap; }
-    .logo { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #17231d, #24372d); border: 1px solid var(--line); display: grid; place-items: center; font-weight: 900; color: var(--green); flex-shrink: 0; }
-    .brand-text h1 { font-size: 14px; margin: 0; color: #fff; font-weight: 700; }
-    .brand-text small { font-size: 11px; color: var(--muted); }
-    .menu-list { flex: 1; padding: 16px 10px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 4px; }
-    .menu-title { font-size: 10px; font-weight: 800; letter-spacing: .1em; color: var(--muted); padding: 10px 10px 4px; text-transform: uppercase; white-space: nowrap; }
-    aside.collapsed .menu-title { display: none; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px; color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-    .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
-    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    aside.collapsed .nav-item span { display: none; }
+
+    aside {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: var(--card);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+
+    aside.collapsed {
+      width: var(--sidebar-collapsed);
+    }
+
+    .brand-area {
+      padding: 20px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #17231d, #24372d);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 14px;
+      margin: 0;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .brand-text small {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .menu-list {
+      flex: 1;
+      padding: 16px 10px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .menu-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      color: var(--muted);
+      padding: 10px 10px 4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    aside.collapsed .menu-title {
+      display: none;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 12px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: var(--card-hover);
+      color: #fff;
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    aside.collapsed .nav-item span {
+      display: none;
+    }
 
     /* ==========================================================
        KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
        ========================================================== */
-    main { 
-      margin-left: var(--sidebar-width); 
-      flex: 1; 
-      padding: 24px; 
-      min-width: 0; 
+    main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 24px;
+      min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
     }
-    aside#sidebar.collapsed ~ main { 
-      margin-left: var(--sidebar-collapsed); 
+
+    aside#sidebar.collapsed~main {
+      margin-left: var(--sidebar-collapsed);
       width: calc(100% - var(--sidebar-collapsed));
     }
-    .container { max-width: 1000px; margin: 0 auto; width: 100%; }
 
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px; }
-    .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
-    .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .btn-secondary:hover { color: #fff; background: var(--card-hover); }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .page-header h2 {
+      font-size: 24px;
+      margin: 0 0 4px;
+      color: #fff;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      color: #fff;
+      background: var(--card-hover);
+    }
 
     /* ==========================================================
        KODE RESPONSIF: GRID 2 KOLOM
        ========================================================== */
-    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 24px; }
-    
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); overflow: hidden; }
-    .card-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
-    
-    .info-list { display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
-    .info-item { display: flex; justify-content: space-between; gap: 12px; word-break: break-word; }
-    .info-label { color: var(--muted); flex-shrink: 0; }
-    .info-value { color: #fff; font-weight: 600; text-align: right; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
 
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
-    .form-control:focus { border-color: var(--green); }
-    textarea.form-control { resize: vertical; min-height: 90px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
 
-    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; }
-    .btn-primary:hover { opacity: 0.9; }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
 
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-    .badge.open { background: var(--red-soft); color: var(--red); }
-    .badge.progress { background: var(--amber-soft); color: var(--amber); }
-    .badge.solved { background: var(--green-soft); color: var(--green); }
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 13px;
+    }
 
-    .timeline { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
-    .timeline-item { background: var(--bg); border: 1px solid var(--line); padding: 12px 14px; border-radius: 10px; font-size: 12px; word-break: break-word; }
-    .timeline-header { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--muted); font-weight: 600; flex-wrap: wrap; gap: 6px; }
-    .timeline-body { color: var(--ink); }
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      word-break: break-word;
+    }
+
+    .info-label {
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .info-value {
+      color: #fff;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--green);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.open {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .badge.progress {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .badge.solved {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .timeline-item {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-weight: 600;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .timeline-body {
+      color: var(--ink);
+    }
 
     /* ==========================================================
        KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
        ========================================================== */
     @media (max-width: 768px) {
-      main { 
-        margin-left: 0 !important; 
-        width: 100% !important; 
+      main {
+        margin-left: 0 !important;
+        width: 100% !important;
         padding: 14px;
-        padding-top: 60px; /* Ruang untuk tombol navigasi toggle sidebar */
+        padding-top: 60px;
+        /* Ruang untuk tombol navigasi toggle sidebar */
       }
-      .grid-2 { 
-        grid-template-columns: 1fr !important; /* Memaksa kolom ganda menjadi 1 kolom vertikal */
+
+      .grid-2 {
+        grid-template-columns: 1fr !important;
+        /* Memaksa kolom ganda menjadi 1 kolom vertikal */
       }
+
       .page-header {
         flex-direction: column;
         align-items: flex-start;
@@ -128,6 +403,7 @@
     }
   </style>
 </head>
+
 <body>
 
   @include('layouts.sidebar')
@@ -185,7 +461,8 @@
             </div>
             <div class="info-item">
               <span class="info-label">Mulai Error</span>
-              <span class="info-value">{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</span>
+              <span class="info-value">{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }}
+                WIB</span>
             </div>
             <div class="info-item">
               <span class="info-label">Durasi Gangguan</span>
@@ -204,89 +481,93 @@
             <div class="info-item">
               <span class="info-label">Status Pekerjaan</span>
               <span class="info-value">
-                <span class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
+                <span
+                  class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
               </span>
             </div>
           </div>
 
           @if($incident->root_cause || $incident->resolution)
-          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);">
-            <p style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
-              Hasil Investigasi
-            </p>
-            @if($incident->root_cause)
-            <div class="info-item">
-              <span class="info-label">Root Cause</span>
-              <span class="info-value">{{ $incident->root_cause }}</span>
+            <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);">
+              <p
+                style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
+                Hasil Investigasi
+              </p>
+              @if($incident->root_cause)
+                <div class="info-item">
+                  <span class="info-label">Root Cause</span>
+                  <span class="info-value">{{ $incident->root_cause }}</span>
+                </div>
+              @endif
+              @if($incident->resolution)
+                <div class="info-item" style="margin-top: 8px;">
+                  <span class="info-label">Resolution</span>
+                  <span class="info-value">{{ $incident->resolution }}</span>
+                </div>
+              @endif
             </div>
-            @endif
-            @if($incident->resolution)
-            <div class="info-item" style="margin-top: 8px;">
-              <span class="info-label">Resolution</span>
-              <span class="info-value">{{ $incident->resolution }}</span>
-            </div>
-            @endif
-          </div>
           @endif
         </div>
 
         {{-- Kolom 2: Update Penanganan — HANYA untuk programmer --}}
         @if($user->role === 'programmer')
-        <div class="card">
-          <div class="card-title">Update Penanganan</div>
+          <div class="card">
+            <div class="card-title">Update Penanganan</div>
 
-          @if($incident->status === 'open')
-            <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-              Incident ini belum ditangani siapa pun.
-            </p>
-            <form action="{{ route('incidents.take', $incident->id) }}" method="POST">
-              @csrf
-              <button type="submit" class="btn-primary">Ambil Incident Ini</button>
-            </form>
+            @if($incident->status === 'open')
+              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
+                Incident ini belum ditangani siapa pun.
+              </p>
+              <form action="{{ route('incidents.take', $incident->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-primary">Ambil Incident Ini</button>
+              </form>
 
-          @elseif($incident->assigned_to !== $user->id)
-            <p style="font-size: 13px; color: var(--muted);">
-              Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser->name }}</b>.
-            </p>
-
-          @elseif($incident->status === 'solved')
-            <p style="font-size: 13px; color: var(--muted);">
-              Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" sebelah kiri.
-            </p>
-            <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">✓ Incident sudah selesai ditangani.</p>
-
-          @else
-            <form
-              action="{{ route('incidents.update', $incident->id) }}"
-              method="POST"
-              onsubmit="return confirm('Setelah dikirim, data ini tidak bisa diubah lagi dan incident akan ditandai Solved. Lanjutkan?');"
-            >
-              @csrf
-              @method('PATCH')
-
-              <div class="form-group">
-                <label>Akar Masalah</label>
-                <textarea name="root_cause" class="form-control" placeholder="Contoh: Plugin conflict setelah update" required>{{ old('root_cause') }}</textarea>
-              </div>
-
-              <div class="form-group">
-                <label>Penyelesaian</label>
-                <textarea name="resolution" class="form-control" placeholder="Contoh: Rollback plugin dan update versi stabil" required>{{ old('resolution') }}</textarea>
-              </div>
-
-              <div class="form-group">
-                <label>Catatan</label>
-                <textarea name="note" class="form-control" placeholder="Contoh: Website kembali normal pukul 10:22">{{ old('note') }}</textarea>
-              </div>
-
-              <p style="font-size: 11px; color: var(--amber); margin-bottom: 12px;">
-                ⚠ Data ini hanya bisa dikirim SEKALI. Setelah dikirim, incident langsung ditandai Solved.
+            @elseif($incident->assigned_to !== $user->id)
+              <p style="font-size: 13px; color: var(--muted);">
+                Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser->name }}</b>.
               </p>
 
-              <button type="submit" class="btn-primary">Simpan & Selesaikan</button>
-            </form>
-          @endif
-        </div>
+            @elseif($incident->status === 'solved')
+              <p style="font-size: 13px; color: var(--muted);">
+                Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" sebelah kiri.
+              </p>
+              <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">✓ Incident sudah
+                selesai ditangani.</p>
+
+            @else
+              <form action="{{ route('incidents.update', $incident->id) }}" method="POST"
+                onsubmit="return confirm('Setelah dikirim, data ini tidak bisa diubah lagi dan incident akan ditandai Solved. Lanjutkan?');">
+                @csrf
+                @method('PATCH')
+
+                <div class="form-group">
+                  <label>Akar Masalah</label>
+                  <textarea name="root_cause" class="form-control" placeholder="Contoh: Plugin conflict setelah update"
+                    required>{{ old('root_cause') }}</textarea>
+                </div>
+
+                <div class="form-group">
+                  <label>Penyelesaian</label>
+                  <textarea name="resolution" class="form-control"
+                    placeholder="Contoh: Rollback plugin dan update versi stabil"
+                    required>{{ old('resolution') }}</textarea>
+                </div>
+
+                <div class="form-group">
+                  <label>Catatan</label>
+                  <textarea name="note" class="form-control"
+                    placeholder="Contoh: Website kembali normal pukul 10:22">{{ old('note') }}</textarea>
+                </div>
+
+                <p style="font-size: 11px; color: var(--amber); margin-bottom: 12px;">
+                  ⚠ Data ini hanya bisa dikirim SEKALI. Setelah dikirim, incident langsung ditandai Solved.
+                </p>
+
+                <button type="submit" class="btn-primary">Simpan & Selesaikan</button>
+              </form>
+            @endif
+          </div>
         @endif
 
       </div>
@@ -322,4 +603,5 @@
   </main>
 
 </body>
+
 </html>

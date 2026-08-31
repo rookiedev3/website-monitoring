@@ -115,12 +115,16 @@
         width: 100%;
       }
     }
+    .main-content,
+    main {
+      margin-top: var(--navbar-height, 60px);
+    }
   </style>
 </head>
 <body>
 
   <!-- MEMANGGIL SIDEBAR -->
-  @include('layouts.sidebar')
+  @include('layouts.navigation')
 
   <!-- MAIN CONTENT -->
   <main>

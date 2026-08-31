@@ -302,7 +302,7 @@
     }
 
     /* Jika sidebar diperkecil (collapsed) di laptop */
-    aside#sidebar.collapsed ~ main {
+    aside#sidebar.collapsed~main {
       margin-left: var(--sidebar-collapsed);
       width: calc(100% - var(--sidebar-collapsed));
     }
@@ -451,7 +451,8 @@
       border-collapse: collapse;
       text-align: left;
       font-size: 13px;
-      min-width: 650px; /* Mencegah kolom tabel tertekan terlalu kecil di layar HP */
+      min-width: 650px;
+      /* Mencegah kolom tabel tertekan terlalu kecil di layar HP */
     }
 
     th {
@@ -668,7 +669,8 @@
         margin-left: 0 !important;
         width: 100% !important;
         padding: 14px;
-        padding-top: 60px; /* Ruang untuk tombol toggle sidebar di layar kecil */
+        padding-top: 60px;
+        /* Ruang untuk tombol toggle sidebar di layar kecil */
       }
 
       .page-header {
@@ -688,13 +690,18 @@
         width: 100%;
       }
     }
+
+    .main-content,
+    main {
+      margin-top: var(--navbar-height, 60px);
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- MEMANGGIL SIDEBAR -->
-  @include('layouts.sidebar')
+  <!-- MEMANGGIL NAVBAR & SIDEBAR -->
+  @include('layouts.navigation')
 
   <!-- MAIN CONTENT -->
   <main>
@@ -776,7 +783,8 @@
                     <form action="{{ route('websites.toggle-status', $site) }}" method="POST" style="display:inline;">
                       @csrf
                       @method('PATCH')
-                      <button type="submit" class="badge {{ $site->monitoring_status === 'active' ? 'active' : 'paused' }}">
+                      <button type="submit"
+                        class="badge {{ $site->monitoring_status === 'active' ? 'active' : 'paused' }}">
                         {{ $site->monitoring_status === 'active' ? '● Active' : '⏸ Paused' }}
                       </button>
                     </form>
@@ -839,17 +847,17 @@
 
   @php
     $websitesForJs = $websites->map(function ($site) {
-        return [
-            'id' => $site->id,
-            'customer_name' => $site->customer_name,
-            'website_name' => $site->website_name,
-            'domain' => $site->domain,
-            'url' => $site->url,
-            'category' => $site->category,
-            'check_interval' => $site->check_interval,
-            'monitoring_status' => $site->monitoring_status,
-            'last_status' => $site->last_status,
-        ];
+      return [
+        'id' => $site->id,
+        'customer_name' => $site->customer_name,
+        'website_name' => $site->website_name,
+        'domain' => $site->domain,
+        'url' => $site->url,
+        'category' => $site->category,
+        'check_interval' => $site->check_interval,
+        'monitoring_status' => $site->monitoring_status,
+        'last_status' => $site->last_status,
+      ];
     })->values();
   @endphp
 

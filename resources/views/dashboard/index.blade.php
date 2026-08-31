@@ -68,7 +68,7 @@
         }
 
         /* Ketika sidebar di-collapse (diperkecil) di laptop */
-        aside#sidebar.collapsed ~ main {
+        aside#sidebar.collapsed~main {
             margin-left: var(--sidebar-collapsed);
             width: calc(100% - var(--sidebar-collapsed));
         }
@@ -268,7 +268,8 @@
             border-collapse: collapse;
             text-align: left;
             font-size: 13px;
-            min-width: 600px; /* Mencegah tabel tertekan terlalu kecil di layar HP */
+            min-width: 600px;
+            /* Mencegah tabel tertekan terlalu kecil di layar HP */
         }
 
         th {
@@ -456,7 +457,8 @@
                 margin-left: 0 !important;
                 width: 100% !important;
                 padding: 14px;
-                padding-top: 60px; /* Ruang untuk tombol hamburger di atas */
+                padding-top: 60px;
+                /* Ruang untuk tombol hamburger di atas */
             }
 
             .dashboard-header {
@@ -476,13 +478,19 @@
                 width: 100%;
             }
         }
+
+        .main-content,
+        main {
+            margin-top: var(--navbar-height, 60px);
+        }
     </style>
 </head>
 
 <body>
 
     <!-- MEMANGGIL SIDEBAR LARAVEL LAYOUT -->
-    @include('layouts.sidebar')
+    @include('layouts.navigation')
+
 
     <!-- MAIN CONTENT -->
     <main>
@@ -548,7 +556,8 @@
                 <div class="card">
                     <div class="card-title">
                         <span><i class="bi bi-globe me-2"></i> Daftar Status Website</span>
-                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">Pengecekan otomatis berkala</span>
+                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">Pengecekan otomatis
+                            berkala</span>
                     </div>
                     <div class="table-responsive">
                         <table>
