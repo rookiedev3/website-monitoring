@@ -20,7 +20,7 @@
             --card-hover: #17231d;
             --ink: #dce9e1;
             --muted: #82988c;
-            --line: #1b2a22;
+            --line: #2e4a3b;
             --green: #0f9f6e;
             --green-soft: rgba(15, 159, 110, 0.12);
             --red: #d94c4c;
@@ -30,8 +30,8 @@
             --blue: #3b82f6;
             --blue-soft: rgba(59, 130, 246, 0.15);
             --shadow: 0 10px 30px rgba(0, 0, 0, .3);
-            --sidebar-width: 260px;
-            --sidebar-collapsed: 76px;
+            --sidebar-width: 215px;
+            --sidebar-collapsed: 62px;
         }
 
         *,
@@ -55,22 +55,28 @@
             text-decoration: none;
         }
 
-        /* Layout Main Content */
+        /* ==========================================================
+           1. KODE RESPONSIF: LAYOUT UTAMA & KONTEN KANAN
+           ========================================================== */
         main {
             margin-left: var(--sidebar-width);
             flex: 1;
-            padding: 30px;
+            padding: 24px;
             min-width: 0;
-            transition: margin-left 0.3s ease;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
         }
 
-        aside.collapsed~main {
+        /* Ketika sidebar di-collapse (diperkecil) di laptop */
+        aside#sidebar.collapsed ~ main {
             margin-left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed));
         }
 
         .container {
             max-width: 1180px;
             margin: 0 auto;
+            width: 100%;
         }
 
         /* Header & Refresh Action */
@@ -116,10 +122,13 @@
             color: #fff;
         }
 
-        /* Metrics Grid */
+        /* ==========================================================
+           2. KODE RESPONSIF: KARTU STATISTIK (GRID OTOMATIS)
+           Menggunakan auto-fit agar otomatis turun ke bawah di HP
+           ========================================================== */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -237,14 +246,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .card-title.danger-header {
             color: var(--red);
         }
 
+        /* ==========================================================
+           3. KODE RESPONSIF: TABEL AGAR BISA DI-SCROLL DI HP
+           ========================================================== */
         .table-responsive {
+            width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
@@ -252,6 +268,7 @@
             border-collapse: collapse;
             text-align: left;
             font-size: 13px;
+            min-width: 600px; /* Mencegah tabel tertekan terlalu kecil di layar HP */
         }
 
         th {
@@ -431,14 +448,32 @@
             justify-content: center;
         }
 
-        /* Responsive Adjustments */
-        @media (max-width: 1024px) {
-            .metrics-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+        /* ==========================================================
+           4. KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+           ========================================================== */
+        @media (max-width: 768px) {
+            main {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 14px;
+                padding-top: 60px; /* Ruang untuk tombol hamburger di atas */
             }
 
-            main {
-                margin-left: 0;
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-grid {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filter-dropdown select {
+                width: 100%;
             }
         }
     </style>
@@ -513,8 +548,7 @@
                 <div class="card">
                     <div class="card-title">
                         <span><i class="bi bi-globe me-2"></i> Daftar Status Website</span>
-                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">Pengecekan otomatis
-                            berkala</span>
+                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">Pengecekan otomatis berkala</span>
                     </div>
                     <div class="table-responsive">
                         <table>
@@ -585,8 +619,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">
-                                            Belum
-                                            ada data website. Silakan jalankan Seeder.</td>
+                                            Belum ada data website. Silakan jalankan Seeder.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -678,7 +711,6 @@
             fetch("{{ route('api.dashboard.status') }}")
                 .then(response => response.json())
                 .then(data => {
-                    // 1. Update Kartu Angka Statistik
                     if (data && data.stats) {
                         document.getElementById('stat-total').innerText = data.stats.total ?? 0;
                         document.getElementById('stat-online').innerText = data.stats.online ?? 0;
@@ -686,7 +718,6 @@
                         document.getElementById('stat-down').innerText = data.stats.down ?? 0;
                     }
 
-                    // 2. Simpan Data & Render Tabel
                     if (data && data.websites) {
                         rawWebsitesData = data.websites;
                         renderTable();
@@ -702,7 +733,6 @@
 
             if (!tbody) return;
 
-            // 1. Filtering Data
             const filteredWebsites = rawWebsitesData.filter(web => {
                 const log = web.latest_log || web.latestLog;
                 const currentStatus = log ? log.status : 'none';
@@ -721,24 +751,20 @@
             const totalItems = filteredWebsites.length;
             const totalPages = Math.ceil(totalItems / perPage) || 1;
 
-            // Reset Halaman jika pencarian membuat halaman aktif melebihi total halaman
             if (currentPage > totalPages) {
                 currentPage = totalPages;
             }
 
-            // Tampilan Data Kosong
             if (totalItems === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">Tidak ada website yang sesuai pencarian/filter.</td></tr>`;
                 renderPaginationControls(0, 1);
                 return;
             }
 
-            // 2. Slicing Data untuk Pagination
             const startIndex = (currentPage - 1) * perPage;
             const endIndex = startIndex + perPage;
             const paginatedItems = filteredWebsites.slice(startIndex, endIndex);
 
-            // 3. Render Baris Tabel
             let html = '';
             const baseUrl = "{{ route('dashboard.show', ':id') }}";
 
@@ -806,8 +832,6 @@
             });
 
             tbody.innerHTML = html;
-
-            // 4. Update Kontrol Pagination
             renderPaginationControls(totalItems, totalPages, startIndex + 1, Math.min(endIndex, totalItems));
         }
 
@@ -826,17 +850,32 @@
             if (prevBtn) prevBtn.disabled = currentPage <= 1;
             if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
 
-            if (pageNumbersEl) {
-                let pagesHtml = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    pagesHtml += `
-                    <button class="page-num ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
-                        ${i}
-                    </button>
-                `;
-                }
-                pageNumbersEl.innerHTML = pagesHtml;
+            if (!pageNumbersEl) return;
+
+            let pagesHtml = '';
+            const side = 1;
+            const start = Math.max(1, currentPage - side);
+            const end = Math.min(totalPages, currentPage + side);
+
+            if (start > 1) {
+                pagesHtml += `<button class="page-num" onclick="goToPage(1)">1</button>`;
+                if (start > 2) pagesHtml += `<span class="page-dots">...</span>`;
             }
+
+            for (let p = start; p <= end; p++) {
+                if (p === currentPage) {
+                    pagesHtml += `<span class="page-num active">${p}</span>`;
+                } else {
+                    pagesHtml += `<button class="page-num" onclick="goToPage(${p})">${p}</button>`;
+                }
+            }
+
+            if (end < totalPages) {
+                if (end < totalPages - 1) pagesHtml += `<span class="page-dots">...</span>`;
+                pagesHtml += `<button class="page-num" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            pageNumbersEl.innerHTML = pagesHtml;
         }
 
         function goToPage(page) {
@@ -846,24 +885,19 @@
 
         function timeAgo(dateString) {
             if (!dateString) return '-';
-
             const now = new Date();
             const past = new Date(dateString);
             const seconds = Math.floor((now - past) / 1000);
 
             if (seconds < 5) return 'Baru saja';
             if (seconds < 60) return `${seconds} detik lalu`;
-
             const minutes = Math.floor(seconds / 60);
             if (minutes < 60) return `${minutes}m lalu`;
-
             const hours = Math.floor(minutes / 60);
             if (hours < 24) return `${hours}j lalu`;
-
             return past.toLocaleDateString('id-ID');
         }
 
-        // Event Listeners
         document.getElementById('btn-prev').addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -877,257 +911,20 @@
         });
 
         document.getElementById('search-input').addEventListener('input', () => {
-            currentPage = 1; // Reset ke halaman 1 saat mengetik kata kunci
+            currentPage = 1;
             renderTable();
         });
 
         document.getElementById('status-filter').addEventListener('change', () => {
-            currentPage = 1; // Reset ke halaman 1 saat mengubah filter status
+            currentPage = 1;
             renderTable();
         });
 
-        // Initial Fetch & Real-time Interval 5 Detik
         fetchRealtimeData();
         setInterval(fetchRealtimeData, 5000);
 
-        // --- PAGINASI CLIENT-SIDE UNTUK TABEL INSIDEN ---
         let currentIncidentPage = 1;
         const incidentPerPage = 5;
-
-        function renderIncidentPagination() {
-            const rows = document.querySelectorAll('#incident-table-body .incident-row');
-            const totalItems = rows.length;
-
-            if (totalItems === 0) return;
-
-            const totalPages = Math.ceil(totalItems / incidentPerPage);
-            const startIndex = (currentIncidentPage - 1) * incidentPerPage;
-            const endIndex = startIndex + incidentPerPage;
-
-            // Sembunyikan atau tampilkan baris sesuai halaman aktif
-            rows.forEach((row, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Update Text Informasi
-            const infoEl = document.getElementById('incident-pagination-info');
-            if (infoEl) {
-                infoEl.innerText = `Menampilkan ${startIndex + 1} - ${Math.min(endIndex, totalItems)} dari ${totalItems} insiden`;
-            }
-
-            // Update Tombol Status
-            const prevBtn = document.getElementById('btn-incident-prev');
-            const nextBtn = document.getElementById('btn-incident-next');
-            if (prevBtn) prevBtn.disabled = currentIncidentPage <= 1;
-            if (nextBtn) nextBtn.disabled = currentIncidentPage >= totalPages;
-
-            // Render Angka Halaman
-            const pageNumbersEl = document.getElementById('incident-page-numbers');
-            if (pageNumbersEl) {
-                let pagesHtml = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    pagesHtml += `
-                <button class="page-num ${i === currentIncidentPage ? 'active' : ''}" onclick="goToIncidentPage(${i})">
-                    ${i}
-                </button>
-            `;
-                }
-                pageNumbersEl.innerHTML = pagesHtml;
-            }
-        }
-
-        function goToIncidentPage(page) {
-            currentIncidentPage = page;
-            renderIncidentPagination();
-        }
-
-        document.getElementById('btn-incident-prev')?.addEventListener('click', () => {
-            if (currentIncidentPage > 1) {
-                currentIncidentPage--;
-                renderIncidentPagination();
-            }
-        });
-
-        document.getElementById('btn-incident-next')?.addEventListener('click', () => {
-            currentIncidentPage++;
-            renderIncidentPagination();
-        });
-
-        // Jalankan pagination insiden saat halaman pertama dibuka
-        document.addEventListener('DOMContentLoaded', renderIncidentPagination);
-
-        function renderTable() {
-            const tbody = document.getElementById('website-table-body');
-            const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
-            const statusFilter = document.getElementById('status-filter').value;
-
-            if (!tbody) return;
-
-            // 1. Filtering Data
-            const filteredWebsites = rawWebsitesData.filter(web => {
-                const log = web.latest_log || web.latestLog;
-                const currentStatus = log ? log.status : 'none';
-
-                const matchesSearch = web.website_name.toLowerCase().includes(searchQuery) ||
-                    web.url.toLowerCase().includes(searchQuery);
-
-                let matchesStatus = true;
-                if (statusFilter === 'online') matchesStatus = currentStatus === 'online';
-                else if (statusFilter === 'warning') matchesStatus = currentStatus === 'warning';
-                else if (statusFilter === 'down') matchesStatus = ['down', 'ssl_error'].includes(currentStatus);
-
-                return matchesSearch && matchesStatus;
-            });
-
-            const totalItems = filteredWebsites.length;
-            const totalPages = Math.ceil(totalItems / perPage) || 1;
-
-            // Reset Halaman jika melebihi total halaman hasil filter
-            if (currentPage > totalPages) {
-                currentPage = totalPages;
-            }
-
-            // Tampilan Data Kosong
-            if (totalItems === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">Tidak ada website yang sesuai pencarian/filter.</td></tr>`;
-                renderPaginationControls(0, 1, 0, 0);
-                return;
-            }
-
-            // 2. Slicing Data
-            const startIndex = (currentPage - 1) * perPage;
-            const endIndex = startIndex + perPage;
-            const paginatedItems = filteredWebsites.slice(startIndex, endIndex);
-
-            // 3. Render Baris Tabel
-            let html = '';
-            const baseUrl = "{{ route('dashboard.show', ':id') }}";
-
-            paginatedItems.forEach(web => {
-                const log = web.latest_log || web.latestLog;
-
-                let statusBadge = '<span class="badge badge-muted">Belum Dicek</span>';
-                let httpCode = '<span style="color:var(--muted);">N/A</span>';
-                let responseTime = '<span style="color:var(--muted);">-</span>';
-                let sslBadge = '<span style="color:var(--muted);">-</span>';
-                let checkedAt = '-';
-
-                if (log) {
-                    if (log.status === 'online') {
-                        statusBadge = '<span class="badge badge-online">● ONLINE</span>';
-                    } else if (log.status === 'warning') {
-                        statusBadge = '<span class="badge badge-warning">● WARNING</span>';
-                    } else {
-                        statusBadge = '<span class="badge badge-down">● DOWN</span>';
-                    }
-
-                    httpCode = log.http_code
-                        ? `<span style="font-weight:700; color:#fff;">${log.http_code}</span>`
-                        : '<span style="color:var(--muted);">N/A</span>';
-
-                    if (log.status !== 'down' && log.response_time_ms) {
-                        const latencyColor = log.response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)';
-                        responseTime = `<span style="color:${latencyColor}; font-weight:700;">${Number(log.response_time_ms).toLocaleString()} ms</span>`;
-                    } else if (log.response_time_ms) {
-                        responseTime = `<span style="color:var(--muted);">${Number(log.response_time_ms).toLocaleString()} ms</span>`;
-                    }
-
-                    if (log.ssl_valid) {
-                        sslBadge = `<span class="badge badge-ssl">Valid (${log.ssl_days_left} Hari)</span>`;
-                    } else if (log.ssl_valid === false && log.status !== 'down') {
-                        sslBadge = `<span class="badge badge-down">SSL Expired</span>`;
-                    } else {
-                        sslBadge = `<span class="badge badge-muted">N/A</span>`;
-                    }
-
-                    checkedAt = timeAgo(log.checked_at);
-                }
-
-                const detailUrl = baseUrl.replace(':id', web.id);
-
-                html += `
-        <tr>
-            <td>
-                <strong style="color:#fff; display:block;">${web.website_name}</strong>
-                <small style="color:var(--muted);">${web.url}</small>
-            </td>
-            <td>${statusBadge}</td>
-            <td>${httpCode}</td>
-            <td>${responseTime}</td>
-            <td>${sslBadge}</td>
-            <td style="color:var(--muted); font-size:12px;">${checkedAt}</td>
-            <td style="text-align:center;">
-                <a href="${detailUrl}" class="btn-detail">
-                    <i class="bi bi-eye"></i>
-                    <span>Detail</span>
-                </a>
-            </td>
-        </tr>
-        `;
-            });
-
-            tbody.innerHTML = html;
-
-            // 4. Update Controls Pagination
-            renderPaginationControls(totalItems, totalPages, startIndex + 1, Math.min(endIndex, totalItems));
-        }
-
-        // --- LOGIKA GENERATE ANGKA RINGKAS (ELLIPSIS) PERSIS DENGAN BLADE DETAIL ---
-        function renderPaginationControls(totalItems, totalPages, from = 0, to = 0) {
-            const infoEl = document.getElementById('pagination-info');
-            const prevBtn = document.getElementById('btn-prev');
-            const nextBtn = document.getElementById('btn-next');
-            const pageNumbersEl = document.getElementById('page-numbers');
-
-            // Update Teks Info
-            if (infoEl) {
-                infoEl.innerText = totalItems > 0
-                    ? `Menampilkan ${from} - ${to} dari ${totalItems} data`
-                    : 'Menampilkan 0 - 0 dari 0 data';
-            }
-
-            // Update Status Disabled Prev / Next
-            if (prevBtn) prevBtn.disabled = currentPage <= 1;
-            if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-
-            if (!pageNumbersEl) return;
-
-            let pagesHtml = '';
-            const side = 1; // Jumlah halaman aktif di kiri/kanan
-            const start = Math.max(1, currentPage - side);
-            const end = Math.min(totalPages, currentPage + side);
-
-            // Halaman Pertama & Ellipsis Kiri
-            if (start > 1) {
-                pagesHtml += `<button class="page-num" onclick="goToPage(1)">1</button>`;
-                if (start > 2) {
-                    pagesHtml += `<span class="page-dots">...</span>`;
-                }
-            }
-
-            // Halaman Utama sekitar halaman aktif
-            for (let p = start; p <= end; p++) {
-                if (p === currentPage) {
-                    pagesHtml += `<span class="page-num active">${p}</span>`;
-                } else {
-                    pagesHtml += `<button class="page-num" onclick="goToPage(${p})">${p}</button>`;
-                }
-            }
-
-            // Ellipsis Kanan & Halaman Terakhir
-            if (end < totalPages) {
-                if (end < totalPages - 1) {
-                    pagesHtml += `<span class="page-dots">...</span>`;
-                }
-                pagesHtml += `<button class="page-num" onclick="goToPage(${totalPages})">${totalPages}</button>`;
-            }
-
-            pageNumbersEl.innerHTML = pagesHtml;
-        }
 
         function renderIncidentPagination() {
             const rows = document.querySelectorAll('#incident-table-body .incident-row');
@@ -1186,6 +983,25 @@
 
             pageNumbersEl.innerHTML = pagesHtml;
         }
+
+        function goToIncidentPage(page) {
+            currentIncidentPage = page;
+            renderIncidentPagination();
+        }
+
+        document.getElementById('btn-incident-prev')?.addEventListener('click', () => {
+            if (currentIncidentPage > 1) {
+                currentIncidentPage--;
+                renderIncidentPagination();
+            }
+        });
+
+        document.getElementById('btn-incident-next')?.addEventListener('click', () => {
+            currentIncidentPage++;
+            renderIncidentPagination();
+        });
+
+        document.addEventListener('DOMContentLoaded', renderIncidentPagination);
     </script>
 </body>
 

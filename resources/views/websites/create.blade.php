@@ -12,21 +12,17 @@
       --card-hover: #17231d;
       --ink: #dce9e1;
       --muted: #82988c;
-      --line: #1b2a22;
+      --line: #2e4a3b;
       --green: #0f9f6e;
       --green-soft: rgba(15, 159, 110, 0.12);
       --red: #d94c4c;
       --red-soft: rgba(217, 76, 76, 0.12);
-      --shadow: 0 10px 30px rgba(0, 0, 0, .3);
-      --sidebar-width: 260px;
-      --sidebar-collapsed: 76px;
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --sidebar-width: 215px;
+      --sidebar-collapsed: 62px;
     }
 
-    * {
-      box-sizing: border-box;
-      transition: width 0.3s ease, padding 0.3s ease;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -154,21 +150,28 @@
       display: none;
     }
 
-    /* STYLE MAIN CONTENT */
-    main {
-      margin-left: var(--sidebar-width);
-      flex: 1;
-      padding: 30px;
-      min-width: 0;
+    /* ==========================================================
+       KODE RESPONSIF: STYLE MAIN CONTENT & PERGESERAN SIDEBAR
+       ========================================================== */
+    main { 
+      margin-left: var(--sidebar-width); 
+      flex: 1; 
+      padding: 24px; 
+      min-width: 0; 
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      width: calc(100% - var(--sidebar-width));
+    }
+    
+    /* Jika sidebar diperkecil (collapsed) di laptop */
+    aside#sidebar.collapsed ~ main { 
+      margin-left: var(--sidebar-collapsed); 
+      width: calc(100% - var(--sidebar-collapsed));
     }
 
-    aside.collapsed~main {
-      margin-left: var(--sidebar-collapsed);
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    .container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      width: 100%;
     }
 
     .page-header {
@@ -220,28 +223,10 @@
       letter-spacing: .05em;
     }
 
-    .form-control {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--line);
-      color: var(--ink);
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      outline: none;
-    }
-
-    .form-control:focus {
-      border-color: var(--green);
-    }
-
-    .form-control::placeholder {
-      color: var(--muted);
-    }
-
-    .form-control.is-invalid {
-      border-color: var(--red);
-    }
+    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
+    .form-control:focus { border-color: var(--green); }
+    .form-control::placeholder { color: var(--muted); }
+    .form-control.is-invalid { border-color: var(--red); }
 
     .error-text {
       display: block;
@@ -251,20 +236,12 @@
       font-weight: 600;
     }
 
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
+    /* ==========================================================
+       KODE RESPONSIF: FORM ROW 2 KOLOM
+       ========================================================== */
+    .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 30px;
-      border-top: 1px solid var(--line);
-      padding-top: 20px;
-    }
+    .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; flex-wrap: wrap; }
 
     .btn-secondary {
       background: transparent;
@@ -300,9 +277,26 @@
       opacity: 0.9;
     }
 
+    /* ==========================================================
+       KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+       ========================================================== */
     @media (max-width: 768px) {
-      .form-row {
-        grid-template-columns: 1fr;
+      main { 
+        margin-left: 0 !important; 
+        width: 100% !important; 
+        padding: 14px;
+        padding-top: 60px; /* Memberi ruang untuk tombol navigasi sidebar di layar kecil */
+      }
+      .form-row { 
+        grid-template-columns: 1fr; /* Mengubah form 2 kolom menjadi 1 kolom vertikal di HP */
+      }
+      .form-actions {
+        flex-direction: column-reverse; /* Mengatur tombol aksi agar menumpuk rapi di layar HP */
+        width: 100%;
+      }
+      .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>

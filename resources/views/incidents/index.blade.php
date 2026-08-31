@@ -11,7 +11,7 @@
       --card-hover: #17231d;
       --ink: #dce9e1;
       --muted: #82988c;
-      --line: #1b2a22;
+      --line: #2e4a3b;
       --green: #0f9f6e;
       --green-soft: rgba(15, 159, 110, 0.12);
       --red: #d94c4c;
@@ -19,10 +19,10 @@
       --amber: #d98b1d;
       --amber-soft: rgba(217, 139, 29, 0.12);
       --shadow: 0 10px 30px rgba(0,0,0,.3);
-      --sidebar-width: 260px;
-      --sidebar-collapsed: 76px;
+      --sidebar-width: 215px;
+      --sidebar-collapsed: 62px;
     }
-    * { box-sizing: border-box; transition: width 0.3s ease, padding 0.3s ease; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -51,54 +51,88 @@
     .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
-    .user-profile-container { position: relative; border-top: 1px solid var(--line); padding: 12px; }
-    .user-profile-btn { width: 100%; background: transparent; border: none; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; cursor: pointer; color: var(--ink); text-align: left; white-space: nowrap; overflow: hidden; }
-    .user-profile-btn:hover { background: var(--card-hover); }
-    .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: #24372d; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
-    .user-info { flex: 1; overflow: hidden; }
-    .user-info h4 { font-size: 12px; margin: 0; color: #fff; text-overflow: ellipsis; overflow: hidden; }
-    .user-info p { font-size: 10px; margin: 0; color: var(--muted); text-overflow: ellipsis; overflow: hidden; }
-    aside.collapsed .user-info { display: none; }
-    .user-popup-menu { position: absolute; bottom: 70px; left: 12px; right: 12px; background: #16241d; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
-    .user-popup-menu.show { display: flex; }
-    .popup-item { padding: 10px 14px; font-size: 12px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; }
-    .popup-item:hover { background: #1f3328; color: #fff; }
-    .popup-item.danger { color: var(--red); }
-    .sidebar-toggle-bar { border-top: 1px solid var(--line); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: rgba(0,0,0,0.1); font-size: 11px; color: var(--muted); }
-    .sidebar-toggle-bar:hover { background: var(--card-hover); color: #fff; }
-    aside.collapsed .sidebar-toggle-text { display: none; }
-    aside.collapsed .sidebar-toggle-bar { justify-content: center; }
-    main { margin-left: var(--sidebar-width); flex: 1; padding: 30px; min-width: 0; }
-    aside.collapsed ~ main { margin-left: var(--sidebar-collapsed); }
-    .container { max-width: 1180px; margin: 0 auto; }
+
+    /* ==========================================================
+       KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
+       ========================================================== */
+    main { 
+      margin-left: var(--sidebar-width); 
+      flex: 1; 
+      padding: 24px; 
+      min-width: 0; 
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      width: calc(100% - var(--sidebar-width));
+    }
+    aside#sidebar.collapsed ~ main { 
+      margin-left: var(--sidebar-collapsed); 
+      width: calc(100% - var(--sidebar-collapsed));
+    }
+    .container { max-width: 1180px; margin: 0 auto; width: 100%; }
+
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px; }
     .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
     .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    /* Filter Bar Responsive */
     .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
     .search-input, .filter-select { background: var(--card); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; }
     .search-input { flex: 1; min-width: 220px; }
     .search-input::placeholder { color: var(--muted); }
+
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-    th { color: var(--muted); font-size: 11px; text-transform: uppercase; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+
+    /* ==========================================================
+       KODE RESPONSIF: TABEL AGAR BISA DIGESER HORIZONTAL DI HP
+       ========================================================== */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 650px; }
+    th { color: var(--muted); font-size: 11px; text-transform: uppercase; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
     td { padding: 14px 12px; border-bottom: 1px solid var(--line); color: var(--ink); vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
     .badge.open { background: var(--red-soft); color: var(--red); }
     .badge.progress { background: var(--amber-soft); color: var(--amber); }
     .badge.solved { background: var(--green-soft); color: var(--green); }
-    .btn-action { background: var(--line); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; text-align: center; display: inline-block; }
+
+    .btn-action { background: var(--line); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; text-align: center; display: inline-block; white-space: nowrap; }
     .btn-action:hover { background: var(--card-hover); }
-    .assign-btn { background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+    .assign-btn { background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
     .assign-btn:hover { border-color: var(--green); color: #fff; background: var(--card-hover); }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; place-items: center; z-index: 1000; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; place-items: center; z-index: 1000; padding: 16px; }
     .modal-overlay.active { display: grid; }
     .modal-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; box-shadow: var(--shadow); }
     .modal-header { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
     .modal-close { background: transparent; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
     .modal-close:hover { color: #fff; }
     .modal-body { margin-bottom: 20px; }
-    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+
+    /* ==========================================================
+       KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+       ========================================================== */
+    @media (max-width: 768px) {
+      main { 
+        margin-left: 0 !important; 
+        width: 100% !important; 
+        padding: 14px;
+        padding-top: 60px; /* Ruang untuk tombol navigasi toggle sidebar */
+      }
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-input, .filter-select, .filter-bar button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -146,67 +180,71 @@
       </form>
 
       <div class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>Website & Customer</th>
-              <th>Jenis Error</th>
-              <th>Mulai Error</th>
-              <th>PIC</th>
-              <th>Status</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($incidents as $incident)
-            <tr>
-              <td>
-                <b>{{ $incident->website->website_name }}</b><br>
-                <small style="color:var(--muted)">{{ $incident->website->customer_name }}</small>
-              </td>
-              <td><span style="color:var(--red)">{{ $incident->type_label }}</span></td>
-              <td>{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M, H:i') }} WIB</td>
-              <td>
-                @if($incident->assignedUser)
-                  {{ $incident->assignedUser->name }}
-                  @if(Auth::user()->role === 'super_admin')
-                    <br>
-                    <button
-                      class="assign-btn"
-                      style="margin-top:4px; padding:3px 8px; font-size:10px;"
-                      onclick="openAssignModal({{ $incident->id }}, '{{ $incident->website->website_name }}', {{ $incident->assigned_to }})"
-                    >
-                      Ganti PIC
-                    </button>
-                  @endif
-                @else
-                  @if(Auth::user()->role === 'super_admin')
-                    <button
-                      class="assign-btn"
-                      onclick="openAssignModal({{ $incident->id }}, '{{ $incident->website->website_name }}', null)"
-                    >
-                      + Tugaskan PIC
-                    </button>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Website & Customer</th>
+                <th>Jenis Error</th>
+                <th>Mulai Error</th>
+                <th>PIC</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($incidents as $incident)
+              <tr>
+                <td>
+                  <b>{{ $incident->website->website_name }}</b><br>
+                  <small style="color:var(--muted)">{{ $incident->website->customer_name }}</small>
+                </td>
+                <td><span style="color:var(--red)">{{ $incident->type_label }}</span></td>
+                <td>{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M, H:i') }} WIB</td>
+                <td>
+                  @if($incident->assignedUser)
+                    {{ $incident->assignedUser->name }}
+                    @if(Auth::user()->role === 'super_admin')
+                      <br>
+                      <button
+                        class="assign-btn"
+                        style="margin-top:4px; padding:3px 8px; font-size:10px;"
+                        onclick="openAssignModal({{ $incident->id }}, '{{ $incident->website->website_name }}', {{ $incident->assigned_to }})"
+                      >
+                        Ganti PIC
+                      </button>
+                    @endif
                   @else
-                    <span style="color: var(--muted);">Belum ditugaskan</span>
+                    @if(Auth::user()->role === 'super_admin')
+                      <button
+                        class="assign-btn"
+                        onclick="openAssignModal({{ $incident->id }}, '{{ $incident->website->website_name }}', null)"
+                      >
+                        + Tugaskan PIC
+                      </button>
+                    @else
+                      <span style="color: var(--muted);">Belum ditugaskan</span>
+                    @endif
                   @endif
-                @endif
-              </td>
-              <td><span class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span></td>
-              <td>
-                <a href="{{ route('incidents.show', $incident->id) }}" class="btn-action">Detail & Update</a>
-              </td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="6" style="text-align:center; color: var(--muted);">Belum ada incident.</td>
-            </tr>
-            @endforelse
-          </tbody>
-        </table>
+                </td>
+                <td><span class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span></td>
+                <td>
+                  <a href="{{ route('incidents.show', $incident->id) }}" class="btn-action">Detail & Update</a>
+                </td>
+              </tr>
+              @empty
+              <tr>
+                <td colspan="6" style="text-align:center; color: var(--muted); padding: 30px;">Belum ada incident.</td>
+              </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {{ $incidents->links() }}
+      <div style="margin-top: 16px;">
+        {{ $incidents->links() }}
+      </div>
 
     </div>
   </main>

@@ -13,7 +13,7 @@
       --card-hover: #17231d;
       --ink: #dce9e1;
       --muted: #82988c;
-      --line: #1b2a22;
+      --line: #2e4a3b;
       --green: #0f9f6e;
       --green-soft: rgba(15, 159, 110, 0.12);
       --red: #d94c4c;
@@ -23,13 +23,12 @@
       --blue: #2563eb;
       --blue-soft: rgba(37, 99, 235, 0.12);
       --shadow: 0 10px 30px rgba(0, 0, 0, .3);
-      --sidebar-width: 260px;
-      --sidebar-collapsed: 76px;
+      --sidebar-width: 215px;
+      --sidebar-collapsed: 62px;
     }
 
     * {
       box-sizing: border-box;
-      transition: width 0.3s ease, padding 0.3s ease;
     }
 
     body {
@@ -290,21 +289,28 @@
       justify-content: center;
     }
 
-    /* STYLE MAIN CONTENT */
+    /* ==========================================================
+       KODE RESPONSIF: STYLE MAIN CONTENT & PERGESERAN SIDEBAR
+       ========================================================== */
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      padding: 30px;
+      padding: 24px;
       min-width: 0;
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      width: calc(100% - var(--sidebar-width));
     }
 
-    aside.collapsed~main {
+    /* Jika sidebar diperkecil (collapsed) di laptop */
+    aside#sidebar.collapsed ~ main {
       margin-left: var(--sidebar-collapsed);
+      width: calc(100% - var(--sidebar-collapsed));
     }
 
     .container {
       max-width: 1180px;
       margin: 0 auto;
+      width: 100%;
     }
 
     /* Header & Actions Bar */
@@ -341,6 +347,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
     .btn-primary:hover {
@@ -359,7 +366,7 @@
       font-weight: 600;
     }
 
-    /* Filter & Search Bar (sama seperti Dashboard) */
+    /* Filter & Search Bar */
     .filter-card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -430,16 +437,21 @@
       box-shadow: var(--shadow);
     }
 
+    /* ==========================================================
+       KODE RESPONSIF: TABEL AGAR BISA DI-SCROLL DI HP
+       ========================================================== */
     .table-responsive {
+      width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     table {
       width: 100%;
-      table-layout: fixed;
       border-collapse: collapse;
       text-align: left;
       font-size: 13px;
+      min-width: 650px; /* Mencegah kolom tabel tertekan terlalu kecil di layar HP */
     }
 
     th {
@@ -456,8 +468,6 @@
       border-bottom: 1px solid var(--line);
       color: var(--ink);
       vertical-align: middle;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     tr:last-child td {
@@ -474,6 +484,7 @@
       font-weight: 700;
       border: none;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .badge.active {
@@ -492,6 +503,7 @@
       border-radius: 6px;
       font-size: 11px;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     .badge-status.online {
@@ -523,6 +535,7 @@
       display: flex;
       gap: 6px;
       align-items: center;
+      justify-content: center;
     }
 
     .btn-icon {
@@ -536,6 +549,7 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      white-space: nowrap;
     }
 
     .btn-icon:hover {
@@ -556,7 +570,7 @@
       border-radius: 4px;
     }
 
-    /* Pagination Controls (sama seperti Dashboard) */
+    /* Pagination Controls */
     .pagination-container {
       display: flex;
       justify-content: space-between;
@@ -645,6 +659,35 @@
       align-items: center;
       justify-content: center;
     }
+
+    /* ==========================================================
+       KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+       ========================================================== */
+    @media (max-width: 768px) {
+      main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 14px;
+        padding-top: 60px; /* Ruang untuk tombol toggle sidebar di layar kecil */
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .filter-grid {
+        flex-direction: column;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .filter-dropdown select {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
@@ -675,7 +718,7 @@
         </div>
       @endif
 
-      <!-- CARDS FILTER STATUS & SEARCH (sama seperti Dashboard) -->
+      <!-- CARDS FILTER STATUS & SEARCH -->
       <div class="filter-card">
         <div class="filter-grid">
           <div class="search-box">
@@ -752,9 +795,8 @@
                     @endif
                   </td>
                   <td style="text-align: center;">
-                    <div class="action-btns" style="justify-content: center;">
+                    <div class="action-btns">
                       <a href="{{ route('websites.edit', $site) }}" class="btn-icon">Edit</a>
-
                       <form action="{{ route('websites.destroy', $site) }}" method="POST"
                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
                         @csrf
@@ -775,7 +817,7 @@
           </table>
         </div>
 
-        <!-- UI Pagination Navigator Website Management (sama seperti Dashboard) -->
+        <!-- UI Pagination Navigator Website Management -->
         <div class="pagination-container">
           <div class="pagination-info" id="pagination-info">
             Menampilkan 0 - 0 dari 0 data
@@ -796,9 +838,6 @@
   </main>
 
   @php
-    // Disiapkan lebih dulu di luar <script> supaya @json() tidak bersarang
-    // di dalam closure multi-baris (penyebab bracket-matching error di editor
-    // dan berpotensi salah dikompilasi Blade).
     $websitesForJs = $websites->map(function ($site) {
         return [
             'id' => $site->id,
@@ -814,11 +853,9 @@
     })->values();
   @endphp
 
-  <!-- JAVASCRIPT: SEARCH, FILTER & PAGINATION CLIENT-SIDE (pola sama seperti Dashboard) -->
+  <!-- JAVASCRIPT: SEARCH, FILTER & PAGINATION CLIENT-SIDE -->
   <script>
     const csrfToken = "{{ csrf_token() }}";
-
-    // Seluruh data website dikirim sekali dari Blade, filtering & paging dilakukan di client
     let rawWebsitesData = {!! $websitesForJs->toJson() !!};
 
     const toggleUrlTemplate = "{{ route('websites.toggle-status', ':id') }}";
@@ -826,7 +863,7 @@
     const destroyUrlTemplate = "{{ route('websites.destroy', ':id') }}";
 
     let currentPage = 1;
-    const perPage = 10; // Jumlah data per halaman
+    const perPage = 10;
 
     function renderTable() {
       const tbody = document.getElementById('website-table-body');
@@ -836,7 +873,6 @@
 
       if (!tbody) return;
 
-      // 1. Filtering Data
       const filteredWebsites = rawWebsitesData.filter(site => {
         const matchesSearch =
           (site.domain || '').toLowerCase().includes(searchQuery) ||
@@ -852,24 +888,20 @@
       const totalItems = filteredWebsites.length;
       const totalPages = Math.ceil(totalItems / perPage) || 1;
 
-      // Reset halaman jika pencarian/filter membuat halaman aktif melebihi total halaman
       if (currentPage > totalPages) {
         currentPage = totalPages;
       }
 
-      // Tampilan data kosong
       if (totalItems === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--muted); padding:30px;">Tidak ada data website yang ditemukan.</td></tr>`;
         renderPaginationControls(0, 1, 0, 0);
         return;
       }
 
-      // 2. Slicing data untuk pagination
       const startIndex = (currentPage - 1) * perPage;
       const endIndex = startIndex + perPage;
       const pageItems = filteredWebsites.slice(startIndex, endIndex);
 
-      // 3. Render baris tabel
       let html = '';
       pageItems.forEach(site => {
         const editUrl = editUrlTemplate.replace(':id', site.id);
@@ -910,7 +942,7 @@
             </td>
             <td>${lastStatusHtml}</td>
             <td style="text-align: center;">
-              <div class="action-btns" style="justify-content: center;">
+              <div class="action-btns">
                 <a href="${editUrl}" class="btn-icon">Edit</a>
                 <form action="${destroyUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
                   <input type="hidden" name="_token" value="${csrfToken}">
@@ -924,8 +956,6 @@
       });
 
       tbody.innerHTML = html;
-
-      // 4. Update kontrol pagination
       renderPaginationControls(totalItems, totalPages, startIndex + 1, Math.min(endIndex, totalItems));
     }
 
@@ -947,7 +977,7 @@
       if (!pageNumbersEl) return;
 
       let pagesHtml = '';
-      const side = 1; // Jumlah halaman aktif di kiri/kanan
+      const side = 1;
       const start = Math.max(1, currentPage - side);
       const end = Math.min(totalPages, currentPage + side);
 
@@ -979,7 +1009,6 @@
       renderTable();
     }
 
-    // Event Listeners
     document.getElementById('btn-prev').addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
@@ -993,7 +1022,7 @@
     });
 
     document.getElementById('search-input').addEventListener('input', () => {
-      currentPage = 1; // Reset ke halaman 1 saat mengetik kata kunci
+      currentPage = 1;
       renderTable();
     });
 
@@ -1003,11 +1032,10 @@
     });
 
     document.getElementById('status-filter').addEventListener('change', () => {
-      currentPage = 1; // Reset ke halaman 1 saat mengubah filter status
+      currentPage = 1;
       renderTable();
     });
 
-    // Render awal saat halaman dibuka
     renderTable();
   </script>
 
