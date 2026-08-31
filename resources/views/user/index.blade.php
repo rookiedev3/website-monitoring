@@ -29,7 +29,6 @@
 
     * {
       box-sizing: border-box;
-      transition: width 0.3s ease, padding 0.3s ease;
     }
 
     body {
@@ -60,6 +59,7 @@
       flex-direction: column;
       z-index: 100;
       box-shadow: var(--shadow);
+      transition: width 0.3s ease;
     }
 
     aside.collapsed {
@@ -290,21 +290,25 @@
       justify-content: center;
     }
 
-    /* STYLE MAIN CONTENT */
+    /* STYLE MAIN CONTENT & RESPONSIF SIDEBAR */
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
       padding: 30px;
       min-width: 0;
+      width: calc(100% - var(--sidebar-width));
+      transition: margin-left 0.3s ease, width 0.3s ease;
     }
 
-    aside.collapsed~main {
+    aside.collapsed ~ main {
       margin-left: var(--sidebar-collapsed);
+      width: calc(100% - var(--sidebar-collapsed));
     }
 
     .container {
       max-width: 1180px;
       margin: 0 auto;
+      width: 100%;
     }
 
     /* Header & Actions Bar */
@@ -341,6 +345,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
     .btn-primary:hover {
@@ -388,7 +393,7 @@
 
     .search-box {
       flex: 1;
-      min-width: 250px;
+      min-width: 220px;
       position: relative;
     }
 
@@ -443,11 +448,12 @@
 
     .table-responsive {
       overflow-x: auto;
+      width: 100%;
     }
 
     table {
       width: 100%;
-      table-layout: fixed;
+      min-width: 650px; /* Menjaga agar layout tabel tidak hancur di layar kecil */
       border-collapse: collapse;
       text-align: left;
       font-size: 13px;
@@ -467,8 +473,6 @@
       border-bottom: 1px solid var(--line);
       color: var(--ink);
       vertical-align: middle;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     tr:last-child td {
@@ -503,6 +507,7 @@
       border-radius: 99px;
       font-size: 11px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .badge-role.super_admin {
@@ -526,6 +531,7 @@
       border-radius: 6px;
       font-size: 11px;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     .badge-status.online {
@@ -555,6 +561,7 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      white-space: nowrap;
     }
 
     .btn-icon:hover {
@@ -573,6 +580,7 @@
       background: rgba(15, 159, 110, 0.1);
       padding: 2px 6px;
       border-radius: 4px;
+      word-break: break-all;
     }
 
     /* Pagination Controls */
@@ -596,6 +604,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .btn-page {
@@ -663,6 +672,36 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+    }
+
+    /* ==========================================================
+       MEDIA QUERY: RESPONSIF UNTUK LAYAR HP & TABLET (Max 768px)
+       ========================================================== */
+    @media (max-width: 768px) {
+      main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 16px;
+        padding-top: 60px; /* Ruang untuk toggle sidebar di mobile */
+      }
+
+      .filter-grid {
+        flex-direction: column;
+      }
+
+      .search-box, .filter-dropdown, .filter-dropdown select {
+        width: 100%;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-header .btn-primary {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
     .main-content,
