@@ -116,6 +116,52 @@
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 
     /* ==========================================================
+       PAGINATION (disamakan dengan Dashboard)
+       ========================================================== */
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .pagination-info { font-size: 12px; color: var(--muted); }
+    .pagination-buttons { display: flex; align-items: center; gap: 6px; }
+    .btn-page {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-page:hover:not(.disabled) { background: var(--card-hover); color: #fff; border-color: var(--muted); }
+    .btn-page.disabled { opacity: 0.4; pointer-events: none; cursor: not-allowed; }
+    .page-numbers { display: flex; gap: 4px; }
+    .page-num {
+      min-width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; border: 1px solid var(--line);
+      background: transparent; color: var(--ink);
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .page-num:hover { background: var(--card-hover); color: #fff; }
+    .page-num.active { background: var(--green); color: #fff; border-color: var(--green); }
+    .page-dots { color: var(--muted); font-size: 12px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; }
+
+    /* ==========================================================
        KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
        ========================================================== */
     @media (max-width: 768px) {
@@ -131,6 +177,13 @@
       }
       .search-input, .filter-select, .filter-bar button {
         width: 100%;
+      }
+      .pagination-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .pagination-buttons {
+        justify-content: center;
       }
     }
   </style>
@@ -240,10 +293,55 @@
             </tbody>
           </table>
         </div>
-      </div>
 
-      <div style="margin-top: 16px;">
-        {{ $incidents->links() }}
+        {{-- ===== Pagination bergaya Dashboard ===== --}}
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Menampilkan {{ $incidents->firstItem() ?? 0 }} - {{ $incidents->lastItem() ?? 0 }} dari {{ $incidents->total() }} data
+          </div>
+          <div class="pagination-buttons">
+            <a href="{{ $incidents->onFirstPage() ? '#' : $incidents->previousPageUrl() }}"
+               class="btn-page {{ $incidents->onFirstPage() ? 'disabled' : '' }}">
+              <i class="bi bi-chevron-left"></i> Prev
+            </a>
+
+            <div class="page-numbers">
+              @php
+                $current = $incidents->currentPage();
+                $last    = $incidents->lastPage();
+                $start   = max(1, $current - 1);
+                $end     = min($last, $current + 1);
+              @endphp
+
+              @if($start > 1)
+                <a href="{{ $incidents->url(1) }}" class="page-num">1</a>
+                @if($start > 2)
+                  <span class="page-dots">...</span>
+                @endif
+              @endif
+
+              @for($p = $start; $p <= $end; $p++)
+                @if($p == $current)
+                  <span class="page-num active">{{ $p }}</span>
+                @else
+                  <a href="{{ $incidents->url($p) }}" class="page-num">{{ $p }}</a>
+                @endif
+              @endfor
+
+              @if($end < $last)
+                @if($end < $last - 1)
+                  <span class="page-dots">...</span>
+                @endif
+                <a href="{{ $incidents->url($last) }}" class="page-num">{{ $last }}</a>
+              @endif
+            </div>
+
+            <a href="{{ $incidents->hasMorePages() ? $incidents->nextPageUrl() : '#' }}"
+               class="btn-page {{ !$incidents->hasMorePages() ? 'disabled' : '' }}">
+              Next <i class="bi bi-chevron-right"></i>
+            </a>
+          </div>
+        </div>
       </div>
 
     </div>

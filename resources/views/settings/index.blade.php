@@ -11,16 +11,16 @@
       --card-hover: #17231d;
       --ink: #dce9e1;
       --muted: #82988c;
-      --line: #1b2a22;
+      --line: #2e4a3b;
       --green: #0f9f6e;
       --green-soft: rgba(15, 159, 110, 0.12);
       --red: #d94c4c;
       --amber: #d98b1d;
       --shadow: 0 10px 30px rgba(0,0,0,.3);
-      --sidebar-width: 260px;
-      --sidebar-collapsed: 76px;
+      --sidebar-width: 215px;
+      --sidebar-collapsed: 62px;
     }
-    * { box-sizing: border-box; transition: width 0.3s ease, padding 0.3s ease; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -49,49 +49,67 @@
     .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
     .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     aside.collapsed .nav-item span { display: none; }
-    .user-profile-container { position: relative; border-top: 1px solid var(--line); padding: 12px; }
-    .user-profile-btn { width: 100%; background: transparent; border: none; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; cursor: pointer; color: var(--ink); text-align: left; white-space: nowrap; overflow: hidden; }
-    .user-profile-btn:hover { background: var(--card-hover); }
-    .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: #24372d; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
-    .user-info { flex: 1; overflow: hidden; }
-    .user-info h4 { font-size: 12px; margin: 0; color: #fff; text-overflow: ellipsis; overflow: hidden; }
-    .user-info p { font-size: 10px; margin: 0; color: var(--muted); text-overflow: ellipsis; overflow: hidden; }
-    aside.collapsed .user-info { display: none; }
-    .user-popup-menu { position: absolute; bottom: 70px; left: 12px; right: 12px; background: #16241d; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
-    .user-popup-menu.show { display: flex; }
-    .popup-item { padding: 10px 14px; font-size: 12px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; }
-    .popup-item:hover { background: #1f3328; color: #fff; }
-    .popup-item.danger { color: var(--red); }
-    .sidebar-toggle-bar { border-top: 1px solid var(--line); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: rgba(0,0,0,0.1); font-size: 11px; color: var(--muted); }
-    .sidebar-toggle-bar:hover { background: var(--card-hover); color: #fff; }
-    aside.collapsed .sidebar-toggle-text { display: none; }
-    aside.collapsed .sidebar-toggle-bar { justify-content: center; }
-    main { margin-left: var(--sidebar-width); flex: 1; padding: 30px; min-width: 0; }
-    aside.collapsed ~ main { margin-left: var(--sidebar-collapsed); }
-    .container { max-width: 900px; margin: 0 auto; }
+
+    /* ==========================================================
+       KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
+       ========================================================== */
+    main { 
+      margin-left: var(--sidebar-width); 
+      flex: 1; 
+      padding: 24px; 
+      min-width: 0; 
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      width: calc(100% - var(--sidebar-width));
+    }
+    aside#sidebar.collapsed ~ main { 
+      margin-left: var(--sidebar-collapsed); 
+      width: calc(100% - var(--sidebar-collapsed));
+    }
+    .container { max-width: 900px; margin: 0 auto; width: 100%; }
+
     .page-header { margin-bottom: 24px; }
     .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
     .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
+
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
     .card-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-    .card-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    .card-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; word-break: break-word; }
+    
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
     .form-group small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; }
+    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
     .form-control:focus { border-color: var(--green); }
     .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
     .error-text { color: var(--red); font-size: 12px; margin-top: 4px; }
+
     .slider-container { margin: 20px 0 30px; }
     .range-slider { width: 100%; accent-color: var(--green); cursor: pointer; height: 6px; background: var(--line); border-radius: 3px; }
     .slider-marks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; padding: 0 4px; }
     .slider-marks span.active { color: var(--green); font-weight: bold; }
-    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* ==========================================================
+       KODE RESPONSIF: GRID 2 KOLOM
+       ========================================================== */
+    .grid-2col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    
     .coming-soon-badge { display: inline-block; background: var(--amber); color: #1a1006; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-left: 8px; text-transform: uppercase; }
     .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
     .btn-primary:hover { opacity: 0.9; }
-    @media (max-width: 640px) {
-      .grid-2col { grid-template-columns: 1fr; }
+
+    /* ==========================================================
+       KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+       ========================================================== */
+    @media (max-width: 768px) {
+      main { 
+        margin-left: 0 !important; 
+        width: 100% !important; 
+        padding: 14px;
+        padding-top: 60px; /* Ruang untuk tombol navigasi toggle sidebar */
+      }
+      .grid-2col { 
+        grid-template-columns: 1fr; /* Mengubah form 2 kolom sejajar menjadi 1 kolom bertumpuk ke bawah di HP */
+      }
     }
   </style>
 </head>
@@ -121,7 +139,7 @@
         <div class="card">
           <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">Konfigurasi Monitoring</div>
 
-          <!-- Monitor Interval (slider, sesuai desain asli) -->
+          <!-- Monitor Interval -->
           <div>
             <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px;">Default Monitor Interval</div>
             <div class="card-desc">
@@ -213,7 +231,7 @@
           </div>
         </div>
 
-        <!-- NOTIFIKASI WHATSAPP — belum ada tabel penyimpanannya -->
+        <!-- NOTIFIKASI WHATSAPP -->
         <div class="card">
           <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">
             Notifikasi & Alert WhatsApp
