@@ -41,6 +41,8 @@ class AuthController extends Controller
             ]);
         }
 
+        $user->forceFill(['last_login_at' => now()])->saveQuietly();
+
         $request->session()->regenerate();
 
         return redirect()->route($this->dashboardRouteFor($user->role));
