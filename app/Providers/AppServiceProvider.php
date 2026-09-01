@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,5 +25,8 @@ class AppServiceProvider extends ServiceProvider
        Event::listen(Login::class, function (Login $event) {
             $event->user->forceFill(['last_login_at' => now()])->saveQuietly();
         });
+        Carbon::serializeUsing(function ($carbon) {
+        return $carbon->toIso8601String();
+    });
     }
 }

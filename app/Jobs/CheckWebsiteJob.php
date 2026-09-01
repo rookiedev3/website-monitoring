@@ -121,7 +121,10 @@ class CheckWebsiteJob implements ShouldQueue
             'checked_at' => $now,
         ]);
 
-        $this->website->touch();
+        // Sinkronkan status terakhir ke tabel websites (dipakai Dashboard & Website Management)
+        $this->website->update([
+            'last_status' => $status,
+        ]);
 
         // --- 4. OTOMATISASI INCIDENT LIFECYCLE ---
         app(\App\Services\IncidentService::class)->evaluate($this->website, $status, $incidentType);

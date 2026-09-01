@@ -80,6 +80,35 @@ class Incident extends Model
         };
     }
 
+    /**
+     * Durasi gangguan yang sudah diformat jadi "X hari Y jam Z menit".
+     * - Incident 'solved' pakai duration_seconds yang sudah tersimpan di DB.
+     * - Incident yang masih berjalan dihitung real-time dari started_at.
+     * abs() dipakai supaya incident yang baru saja dibuat (selisih bisa
+     * sedikit negatif karena micro-lag) tidak wrap jadi "23 jam 59 menit".
+     */
+    public function getFormattedDurationAttribute(): string
+    {
+        $seconds = $this->status === 'solved'
+            ? $this->duration_seconds
+            : abs(now()->diffInSeconds($this->started_at));
+
+        $days = intdiv($seconds, 86400);
+        $hours = intdiv($seconds % 86400, 3600);
+        $minutes = intdiv($seconds % 3600, 60);
+
+        $parts = [];
+        if ($days > 0) {
+            $parts[] = "{$days} hari";
+        }
+        if ($hours > 0 || $days > 0) {
+            $parts[] = "{$hours} jam";
+        }
+        $parts[] = "{$minutes} menit";
+
+        return implode(' ', $parts);
+    }
+
     /* ==========================================
  | SCOPES
  ========================================== */

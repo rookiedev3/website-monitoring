@@ -450,10 +450,9 @@
           <div class="info-item">
             <span class="info-label">Durasi Gangguan</span>
             <span class="info-value">
-              @if($incident->status === 'solved')
-                {{ gmdate('H \j\a\m i \m\e\n\i\t', $incident->duration_seconds) }}
-              @else
-                {{ gmdate('H \j\a\m i \m\e\n\i\t', now()->diffInSeconds($incident->started_at)) }} (berjalan)
+              {{ $incident->formatted_duration }}
+              @if($incident->status !== 'solved')
+                (berjalan)
               @endif
             </span>
           </div>
@@ -505,7 +504,17 @@
         <div class="card" style="margin-bottom: 24px;">
           <div class="card-title">Update Penanganan</div>
 
-          @if($incident->status === 'open')
+          {{-- Solved dicek PALING PERTAMA — status final harus menang dari kondisi lain,
+               termasuk saat auto-resolved oleh sistem (assigned_to masih null). --}}
+          @if($incident->status === 'solved')
+            <p style="font-size: 13px; color: var(--muted);">
+              Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
+            </p>
+            <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">
+              ✓ Incident sudah selesai {{ $incident->assignedUser ? ' ditangano oleh ' . $incident->assignedUser->name : ' Auto-resolved' }}.
+            </p>
+
+          @elseif($incident->status === 'open')
             <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
               Incident ini belum ditangani siapa pun.
             </p>
@@ -518,13 +527,6 @@
             <p style="font-size: 13px; color: var(--muted);">
               Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'Pengguna lain' }}</b>.
             </p>
-
-          @elseif($incident->status === 'solved')
-            <p style="font-size: 13px; color: var(--muted);">
-              Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
-            </p>
-            <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">✓ Incident sudah
-              selesai ditangani.</p>
 
           @else
             <form action="{{ route('incidents.update', $incident->id) }}" method="POST"
