@@ -165,7 +165,7 @@ class IncidentController extends Controller
                 'parts' => 3,
             ]);
 
-            $recipients = User::whereIn('role', ['super_admin', 'admin'])->get();
+            $recipients = User::notificationRecipients()->get();
 
             // 🟢 Kirim Notifikasi Recovery/Solved
             Notification::send(

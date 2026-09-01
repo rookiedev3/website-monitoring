@@ -267,4 +267,65 @@ class NotificationTest extends TestCase
         $viewResponse->assertStatus(200);
         $viewResponse->assertSeeText('Detail & Penanganan Incident');
     }
+
+    public function test_notification_recipients_scope_returns_active_super_admin_and_programmer(): void
+    {
+        $superAdmin = User::factory()->create(['role' => 'super_admin', 'is_active' => true]);
+        $programmer = User::factory()->create(['role' => 'programmer', 'is_active' => true]);
+        $inactiveAdmin = User::factory()->create(['role' => 'super_admin', 'is_active' => false]);
+        $viewer = User::factory()->create(['role' => 'viewer', 'is_active' => true]);
+
+        $recipients = User::notificationRecipients()->get();
+
+        $this->assertTrue($recipients->contains($superAdmin));
+        $this->assertTrue($recipients->contains($programmer));
+        $this->assertFalse($recipients->contains($inactiveAdmin));
+        $this->assertFalse($recipients->contains($viewer));
+    }
+
+    public function test_programmer_resolving_incident_sends_notification_to_super_admin_and_programmer(): void
+    {
+        Notification::fake();
+
+        $superAdmin = User::factory()->create(['role' => 'super_admin', 'is_active' => true]);
+        $programmer = User::factory()->create(['role' => 'programmer', 'is_active' => true]);
+        $otherProgrammer = User::factory()->create(['role' => 'programmer', 'is_active' => true]);
+        $viewer = User::factory()->create(['role' => 'viewer', 'is_active' => true]);
+
+        $website = Website::create([
+            'customer_name' => 'Client G',
+            'website_name' => 'Resolve Test',
+            'url' => 'https://resolve-example.com',
+            'domain' => 'resolve-example.com',
+            'check_interval' => 5,
+            'timeout_seconds' => 10,
+            'monitoring_status' => 'active',
+        ]);
+
+        $incident = Incident::create([
+            'website_id' => $website->id,
+            'incident_type' => 'down',
+            'status' => 'on_progress',
+            'assigned_to' => $programmer->id,
+            'started_at' => now()->subHour(),
+        ]);
+
+        $response = $this->actingAs($programmer)
+            ->put(route('incidents.update', $incident->id), [
+                'root_cause' => 'Server restarted',
+                'resolution' => 'Service brought back online',
+            ]);
+
+        $response->assertSessionHas('success');
+
+        Notification::assertSentTo(
+            [$superAdmin, $programmer, $otherProgrammer],
+            WebsiteUpNotification::class
+        );
+
+        Notification::assertNotSentTo(
+            [$viewer],
+            WebsiteUpNotification::class
+        );
+    }
 }

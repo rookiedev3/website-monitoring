@@ -28,7 +28,16 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
-            'last_login_at' => 'datetime', 
+            'last_login_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Scope a query to only include active super_admin and programmer users for notifications.
+     */
+    public function scopeNotificationRecipients($query)
+    {
+        return $query->whereIn('role', ['super_admin', 'programmer'])
+            ->where('is_active', true);
     }
 }

@@ -16,9 +16,7 @@ class IncidentService
     public function evaluate(Website $website, string $currentStatus, ?string $incidentType = null): void
     {
         // 1. Ambil penerima notifikasi (Super Admin & Programmer yang aktif)
-        $recipients = User::whereIn('role', ['super_admin', 'programmer'])
-            ->where('is_active', true)
-            ->get();
+        $recipients = User::notificationRecipients()->get();
 
         $logCount = $website->monitoringLogs()->count();
 

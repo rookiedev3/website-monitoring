@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\MonitoringSettingController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
@@ -64,6 +65,8 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('success', 'Semua notifikasi telah ditandai dibaca.');
     })->name('notifications.markAllRead');
+
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // BUAT SUPER ADMIN
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {
