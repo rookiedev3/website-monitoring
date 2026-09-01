@@ -218,16 +218,6 @@
       background: var(--card-hover);
     }
 
-    /* ==========================================================
-       KODE RESPONSIF: GRID 2 KOLOM
-       ========================================================== */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -390,11 +380,7 @@
         padding-top: 60px;
         /* Ruang untuk tombol navigasi toggle sidebar */
       }
-
-      .grid-2 {
-        grid-template-columns: 1fr !important;
-        /* Memaksa kolom ganda menjadi 1 kolom vertikal */
-      }
+    }
 
     .main-content,
     main {
@@ -432,144 +418,148 @@
 
       @php $user = Auth::user(); @endphp
 
-      <div class="grid-2" @if($user->role !== 'programmer') style="grid-template-columns: 1fr; max-width: 520px;" @endif>
-
-        <!-- Kolom 1: Informasi Gangguan -->
-        <div class="card">
-          <div class="card-title">Informasi Gangguan</div>
-          <div class="info-list">
-            <div class="info-item">
-              <span class="info-label">Website / Domain</span>
-              <span class="info-value">{{ $incident->website->domain }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Customer</span>
-              <span class="info-value">{{ $incident->website->customer_name }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Jenis Error</span>
-              <span class="info-value" style="color:var(--red)">{{ $incident->type_label }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">HTTP Code</span>
-              <span class="info-value">{{ $latestLog->http_code ?? '-' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Response Time</span>
-              <span class="info-value">{{ $latestLog->response_time_ms ?? '-' }} ms</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Mulai Error</span>
-              <span class="info-value">{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }}
-                WIB</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Durasi Gangguan</span>
-              <span class="info-value">
-                @if($incident->status === 'solved')
-                  {{ gmdate('H \j\a\m i \m\e\n\i\t', $incident->duration_seconds) }}
-                @else
-                  {{ gmdate('H \j\a\m i \m\e\n\i\t', now()->diffInSeconds($incident->started_at)) }} (berjalan)
-                @endif
-              </span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">PIC</span>
-              <span class="info-value">{{ $incident->assignedUser?->name ?? 'Belum ditugaskan' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Status Pekerjaan</span>
-              <span class="info-value">
-                <span
-                  class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
-              </span>
-            </div>
+      <!-- Informasi Gangguan -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-title">Informasi Gangguan</div>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">Website / Domain</span>
+            <span class="info-value">{{ $incident->website->domain }}</span>
           </div>
-
-          @if($incident->root_cause || $incident->resolution)
-            <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);">
-              <p
-                style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
-                Hasil Investigasi
-              </p>
-              @if($incident->root_cause)
-                <div class="info-item">
-                  <span class="info-label">Root Cause</span>
-                  <span class="info-value">{{ $incident->root_cause }}</span>
-                </div>
+          <div class="info-item">
+            <span class="info-label">Customer</span>
+            <span class="info-value">{{ $incident->website->customer_name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Jenis Error</span>
+            <span class="info-value" style="color:var(--red)">{{ $incident->type_label }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">HTTP Code</span>
+            <span class="info-value">{{ $latestLog->http_code ?? 'N/A' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Response Time</span>
+            <span class="info-value">{{ $latestLog->response_time_ms ?? '-' }} ms</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Mulai Error</span>
+            <span class="info-value">{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }}
+              WIB</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Durasi Gangguan</span>
+            <span class="info-value">
+              @if($incident->status === 'solved')
+                {{ gmdate('H \j\a\m i \m\e\n\i\t', $incident->duration_seconds) }}
+              @else
+                {{ gmdate('H \j\a\m i \m\e\n\i\t', now()->diffInSeconds($incident->started_at)) }} (berjalan)
               @endif
-              @if($incident->resolution)
-                <div class="info-item" style="margin-top: 8px;">
-                  <span class="info-label">Resolution</span>
-                  <span class="info-value">{{ $incident->resolution }}</span>
-                </div>
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">PIC</span>
+            <span class="info-value">
+              @if($incident->assignedUser)
+                {{ $incident->assignedUser->name }}
+              @elseif($incident->status === 'solved')
+                Auto-resolved (sistem)
+              @else
+                Belum ditugaskan
               @endif
-            </div>
-          @endif
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status Pekerjaan</span>
+            <span class="info-value">
+              <span
+                class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
+            </span>
+          </div>
         </div>
 
-        {{-- Kolom 2: Update Penanganan — HANYA untuk programmer --}}
-        @if($user->role === 'programmer')
-          <div class="card">
-            <div class="card-title">Update Penanganan</div>
-
-            @if($incident->status === 'open')
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                Incident ini belum ditangani siapa pun.
-              </p>
-              <form action="{{ route('incidents.take', $incident->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-primary">Ambil Incident Ini</button>
-              </form>
-
-            @elseif($incident->assigned_to !== $user->id)
-              <p style="font-size: 13px; color: var(--muted);">
-                Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'Pengguna lain' }}</b>.
-              </p>
-
-            @elseif($incident->status === 'solved')
-              <p style="font-size: 13px; color: var(--muted);">
-                Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" sebelah kiri.
-              </p>
-              <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">✓ Incident sudah
-                selesai ditangani.</p>
-
-            @else
-              <form action="{{ route('incidents.update', $incident->id) }}" method="POST"
-                onsubmit="return confirm('Setelah dikirim, data ini tidak bisa diubah lagi dan incident akan ditandai Solved. Lanjutkan?');">
-                @csrf
-                @method('PATCH')
-
-                <div class="form-group">
-                  <label>Akar Masalah</label>
-                  <textarea name="root_cause" class="form-control" placeholder="Contoh: Plugin conflict setelah update"
-                    required>{{ old('root_cause') }}</textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Penyelesaian</label>
-                  <textarea name="resolution" class="form-control"
-                    placeholder="Contoh: Rollback plugin dan update versi stabil"
-                    required>{{ old('resolution') }}</textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Catatan</label>
-                  <textarea name="note" class="form-control"
-                    placeholder="Contoh: Website kembali normal pukul 10:22">{{ old('note') }}</textarea>
-                </div>
-
-                <p style="font-size: 11px; color: var(--amber); margin-bottom: 12px;">
-                  ⚠ Data ini hanya bisa dikirim SEKALI. Setelah dikirim, incident langsung ditandai Solved.
-                </p>
-
-                <button type="submit" class="btn-primary">Simpan & Selesaikan</button>
-              </form>
+        @if($incident->root_cause || $incident->resolution)
+          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);">
+            <p
+              style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
+              Hasil Investigasi
+            </p>
+            @if($incident->root_cause)
+              <div class="info-item">
+                <span class="info-label">Root Cause</span>
+                <span class="info-value">{{ $incident->root_cause }}</span>
+              </div>
+            @endif
+            @if($incident->resolution)
+              <div class="info-item" style="margin-top: 8px;">
+                <span class="info-label">Resolution</span>
+                <span class="info-value">{{ $incident->resolution }}</span>
+              </div>
             @endif
           </div>
         @endif
-
       </div>
+
+      {{-- Update Penanganan — HANYA untuk programmer, ditumpuk di bawah Informasi Gangguan --}}
+      @if($user->role === 'programmer')
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-title">Update Penanganan</div>
+
+          @if($incident->status === 'open')
+            <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
+              Incident ini belum ditangani siapa pun.
+            </p>
+            <form action="{{ route('incidents.take', $incident->id) }}" method="POST">
+              @csrf
+              <button type="submit" class="btn-primary">Ambil Incident Ini</button>
+            </form>
+
+          @elseif($incident->assigned_to !== $user->id)
+            <p style="font-size: 13px; color: var(--muted);">
+              Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'Pengguna lain' }}</b>.
+            </p>
+
+          @elseif($incident->status === 'solved')
+            <p style="font-size: 13px; color: var(--muted);">
+              Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
+            </p>
+            <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">✓ Incident sudah
+              selesai ditangani.</p>
+
+          @else
+            <form action="{{ route('incidents.update', $incident->id) }}" method="POST"
+              onsubmit="return confirm('Setelah dikirim, data ini tidak bisa diubah lagi dan incident akan ditandai Solved. Lanjutkan?');">
+              @csrf
+              @method('PATCH')
+
+              <div class="form-group">
+                <label>Akar Masalah</label>
+                <textarea name="root_cause" class="form-control" placeholder="Contoh: Plugin conflict setelah update"
+                  required>{{ old('root_cause') }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Penyelesaian</label>
+                <textarea name="resolution" class="form-control"
+                  placeholder="Contoh: Rollback plugin dan update versi stabil"
+                  required>{{ old('resolution') }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Catatan</label>
+                <textarea name="note" class="form-control"
+                  placeholder="Contoh: Website kembali normal pukul 10:22">{{ old('note') }}</textarea>
+              </div>
+
+              <p style="font-size: 11px; color: var(--amber); margin-bottom: 12px;">
+                ⚠ Data ini hanya bisa dikirim SEKALI. Setelah dikirim, incident langsung ditandai Solved.
+              </p>
+
+              <button type="submit" class="btn-primary">Simpan & Selesaikan</button>
+            </form>
+          @endif
+        </div>
+      @endif
 
       <!-- Riwayat Catatan Penanganan -->
       <div class="card">
