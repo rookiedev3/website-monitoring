@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Website Monitoring IT Solution</title>
+    <title>Login | IT Solution Monitoring</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,8 +13,6 @@
     <style>
         :root {
             --bg-main: #020617;
-            --card-bg: rgba(15, 23, 42, 0.75);
-            --border-color: rgba(52, 211, 153, 0.2);
             --border-focus: #10b981;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -37,163 +35,126 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Background Dinamis & Berwarna (Navy, Teal, Emerald) */
-            background: linear-gradient(135deg, #020617 0%, #064e3b 50%, #0f172a 100%);
-            background-size: 200% 200%;
-            animation: gradientBG 12s ease infinite;
+            background: #020617;
             color: var(--text-main);
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Ambient Glow & Floating Orbs Animation */
-        .glow-orb-1 {
-            position: absolute;
-            width: 450px;
-            height: 450px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
-            top: -100px;
-            left: -100px;
-            pointer-events: none;
-            animation: floatOrb 8s ease-in-out infinite alternate;
-        }
-
-        .glow-orb-2 {
-            position: absolute;
-            width: 550px;
-            height: 550px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
-            bottom: -150px;
-            right: -150px;
-            pointer-events: none;
-            animation: floatOrb 10s ease-in-out infinite alternate-reverse;
-        }
-
-        @keyframes floatOrb {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(30px) scale(1.08); }
-        }
-
-        /* Card Wrapper with Entrance Animation */
-        .login-card-container {
-            width: 90%;
-            max-width: 980px;
-            min-height: 580px;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(16, 185, 129, 0.1);
-            display: grid;
-            grid-template-columns: 1.1fr 1fr;
             overflow: hidden;
             position: relative;
-            z-index: 10;
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes slideUpFade {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .login-fullscreen-wrapper {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease forwards;
         }
 
-        /* Left Side: Cyber Graphics & Brand Area */
-        .login-illustration-side {
-            background: linear-gradient(145deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.8) 100%);
-            padding: 48px;
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* SISI KIRI: Welcome & Background Gelombang */
+        .left-wave-side {
+            background: transparent;
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            padding: 80px;
+        }
+
+        /* Container Gelombang Ekstra Lebar & Besar */
+        .wave-svg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .wave-svg {
+            position: absolute;
+            top: -15%;
+            left: -15%;
+            width: 155%;
+            height: 130%;
+            object-fit: fill;
+        }
+
+        .wave-layer-1 {
+            animation: waveFloat1 10s ease-in-out infinite alternate;
+            opacity: 0.95;
+        }
+
+        .wave-layer-2 {
+            animation: waveFloat2 14s ease-in-out infinite alternate;
+            opacity: 0.65;
+        }
+
+        @keyframes waveFloat1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-3%, 2%) scale(1.04); }
+        }
+
+        @keyframes waveFloat2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(4%, -3%) scale(1.06); }
+        }
+
+        /* Teks Welcome */
+        .left-content {
             position: relative;
-            border-right: 1px solid var(--border-color);
-        }
-
-        .brand-logo-area img {
-            max-height: 32px;
-            width: auto;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
-        }
-
-        .illustration-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            z-index: 3;
+            max-width: 520px;
             margin: auto 0;
         }
 
-        /* Animated Pulse Server Frame */
-        .server-art {
-            width: 140px;
-            height: 140px;
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            border-radius: 28px;
-            display: grid;
-            place-items: center;
-            color: var(--accent-green);
+        .welcome-title {
             font-size: 52px;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
-            margin-bottom: 24px;
-            position: relative;
-            transition: all 0.3s ease;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: #fff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
 
-        .server-art:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 45px rgba(16, 185, 129, 0.4);
-        }
-
-        .status-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(16, 185, 129, 0.25);
-            padding: 4px 10px;
-            border-radius: 20px;
-            border: 1px solid var(--accent-green);
-            font-size: 10px;
+        .welcome-subtitle {
+            font-size: 16px;
             font-weight: 700;
-            color: var(--accent-green);
+            letter-spacing: 3px;
+            color: #000000;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-green);
-            animation: pulse 1.8s infinite;
+        .left-footer-info {
+            position: relative;
+            z-index: 3;
+            font-size: 13px;
+            color: var(--text-muted);
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.3); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        /* Right Side: Form Controls */
-        .login-form-side {
-            padding: 48px;
+        /* SISI KANAN: Form Sign In */
+        .right-form-side {
+            padding: 80px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            background: transparent;
+            position: relative;
+            max-width: 580px;
+            width: 100%;
+            margin: 0 auto;
+            z-index: 3;
         }
 
         .form-label {
-            font-size: 11px !important;
+            font-size: 12px !important;
             font-weight: 700 !important;
             color: var(--text-muted) !important;
             text-transform: uppercase;
@@ -210,32 +171,33 @@
 
         .input-icon {
             position: absolute;
-            left: 16px;
+            left: 18px;
             color: var(--text-muted);
-            font-size: 16px;
+            font-size: 18px;
             z-index: 10;
-            transition: color 0.2s ease;
+            transition: color 0.3s ease;
         }
 
         .form-control {
-            border-radius: 12px;
-            padding: 12px 16px 12px 46px;
-            font-size: 14px;
+            border-radius: 14px;
+            padding: 15px 18px 15px 50px;
+            font-size: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            background-color: rgba(2, 6, 23, 0.5);
+            background-color: rgba(15, 23, 42, 0.6);
             color: var(--text-main);
-            transition: all 0.25s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .password-container .form-control {
-            padding-right: 48px;
+            padding-right: 50px;
         }
 
         .form-control:focus {
             border-color: var(--border-focus);
             box-shadow: 0 0 0 4px var(--accent-glow);
-            background-color: rgba(2, 6, 23, 0.8);
+            background-color: rgba(15, 23, 42, 0.95);
             color: #fff;
+            transform: translateY(-1px);
         }
 
         .form-control:focus + .input-icon,
@@ -249,7 +211,7 @@
 
         .password-toggle-btn {
             position: absolute;
-            right: 14px;
+            right: 16px;
             background: transparent;
             border: none;
             color: var(--text-muted);
@@ -267,22 +229,39 @@
         }
 
         .btn-custom-login {
-            background: var(--accent-green);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #022c22;
             border: none;
-            border-radius: 12px;
-            padding: 13px;
+            border-radius: 14px;
+            padding: 16px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15.5px;
             letter-spacing: 0.3px;
-            transition: all 0.25s ease;
+            transition: all 0.3s ease;
             box-shadow: 0 4px 20px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-custom-login::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-custom-login:hover::after {
+            left: 100%;
         }
 
         .btn-custom-login:hover {
-            background: #34d399;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
             color: #022c22;
-            box-shadow: 0 6px 24px rgba(52, 211, 153, 0.5);
+            box-shadow: 0 6px 25px rgba(52, 211, 153, 0.5);
             transform: translateY(-2px);
         }
 
@@ -290,9 +269,9 @@
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-muted);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 11px;
-            font-size: 13px;
+            border-radius: 14px;
+            padding: 13px;
+            font-size: 14px;
             font-weight: 600;
             text-decoration: none;
             display: flex;
@@ -307,12 +286,15 @@
             background: rgba(255, 255, 255, 0.08);
             color: var(--text-main);
             border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
         }
 
         .form-check-input {
             background-color: rgba(2, 6, 23, 0.6);
             border-color: rgba(255, 255, 255, 0.2);
             cursor: pointer;
+            width: 18px;
+            height: 18px;
         }
 
         .form-check-input:checked {
@@ -321,15 +303,17 @@
         }
 
         @media (max-width: 991px) {
-            .login-card-container {
+            .login-fullscreen-wrapper {
                 grid-template-columns: 1fr;
-                max-width: 440px;
+                overflow-y: auto;
             }
-            .login-illustration-side {
+            .left-wave-side {
                 display: none;
             }
-            .login-form-side {
-                padding: 36px 28px;
+            .right-form-side {
+                padding: 40px 24px;
+                height: 100vh;
+                justify-content: center;
             }
         }
     </style>
@@ -337,49 +321,81 @@
 
 <body>
 
-    <div class="glow-orb-1"></div>
-    <div class="glow-orb-2"></div>
-
-    <div class="login-card-container">
+    <div class="login-fullscreen-wrapper">
         
-        <div class="login-illustration-side">
-            <div class="brand-logo-area">
-                <img src="{{ asset('images/foto-perusahaan.jpg') }}" alt="Logo Perusahaan">
+        <!-- SISI KIRI: Gelombang Ekstra Besar Mengisi Ruang -->
+        <div class="left-wave-side">
+            <div class="wave-svg-container">
+                <!-- Layer 2: Gelombang Belakang (Memencar Luas ke Kanan Atas & Tengah) -->
+                <svg class="wave-svg wave-layer-2" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <path d="M 0,0 
+                             C 550,180 250,450 680,620 
+                             C 950,750 450,920 850,1000 
+                             L 0,1000 Z" fill="url(#gradGreenBack)"/>
+                    <defs>
+                        <linearGradient id="gradGreenBack" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#06b6d4" />
+                            <stop offset="45%" stop-color="#047857" />
+                            <stop offset="100%" stop-color="#020617" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <!-- Layer 1: Gelombang Utama (Ekstra Lebar & Tebal) -->
+                <svg class="wave-svg wave-layer-1" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <path d="M 0,0 
+                             C 650,140 300,400 750,580 
+                             C 980,700 400,880 780,1000 
+                             L 0,1000 Z" fill="url(#gradGreenMain)"/>
+                    
+                    <!-- Garis Aksentuasi Meliuk Tebal -->
+                    <path d="M 0,20 
+                             C 660,150 310,410 760,590 
+                             C 990,710 410,890 790,1000" 
+                          stroke="rgba(52, 211, 153, 0.5)" stroke-width="4" fill="none"/>
+                    
+                    <defs>
+                        <linearGradient id="gradGreenMain" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#34d399" />
+                            <stop offset="25%" stop-color="#10b981" />
+                            <stop offset="60%" stop-color="#064e3b" />
+                            <stop offset="100%" stop-color="#020617" />
+                        </linearGradient>
+                    </defs>
+                </svg>
             </div>
 
-            <div class="illustration-box">
-                <div class="server-art">
-                    <i class="bi bi-cpu-fill"></i>
-                    <div class="status-badge">
-                        <span class="status-dot"></span> Live
-                    </div>
-                </div>
-                <h5 class="fw-bold mb-2" style="color: #fff; font-size: 18px; letter-spacing: -0.3px;">IT Solution Monitoring</h5>
-                <p style="font-size: 12.5px; color: var(--text-muted); max-width: 260px; line-height: 1.5;">
-                    Pusat kontrol pemantauan server dan infrastruktur uptime jaringan secara real-time.
-                </p>
-            </div>
+            <div></div>
 
-            <div style="font-size: 11px; color: #64748b;">
+            <div class="left-content">
+    <div class="welcome-subtitle">IT Solution</div>
+    <div class="welcome-title">WEBSITE MONITORING</div>
+    <p style="font-size: 15.5px; color: rgba(248, 250, 252, 0.85); margin-top: 14px; line-height: 1.6; max-width: 440px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+        Platform pemantauan otomatis status website klien, pelacakan incident, dan kalkulasi uptime secara real-time untuk penanganan tim IT.
+    </p>
+</div>
+
+            <div class="left-footer-info">
                 &copy; {{ date('Y') }} IT Solution Corp. All rights reserved.
             </div>
         </div>
 
-        <div class="login-form-side">
+        <!-- SISI KANAN: Form Sign In -->
+        <div class="right-form-side">
             
             <div class="mb-4">
-                <h3 class="fw-bold mb-1" style="color: #fff; font-size: 22px; letter-spacing: -0.4px;">Login Admin</h3>
-                <p class="mb-0" style="font-size: 13px; color: var(--text-muted);">Masukkan kredensial Anda untuk masuk ke sistem.</p>
+                <h3 class="fw-bold mb-1" style="color: #fff; font-size: 30px; letter-spacing: -0.5px;">LOGIN</h3>
+                <p class="mb-0" style="font-size: 14px; color: var(--text-muted);">Masukkan kredensial Anda untuk mengakses sistem.</p>
             </div>
 
             @if (session('success'))
-                <div style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 10px 14px; border-radius: 10px; font-size: 12.5px; margin-bottom: 20px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 500;">
+                <div style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 12px 16px; border-radius: 12px; font-size: 13.5px; margin-bottom: 24px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 500;">
                     <i class="bi bi-check-circle-fill me-1"></i> {{ session('success') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div style="background-color: var(--red-glow); color: var(--red-alert); padding: 10px 14px; border-radius: 10px; font-size: 12.5px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 500;">
+                <div style="background-color: var(--red-glow); color: var(--red-alert); padding: 12px 16px; border-radius: 12px; font-size: 13.5px; margin-bottom: 24px; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 500;">
                     <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ $errors->first() }}
                 </div>
             @endif
@@ -387,43 +403,41 @@
             <form action="{{ route('login.proses') }}" method="POST">
                 @csrf
 
-                <div class="mb-3">
-                    <label class="form-label">Username / Email</label>
+                <div class="mb-4">
+                    <label class="form-label">Email</label>
                     <div class="input-group-custom">
                         <i class="bi bi-envelope input-icon"></i>
-                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required placeholder="name@company.com" autocomplete="email">
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required placeholder="Masukkan email Anda" autocomplete="email">
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
+                <div class="mb-4">
+                    <label class="form-label"> Password</label>
                     <div class="password-container">
                         <i class="bi bi-shield-lock input-icon"></i>
-                        <input type="password" name="password" id="password" class="form-control" required placeholder="••••••••">
+                        <input type="password" name="password" id="password" class="form-control" required placeholder="Masukkan password Anda">
                         <button type="button" class="password-toggle-btn" id="togglePassword">
                             <i class="bi bi-eye-slash" id="eyeIcon"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-4" style="font-size: 12.5px;">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                        <label class="form-check-label ms-1" for="remember" style="color: var(--text-muted); font-weight: 500; cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center mb-4" style="font-size: 13.5px;">
+                    <div class="form-check d-flex align-items-center gap-2">
+                        <input class="form-check-input mt-0" type="checkbox" name="remember" id="remember">
+                        <label class="form-check-label" for="remember" style="color: var(--text-muted); font-weight: 500; cursor: pointer;">
                             Ingat Saya
                         </label>
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-custom-login w-100 mb-3">
-                    Masuk ke Sistem <i class="bi bi-arrow-right ms-1"></i>
+                    LOGIN <i class="bi bi-arrow-right ms-1"></i>
                 </button>
             </form>
 
             <div>
-                <a href="{{ url('/') }}" class="btn-back-home">
-                    <i class="bi bi-house"></i> Kembali ke Beranda
-                </a>
+               
             </div>
 
         </div>
