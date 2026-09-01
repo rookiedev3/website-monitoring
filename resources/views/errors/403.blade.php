@@ -61,8 +61,8 @@
     </div>
     <h1>403</h1>
     <h2>Akses Ditolak</h2>
-    <p>{{ $exception->getMessage() ?: 'Anda tidak memiliki izin untuk mengakses halaman ini. Hubungi Super Admin jika ini seharusnya bisa diakses.' }}</p>
-    <a href="{{ url('/') }}" class="btn">Kembali ke Dashboard</a>
+    {{-- <p>{{ $exception->getMessage() ?: 'Anda tidak memiliki izin untuk mengakses halaman ini. Hubungi Super Admin jika ini seharusnya bisa diakses.' }}</p>
+    <a href="{{ url('/') }}" class="btn">Kembali ke Dashboard</a> --}}
   </div>
 </body>
 </html>
