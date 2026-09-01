@@ -713,9 +713,11 @@
           <h2>Website Management</h2>
           <p>Kelola daftar master website customer yang dipantau oleh sistem.</p>
         </div>
+        @if(auth()->user()->role == 'super_admin')
         <a href="{{ route('websites.create') }}" class="btn-primary">
           + Tambah Website Baru
         </a>
+        @endif
       </div>
 
       <!-- NOTIFIKASI SUKSES -->
@@ -762,7 +764,9 @@
                 <th style="width: 12%;">Interval Check</th>
                 <th style="width: 14%;">Status Pemantauan</th>
                 <th style="width: 14%;">Status Terakhir</th>
+                @if(auth()->user()->role == 'super_admin')
                 <th style="width: 10%; text-align: center;">Aksi</th>
+                @endif
               </tr>
             </thead>
             <tbody id="website-table-body">
@@ -802,6 +806,7 @@
                       <span class="badge-status none">⚪ Belum Dicek</span>
                     @endif
                   </td>
+                  @if(auth()->user()->role == 'super_admin')
                   <td style="text-align: center;">
                     <div class="action-btns">
                       <a href="{{ route('websites.edit', $site) }}" class="btn-icon">Edit</a>
@@ -813,6 +818,7 @@
                       </form>
                     </div>
                   </td>
+                  @endif
                 </tr>
               @empty
                 <tr>
@@ -864,6 +870,7 @@
   <!-- JAVASCRIPT: SEARCH, FILTER & PAGINATION CLIENT-SIDE -->
   <script>
     const csrfToken = "{{ csrf_token() }}";
+    const isSuperAdmin = {{ auth()->user()->role == 'super_admin' ? 'true' : 'false' }};
     let rawWebsitesData = {!! $websitesForJs->toJson() !!};
 
     const toggleUrlTemplate = "{{ route('websites.toggle-status', ':id') }}";
@@ -872,6 +879,7 @@
 
     let currentPage = 1;
     const perPage = 10;
+    const totalColumns = isSuperAdmin ? 7 : 6;
 
     function renderTable() {
       const tbody = document.getElementById('website-table-body');
@@ -901,7 +909,7 @@
       }
 
       if (totalItems === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--muted); padding:30px;">Tidak ada data website yang ditemukan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${totalColumns}" style="text-align:center; color:var(--muted); padding:30px;">Tidak ada data website yang ditemukan.</td></tr>`;
         renderPaginationControls(0, 1, 0, 0);
         return;
       }
@@ -930,6 +938,19 @@
           lastStatusHtml = '<span class="badge-status ssl_warning">🔵 SSL Warning</span>';
         }
 
+        const actionCellHtml = isSuperAdmin ? `
+            <td style="text-align: center;">
+              <div class="action-btns">
+                <a href="${editUrl}" class="btn-icon">Edit</a>
+                <form action="${destroyUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
+                  <input type="hidden" name="_token" value="${csrfToken}">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn-icon danger">Hapus</button>
+                </form>
+              </div>
+            </td>
+        ` : '';
+
         html += `
           <tr>
             <td>
@@ -949,16 +970,7 @@
               </form>
             </td>
             <td>${lastStatusHtml}</td>
-            <td style="text-align: center;">
-              <div class="action-btns">
-                <a href="${editUrl}" class="btn-icon">Edit</a>
-                <form action="${destroyUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
-                  <input type="hidden" name="_token" value="${csrfToken}">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="btn-icon danger">Hapus</button>
-                </form>
-              </div>
-            </td>
+            ${actionCellHtml}
           </tr>
         `;
       });

@@ -600,7 +600,7 @@
                   <td>{{ $incident->started_at->timezone('Asia/Jakarta')->format('d M, H:i') }} WIB</td>
                   <td>
                     @if($incident->assignedUser)
-                      {{ $incident->assignedUser?->name ?? 'Belum ditugaskan' }}
+                      {{ $incident->assignedUser->name }}
                       @if(Auth::user()->role === 'super_admin')
                         <br>
                         <button class="assign-btn" style="margin-top:4px; padding:3px 8px; font-size:10px;"
@@ -608,6 +608,8 @@
                           Ganti PIC
                         </button>
                       @endif
+                    @elseif($incident->status === 'solved')
+                      <span style="color: var(--green);">Auto-resolved</span>
                     @else
                       @if(Auth::user()->role === 'super_admin')
                         <button class="assign-btn"

@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
 
     // BUAT SUPER ADMIN
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {
+        Route::resource('/users', UserController::class);
         // route khusus super_admin
         // Dashboard Monitoring
         // Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');
@@ -96,7 +97,6 @@ Route::middleware('auth')->group(function () {
 // });
 
 // Route::resource('/pengguna', UserController::class)->names('user');
-Route::resource('/users', UserController::class);
 
 //
 // Halaman Analytics
