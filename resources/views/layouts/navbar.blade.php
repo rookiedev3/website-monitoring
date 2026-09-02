@@ -1,202 +1,79 @@
 <!-- TOP NAVBAR KHUSUS NOTIFIKASI -->
 <style>
-  :root {
-    --navbar-height: 60px;
-    --navbar-bg: #16241d;
-    --nav-border: #2e4a3b;
-    --text-color: #fff;
-    --muted-color: #9ca3af;
+  /* KUNCI UTAMA: Memaksa navbar menyesuaikan diri secara instan */
+  header.top-navbar {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: 215px !important; /* Default saat sidebar lebar */
+    width: calc(100% - 215px) !important;
+    height: 60px !important;
+    background: #16241d !important;
+    border-bottom: 1px solid #2e4a3b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    padding: 0 24px !important;
+    z-index: 90 !important;
+    transition: left 0.3s ease, width 0.3s ease !important;
   }
 
-  .top-navbar {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: var(--sidebar-width);
-    height: var(--navbar-height);
-    background: var(--navbar-bg);
-    border-bottom: 1px solid var(--nav-border);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 24px;
-    z-index: 90;
-    transition: left 0.3s ease;
-  }
-
-  /* Navbar otomatis memanjang saat body memiliki kelas sidebar-is-collapsed */
-  body.sidebar-is-collapsed .top-navbar {
-    left: var(--sidebar-collapsed) !important;
+  /* Jika body mendeteksi sidebar diperkecil, navbar otomatis melebar penuh */
+  body.sidebar-is-collapsed header.top-navbar {
+    left: 62px !important;
+    width: calc(100% - 62px) !important;
   }
 
   /* Responsive Mobile Navbar */
   @media (max-width: 768px) {
-    .top-navbar {
+    header.top-navbar {
       left: 0 !important;
-      padding-left: 55px;
-      padding-right: 16px;
+      width: 100% !important;
+      padding-left: 55px !important;
+      padding-right: 16px !important;
     }
   }
 
-  /* Dropdown Container */
-  .notification-wrapper {
-    position: relative;
-  }
-
+  /* Dropdown & Komponen Pendukung */
+  .notification-wrapper { position: relative; }
   .notification-btn {
-    background: transparent;
-    border: 1px solid var(--nav-border);
-    color: var(--text-color);
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: relative;
-    transition: background 0.2s ease;
+    background: transparent; border: 1px solid #2e4a3b; color: #fff;
+    width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; position: relative; transition: background 0.2s ease;
   }
-
-  .notification-btn:hover {
-    background: #1f3328;
-  }
-
-  /* Badge Unread Indicator */
+  .notification-btn:hover { background: #1f3328; }
   .notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #ef4444;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 10px;
-    border: 2px solid var(--navbar-bg);
-    line-height: 1;
+    position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff;
+    font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; border: 2px solid #16241d; line-height: 1;
   }
-
-  /* Dropdown Menu Box */
   .notification-dropdown {
-    position: absolute;
-    top: 48px;
-    right: 0;
-    width: 340px;
-    max-height: 420px;
-    background: #17231d;
-    border: 1px solid var(--nav-border);
-    border-radius: 12px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 100;
+    position: absolute; top: 48px; right: 0; width: 340px; max-height: 420px;
+    background: #17231d; border: 1px solid #2e4a3b; border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); display: none; flex-direction: column; overflow: hidden; z-index: 100;
   }
-
-  .notification-dropdown.show {
-    display: flex;
-  }
-
-  .notif-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--nav-border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .notif-header h3 {
-    font-size: 13px;
-    margin: 0;
-    color: #fff;
-    font-weight: 700;
-  }
-
-  .mark-all-btn {
-    font-size: 11px;
-    color: #4ade80;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-  }
+  .notification-dropdown.show { display: flex; }
+  .notif-header { padding: 12px 16px; border-bottom: 1px solid #2e4a3b; display: flex; align-items: center; justify-content: space-between; }
+  .notif-header h3 { font-size: 13px; margin: 0; color: #fff; font-weight: 700; }
+  .mark-all-btn { font-size: 11px; color: #4ade80; background: none; border: none; cursor: pointer; text-decoration: none; }
   .mark-all-btn:hover { text-decoration: underline; }
-
-  .notif-body {
-    overflow-y: auto;
-    flex: 1;
-  }
-
-  /* Individual Notification Card */
-  .notif-item {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(46, 74, 59, 0.5);
-    display: flex;
-    gap: 12px;
-    text-decoration: none;
-    transition: background 0.2s ease;
-  }
-
-  .notif-item:hover {
-    background: #1f3328;
-  }
-
-  .notif-item.unread {
-    background: rgba(24, 56, 40, 0.4);
-  }
-
-  /* Status Indicator Dot */
-  .notif-icon-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-top: 4px;
-    flex-shrink: 0;
-  }
+  .notif-body { overflow-y: auto; flex: 1; }
+  .notif-item-wrapper { position: relative; display: flex; align-items: center; border-bottom: 1px solid rgba(46, 74, 59, 0.5); transition: background 0.2s ease; }
+  .notif-item-wrapper:hover { background: #1f3328; }
+  .notif-item-wrapper.unread { background: rgba(24, 56, 40, 0.4); }
+  .notif-item-wrapper .notif-item { flex: 1; border-bottom: none; padding-right: 36px; text-decoration: none; display: flex; gap: 12px; padding: 12px 16px 12px 12px; }
+  .notif-icon-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
   .notif-icon-dot.danger { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
   .notif-icon-dot.success { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-
-  .notif-content {
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .notif-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 2px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .notif-desc {
-    font-size: 11px;
-    color: var(--muted-color);
-    margin: 0 0 4px 0;
-    line-height: 1.3;
-  }
-
-  .notif-time {
-    font-size: 9px;
-    color: #6b7280;
-  }
-
-  .notif-empty {
-    padding: 24px;
-    text-align: center;
-    color: var(--muted-color);
-    font-size: 12px;
-  }
-
-  @media (max-width: 480px) {
-    .notification-dropdown {
-      width: 290px;
-      right: -10px;
-    }
-  }
+  .notif-content { flex: 1; overflow: hidden; }
+  .notif-title { font-size: 12px; font-weight: 700; color: #fff; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .notif-desc { font-size: 11px; color: #9ca3af; margin: 0 0 4px 0; line-height: 1.3; }
+  .notif-time { font-size: 9px; color: #6b7280; }
+  .notif-delete-form { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); margin: 0; z-index: 2; }
+  .notif-delete-btn { background: transparent; border: none; color: #6b7280; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: all 0.2s ease; }
+  .notif-delete-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .notif-delete-btn:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  .notif-empty { padding: 24px; text-align: center; color: #9ca3af; font-size: 12px; }
+  @media (max-width: 480px) { .notification-dropdown { width: 290px; right: -10px; } }
 </style>
 
 <header class="top-navbar">
@@ -240,17 +117,28 @@
                 : ($data['action_url'] ?? route('incidents.index'));
             @endphp
 
-            <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}" 
-               class="notif-item {{ $isUnread ? 'unread' : '' }}">
-              
-              <span class="notif-icon-dot {{ $colorClass }}"></span>
+            <div class="notif-item-wrapper {{ $isUnread ? 'unread' : '' }}">
+              <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}" 
+                 class="notif-item">
+                <span class="notif-icon-dot {{ $colorClass }}"></span>
+                <div class="notif-content">
+                  <h4 class="notif-title">{{ $data['website_name'] ?? 'Pemberitahuan System' }}</h4>
+                  <p class="notif-desc">{{ $data['message'] ?? 'Status website telah diperbarui.' }}</p>
+                  <span class="notif-time">{{ $notif->created_at->diffForHumans() }}</span>
+                </div>
+              </a>
 
-              <div class="notif-content">
-                <h4 class="notif-title">{{ $data['website_name'] ?? 'Pemberitahuan System' }}</h4>
-                <p class="notif-desc">{{ $data['message'] ?? 'Status website telah diperbarui.' }}</p>
-                <span class="notif-time">{{ $notif->created_at->diffForHumans() }}</span>
-              </div>
-            </a>
+              <form action="{{ route('notifications.destroy', $notif->id) }}" method="POST" class="notif-delete-form">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="notif-delete-btn" title="Hapus Notifikasi" onclick="event.stopPropagation();">
+                  <svg viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </form>
+            </div>
           @empty
             <div class="notif-empty">
               Tidak ada notifikasi saat ini.
@@ -277,6 +165,25 @@
         if (!notifMenu.contains(e.target) && !notifBtn.contains(e.target)) {
           notifMenu.classList.remove('show');
         }
+      });
+    }
+
+    // Tambahan pengaman script agar langsung mengupdate navbar secara real-time
+    const sidebar = document.getElementById('sidebar');
+    const topNavbar = document.querySelector('.top-navbar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+
+    if (sidebarToggle && topNavbar) {
+      sidebarToggle.addEventListener('click', () => {
+        setTimeout(() => {
+          if (sidebar.classList.contains('collapsed')) {
+            topNavbar.style.left = '62px';
+            topNavbar.style.width = 'calc(100% - 62px)';
+          } else {
+            topNavbar.style.left = '215px';
+            topNavbar.style.width = 'calc(100% - 215px)';
+          }
+        }, 10);
       });
     }
   });

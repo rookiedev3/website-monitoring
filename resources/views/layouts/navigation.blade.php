@@ -16,6 +16,7 @@
     top: 0;
     right: 0;
     left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
     height: var(--navbar-height);
     background: var(--navbar-bg);
     border-bottom: 1px solid var(--nav-border);
@@ -24,11 +25,7 @@
     justify-content: flex-end;
     padding: 0 24px;
     z-index: 90;
-    transition: left 0.3s ease;
-  }
-
-  aside#sidebar.collapsed~.top-navbar {
-    left: var(--sidebar-collapsed);
+    transition: left 0.3s ease, width 0.3s ease;
   }
 
   /* NOTIFICATION DROPDOWN STYLES */
@@ -411,6 +408,11 @@
     display: none;
   }
 
+  aside#sidebar.collapsed .user-profile-btn {
+    justify-content: center !important;
+    padding: 6px 0 !important;
+  }
+
   .user-popup-menu {
     position: absolute;
     bottom: 60px;
@@ -454,6 +456,28 @@
     color: #fff;
   }
 
+  /* KETIKA SIDEBAR COLLAPSED: POPUP MENJADI IKON SAJA */
+  aside#sidebar.collapsed ~ .user-popup-menu,
+  aside#sidebar.collapsed .user-popup-menu.fixed-popup {
+    position: fixed !important;
+    left: 68px !important;
+    bottom: 60px !important;
+    width: 52px !important;
+    border-radius: 8px !important;
+    padding: 4px 0 !important;
+  }
+
+  aside#sidebar.collapsed .user-popup-menu span.popup-text {
+    display: none !important;
+  }
+
+  aside#sidebar.collapsed .user-popup-menu .popup-item {
+    justify-content: center !important;
+    padding: 10px 0 !important;
+    width: 100% !important;
+    gap: 0 !important;
+  }
+
   .sidebar-toggle-bar {
     border-top: 1px solid var(--line);
     padding: 8px 10px;
@@ -479,7 +503,6 @@
     justify-content: center;
   }
 
-  /* RESPONSIVE LAYOUT RULES */
   .sidebar-overlay {
     display: none;
     position: fixed;
@@ -498,6 +521,7 @@
   @media (max-width: 768px) {
     .top-navbar {
       left: 0 !important;
+      width: 100% !important;
       padding-left: 55px;
     }
 
@@ -519,7 +543,6 @@
     }
   }
 
-  /* WRAPPER & HOVER STYLES FOR NOTIFICATION ITEM */
   .notif-item-wrapper {
     position: relative;
     display: flex;
@@ -539,12 +562,9 @@
   .notif-item-wrapper .notif-item {
     flex: 1;
     border-bottom: none;
-    /* Menghapus border bawaannotif-item */
     padding-right: 36px;
-    /* Memberi ruang untuk tombol X */
   }
 
-  /* TOMBOL HAPUS (X) STYLES */
   .notif-delete-form {
     position: absolute;
     right: 10px;
@@ -585,7 +605,7 @@
   }
 </style>
 
-<!-- TOP NAVBAR KHUSUS NOTIFIKASI -->
+<!-- TOP NAVBAR UTAMA & NOTIFIKASI -->
 <header class="top-navbar">
   @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'programmer']))
     @php
@@ -628,7 +648,6 @@
             @endphp
 
             <div class="notif-item-wrapper {{ $isUnread ? 'unread' : '' }}">
-              <!-- Link Konten Notifikasi -->
               <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}"
                 class="notif-item">
                 <span class="notif-icon-dot {{ $colorClass }}"></span>
@@ -639,7 +658,6 @@
                 </div>
               </a>
 
-              <!-- Tombol Hapus (X) -->
               <form action="{{ route('notifications.destroy', $notif->id) }}" method="POST" class="notif-delete-form">
                 @csrf
                 @method('DELETE')
@@ -698,7 +716,6 @@
   <div class="menu-list">
     <div class="menu-title">Menu Utama</div>
 
-    <!-- Dashboard -->
     <a href="{{ route('dashboard.index') }}"
       class="nav-item {{ request()->routeIs('dashboard.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24">
@@ -710,7 +727,6 @@
       <span>Dashboard</span>
     </a>
 
-    <!-- Websites -->
     <a href="{{ route('websites.index') }}"
       class="nav-item {{ request()->routeIs('websites.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24">
@@ -720,7 +736,6 @@
       <span>Websites</span>
     </a>
 
-    <!-- Incidents & Errors -->
     <a href="{{ route('incidents.index') }}"
       class="nav-item {{ request()->routeIs('incidents.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24">
@@ -731,7 +746,6 @@
       <span>Incidents & Errors</span>
     </a>
 
-    <!-- Analytics -->
     @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'viewer']))
       <a href="{{ route('analytics.index') }}"
         class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }} menu-link">
@@ -742,20 +756,18 @@
       </a>
     @endif
 
-    <!-- Settings -->
     @if(auth()->check() && auth()->user()->role == 'super_admin')
       <a href="{{ route('settings.index') }}"
         class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }} menu-link">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3" />
           <path
-            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.31.4 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09c-.2.6-.82 1-1.51 1z" />
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.31.4 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09c-.2.6-.82 1-1.51 1z" />
         </svg>
         <span>Settings</span>
       </a>
     @endif
 
-    <!-- Manajemen User -->
     @if(auth()->check() && auth()->user()->role == 'super_admin')
       <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }} menu-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -770,24 +782,23 @@
     @endif
   </div>
 
-  <!-- Profil User -->
   @if(auth()->check())
     <div class="user-profile-container">
       <div class="user-popup-menu" id="userPopupMenu">
-        <button class="popup-item">
+        <a href="{{ route('profile.index') }}" class="popup-item" title="Profil User">
           <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          Profil User
-        </button>
-        <a href="{{ route('logout') }}" class="popup-item danger">
+          <span class="popup-text">Profil User</span>
+        </a>
+        <a href="{{ route('logout') }}" class="popup-item danger" title="Logout">
           <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          Logout
+          <span class="popup-text">Logout</span>
         </a>
       </div>
 
@@ -813,7 +824,6 @@
 <!-- SCRIPT PENGENDALI INTERAKSI NAVIGASI -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Handling Notifikasi Dropdown
     const notifBtn = document.getElementById('notifDropdownBtn');
     const notifMenu = document.getElementById('notifDropdownMenu');
 
@@ -830,7 +840,6 @@
       });
     }
 
-    // Handling Sidebar Layout & Responsiveness
     const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebarToggle');
     const toggleIcon = document.getElementById('toggleIcon');
@@ -838,6 +847,7 @@
     const userPopupMenu = document.getElementById('userPopupMenu');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const floatingMenuBtn = document.getElementById('floatingMenuBtn');
+    const topNavbar = document.querySelector('.top-navbar');
 
     function checkScreenSize() {
       if (window.innerWidth <= 768) {
@@ -855,6 +865,17 @@
     if (sidebarToggle) {
       sidebarToggle.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
+        
+        if (topNavbar) {
+          if (sidebar.classList.contains('collapsed')) {
+            topNavbar.style.left = '62px';
+            topNavbar.style.width = 'calc(100% - 62px)';
+          } else {
+            topNavbar.style.left = '215px';
+            topNavbar.style.width = 'calc(100% - 215px)';
+          }
+        }
+
         if (userPopupMenu) userPopupMenu.classList.remove('show');
         toggleIcon.innerHTML = sidebar.classList.contains('collapsed')
           ? '<polyline points="9 18 15 12 9 6"/>'
