@@ -319,60 +319,21 @@
       opacity: 0.9;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .badge.open {
-      background: var(--red-soft);
-      color: var(--red);
-    }
-
-    .badge.progress {
-      background: var(--amber-soft);
-      color: var(--amber);
-    }
-
-    .badge.solved {
-      background: var(--green-soft);
-      color: var(--green);
-    }
-
-    .timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 10px;
-    }
-
-    .timeline-item {
-      background: var(--bg);
-      border: 1px solid var(--line);
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      word-break: break-word;
-    }
-
-    .timeline-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      color: var(--muted);
-      font-weight: 600;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .timeline-body {
+    .btn-outline {
+      background: transparent;
       color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--green);
+      color: #fff;
     }
 
     /* ==========================================================
@@ -496,6 +457,83 @@
       transform: translateY(-1px);
     }
 
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.open {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .badge.progress {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .badge.solved {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .badge-log-online {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .badge-log-warning {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .badge-log-down {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .text-error {
+      color: var(--red);
+      font-size: 12px;
+      font-family: monospace;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .timeline-item {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-weight: 600;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .timeline-body {
+      color: var(--ink);
+    }
+
     /* ==========================================================
        KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
        ========================================================== */
@@ -505,6 +543,7 @@
         width: 100% !important;
         padding: 14px;
         padding-top: 60px;
+        /* Ruang untuk tombol navigasi toggle sidebar */
       }
     }
 
@@ -542,7 +581,14 @@
         <p style="color: var(--red); margin-bottom: 16px; font-size: 13px;">{{ $errors->first() }}</p>
       @endif
 
-      @php $user = Auth::user(); @endphp
+      @php
+        $user = Auth::user();
+        // Dianggap "beneran diselesaikan PIC" cuma kalau root_cause sudah diisi.
+        // Kalau assignedUser ada tapi root_cause kosong -> berarti auto-resolved
+        // duluan sebelum PIC sempat lapor, JANGAN diklaim sebagai kerjaan PIC.
+        $resolvedByPic = $incident->status === 'solved' && $incident->root_cause;
+        $isMyIncident = $incident->assigned_to === $user->id;
+      @endphp
 
       <!-- Informasi Gangguan -->
       <div class="card" style="margin-bottom: 20px;">
@@ -587,6 +633,9 @@
             <span class="info-value">
               @if($incident->assignedUser)
                 {{ $incident->assignedUser->name }}
+                @if($incident->status === 'solved' && ! $incident->root_cause)
+                  <br><small style="color: var(--muted); font-weight: 400;">(auto-resolved sebelum sempat lapor)</small>
+                @endif
               @elseif($incident->status === 'solved')
                 Auto-resolved (sistem)
               @else
@@ -599,6 +648,11 @@
             <span class="info-value">
               <span
                 class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
+              @if($incident->status !== 'solved' && $incident->root_cause)
+                <span style="display:block; font-size:10px; color: var(--amber); font-weight:600; margin-top:4px;">
+                  Menunggu konfirmasi sistem
+                </span>
+              @endif
             </span>
           </div>
         </div>
@@ -625,17 +679,26 @@
         @endif
       </div>
 
-      {{-- Update Penanganan — HANYA untuk programmer --}}
+      {{-- Update Penanganan — HANYA untuk programmer, ditumpuk di bawah Informasi Gangguan --}}
       @if($user->role === 'programmer')
-        <div class="card" style="margin-bottom: 24px;">
+        <div class="card" style="margin-bottom: 20px;">
           <div class="card-title">Update Penanganan</div>
 
-          @if($incident->status === 'solved')
+          {{-- Urutan pengecekan:
+               1) solved + root_cause ada -> beneran diselesaikan PIC, tampilkan final
+               2) open -> belum ada yang ambil
+               3) bukan PIC-nya (assigned ke orang lain) -> info aja
+               4) PIC-nya SAYA & root_cause BELUM ada -> tampilkan form laporan.
+                  Ini berlaku baik saat on_progress MAUPUN sudah solved duluan
+                  (auto-resolved) -> PIC tetap boleh isi laporan post-mortem.
+               5) PIC-nya SAYA & root_cause SUDAH ada tapi status belum solved
+                  -> laporan terkirim, tinggal nunggu konfirmasi sistem --}}
+          @if($resolvedByPic)
             <p style="font-size: 13px; color: var(--muted);">
               Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
             </p>
             <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">
-              ✓ Incident sudah selesai {{ $incident->assignedUser ? ' ditangani oleh ' . $incident->assignedUser->name : ' Auto-resolved' }}.
+              ✓ Incident sudah selesai ditangani oleh {{ $incident->assignedUser->name }}.
             </p>
 
           @elseif($incident->status === 'open')
@@ -647,13 +710,26 @@
               <button type="submit" class="btn-primary">Ambil Incident Ini</button>
             </form>
 
-          @elseif($incident->assigned_to !== $user->id)
-            <p style="font-size: 13px; color: var(--muted);">
-              Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'Pengguna lain' }}</b>.
-            </p>
+          @elseif(! $isMyIncident)
+            @if($incident->status === 'solved')
+              <p style="font-size: 13px; color: var(--muted);">
+                ✓ Website sudah auto-resolved oleh sistem. Incident ini sempat ditugaskan ke
+                <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'pengguna lain' }}</b>, namun belum
+                sempat ada laporan yang dikirim.
+              </p>
+            @else
+              <p style="font-size: 13px; color: var(--muted);">
+                Incident ini sedang ditangani oleh <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'Pengguna lain' }}</b>.
+              </p>
+            @endif
 
-          @else
-            <!-- Form Update Incident -->
+          @elseif(! $incident->root_cause)
+            @if($incident->status === 'solved')
+              <p style="font-size: 12px; color: var(--green); margin-bottom: 12px;">
+                ✓ Website sudah auto-resolved oleh sistem sebelum kamu sempat mengirim laporan. Kamu tetap bisa
+                mengisi laporan di bawah ini sebagai dokumentasi (opsional, sifatnya post-mortem).
+              </p>
+            @endif
             <form id="solve-incident-form" action="{{ route('incidents.update', $incident->id) }}" method="POST">
               @csrf
               @method('PATCH')
@@ -672,22 +748,113 @@
               </div>
 
               <div class="form-group">
-                <label>Catatan</label>
+                <label>Catatan Awal (opsional)</label>
                 <textarea name="note" class="form-control"
-                  placeholder="Contoh: Website kembali normal pukul 10:22">{{ old('note') }}</textarea>
+                  placeholder="Contoh: Sudah rollback plugin, menunggu propagasi">{{ old('note') }}</textarea>
               </div>
 
               <p style="font-size: 11px; color: var(--amber); margin-bottom: 12px;">
-                ⚠ Data ini hanya bisa dikirim SEKALI. Setelah dikirim, incident langsung ditandai Solved.
+                ⚠ Data ini hanya bisa dikirim SEKALI.
+                @if($incident->status !== 'solved')
+                  Status incident TIDAK langsung Solved — sistem akan otomatis menandainya Solved setelah
+                  pengecekan berikutnya memastikan website online kembali.
+                @endif
               </p>
 
               <button type="button" class="btn-primary" onclick="openSolveModal()">
-                <i class="bi bi-check-circle-fill"></i> Simpan & Selesaikan
+                <i class="bi bi-check-circle-fill"></i> Kirim Laporan Penanganan
               </button>
             </form>
+
+          @else
+            {{-- PIC-nya saya, root_cause sudah ada, tapi status belum solved --}}
+            <p style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">
+              Laporan penanganan sudah kamu kirim (lihat kolom "Hasil Investigasi" di atas).
+            </p>
+            <p style="font-size: 12px; color: var(--amber);">
+              ⏳ Incident ini akan otomatis ditandai <b>Solved</b> begitu sistem mengonfirmasi website kembali online
+              pada pengecekan berikutnya. Kalau ternyata masih down, incident ini akan tetap dipakai (tidak dibuat
+              incident baru) sampai benar-benar pulih.
+            </p>
           @endif
         </div>
+
+        {{-- Tambah Catatan — SELALU tersedia untuk PIC yang bersangkutan,
+             berapa pun statusnya (open/on_progress/solved) dan sudah/belum
+             kirim laporan. Ini yang tadinya hilang begitu incident solved. --}}
+        @if($isMyIncident)
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-title">Tambah Catatan</div>
+            <form action="{{ route('incidents.notes.store', $incident->id) }}" method="POST">
+              @csrf
+              <div class="form-group">
+                <textarea name="note" class="form-control"
+                  placeholder="Tulis update, follow-up, atau catatan tambahan..."
+                  required>{{ old('note') }}</textarea>
+              </div>
+              <button type="submit" class="btn-outline">Kirim Catatan</button>
+            </form>
+          </div>
+        @endif
       @endif
+
+      <!-- Riwayat Log Pengecekan (khusus periode insiden ini) -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-title" style="display:flex; align-items:center; gap:8px;">
+          <span>Riwayat Log Pengecekan</span>
+          <span style="font-size: 10px; font-weight: 600; color: var(--muted); text-transform: none; letter-spacing: normal;">
+            (mulai gangguan terjadi{{ $incident->resolved_at ? ' sampai pulih' : ' sampai sekarang' }})
+          </span>
+        </div>
+        <div class="table-responsive" style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:13px;">
+            <thead>
+              <tr>
+                <th style="width: 24%;">Waktu Cek</th>
+                <th style="width: 18%;">Status</th>
+                <th style="width: 14%;">HTTP Code</th>
+                <th style="width: 16%;">Latency</th>
+                <th style="width: 28%;">Detail Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($incidentLogs as $log)
+                <tr>
+                  <td style="color:var(--muted); font-size:12px;">
+                    {{ $log->checked_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }} WIB
+                  </td>
+                  <td>
+                    <span class="badge {{ $log->status === 'online' ? 'badge-log-online' : ($log->status === 'warning' ? 'badge-log-warning' : 'badge-log-down') }}">
+                      ● {{ strtoupper($log->status_label ?? $log->status) }}
+                    </span>
+                  </td>
+                  <td>
+                    <strong style="color:#fff;">{{ $log->formatted_http_code ?? $log->http_code ?? '-' }}</strong>
+                  </td>
+                  <td>
+                    @if($log->response_time_ms)
+                      <span style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)' }}; font-weight:700;">
+                        {{ number_format($log->response_time_ms) }} ms
+                      </span>
+                    @else
+                      <span style="color:var(--muted);">-</span>
+                    @endif
+                  </td>
+                  <td class="text-error">
+                    {{ $log->display_error ?? $log->error_message ?? '-' }}
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="5" style="text-align:center; padding: 24px; color:var(--muted);">
+                    Belum ada log pengecekan tercatat untuk periode insiden ini.
+                  </td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <!-- Riwayat Catatan Penanganan -->
       <div class="card">
@@ -719,69 +886,82 @@
     </div>
   </main>
 
-  <!-- MODAL KONFIRMASI SIMPAN & SELESAIKAN -->
-  <div id="solve-modal" class="modal-backdrop" onclick="closeSolveModalOnBackdrop(event)">
-    <div class="modal-card">
-      <div class="modal-icon-wrapper">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-      </div>
-      <h3 class="modal-title">Konfirmasi Selesaikan Incident</h3>
-      <p class="modal-subtitle">
-        Setelah dikirim, data hasil investigasi tidak dapat diubah lagi dan status incident akan langsung ditandai sebagai <strong>Solved</strong>.<br><br>
-        Apakah Anda yakin ingin menyelesaikan penanganan ini?
-      </p>
-      <div class="modal-actions">
-        <button type="button" class="btn-cancel" onclick="closeSolveModal()">Batal</button>
-        <button type="button" class="btn-confirm" onclick="submitSolveForm()">
-          <i class="bi bi-check-lg"></i> Ya, Selesaikan
-        </button>
+  {{-- Modal konfirmasi cuma perlu di-render kalau formnya ada di halaman ini --}}
+  @if($user->role === 'programmer' && $isMyIncident && $incident->status !== 'solved' && ! $incident->root_cause)
+    @php
+      $modalSubtitle = 'Setelah dikirim, data hasil investigasi tidak dapat diubah lagi. Status incident TIDAK langsung ditandai Solved — sistem akan menandainya Solved secara otomatis begitu pengecekan berikutnya memastikan website online kembali.';
+    @endphp
+  @elseif($user->role === 'programmer' && $isMyIncident && $incident->status === 'solved' && ! $incident->root_cause)
+    @php
+      $modalSubtitle = 'Website sudah lebih dulu dikonfirmasi online oleh sistem (auto-resolved). Laporan ini akan tersimpan sebagai dokumentasi post-mortem dan tidak dapat diubah lagi setelah dikirim.';
+    @endphp
+  @endif
+
+  @if($user->role === 'programmer' && $isMyIncident && ! $incident->root_cause)
+    <!-- MODAL KONFIRMASI KIRIM LAPORAN PENANGANAN -->
+    <div id="solve-modal" class="modal-backdrop" onclick="closeSolveModalOnBackdrop(event)">
+      <div class="modal-card">
+        <div class="modal-icon-wrapper">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h3 class="modal-title">Konfirmasi Kirim Laporan</h3>
+        <p class="modal-subtitle">
+          {{ $modalSubtitle }}<br><br>
+          Apakah Anda yakin ingin mengirim laporan ini?
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeSolveModal()">Batal</button>
+          <button type="button" class="btn-confirm" onclick="submitSolveForm()">
+            <i class="bi bi-check-lg"></i> Ya, Kirim
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- JAVASCRIPT HANDLER UNTUK MODAL -->
-  <script>
-    function openSolveModal() {
-      const form = document.getElementById('solve-incident-form');
-      if (form) {
-        // Melakukan validasi browser (required fields) sebelum membuka modal
-        if (!form.reportValidity()) {
-          return;
+    <!-- JAVASCRIPT HANDLER UNTUK MODAL -->
+    <script>
+      function openSolveModal() {
+        const form = document.getElementById('solve-incident-form');
+        if (form) {
+          // Melakukan validasi browser (required fields) sebelum membuka modal
+          if (!form.reportValidity()) {
+            return;
+          }
+        }
+        const modal = document.getElementById('solve-modal');
+        if (modal) {
+          modal.classList.add('active');
         }
       }
-      const modal = document.getElementById('solve-modal');
-      if (modal) {
-        modal.classList.add('active');
-      }
-    }
 
-    function closeSolveModal() {
-      const modal = document.getElementById('solve-modal');
-      if (modal) {
-        modal.classList.remove('active');
+      function closeSolveModal() {
+        const modal = document.getElementById('solve-modal');
+        if (modal) {
+          modal.classList.remove('active');
+        }
       }
-    }
 
-    function closeSolveModalOnBackdrop(event) {
-      if (event.target.id === 'solve-modal') {
-        closeSolveModal();
+      function closeSolveModalOnBackdrop(event) {
+        if (event.target.id === 'solve-modal') {
+          closeSolveModal();
+        }
       }
-    }
 
-    function submitSolveForm() {
-      const form = document.getElementById('solve-incident-form');
-      if (form) {
-        form.submit();
+      function submitSolveForm() {
+        const form = document.getElementById('solve-incident-form');
+        if (form) {
+          form.submit();
+        }
       }
-    }
 
-    // Menutup modal dengan tombol ESC
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        closeSolveModal();
-      }
-    });
-  </script>
+      // Menutup modal dengan tombol ESC
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeSolveModal();
+        }
+      });
+    </script>
+  @endif
 
 </body>
 

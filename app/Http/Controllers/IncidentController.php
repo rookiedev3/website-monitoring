@@ -6,13 +6,10 @@ use App\Models\Incident;
 use App\Models\IncidentNote;
 use App\Models\MonitoringLog;
 use App\Models\User;
-use App\Notifications\WebsiteUpNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class IncidentController extends Controller
@@ -77,9 +74,20 @@ class IncidentController extends Controller
             ->latest('checked_at')
             ->first();
 
+        // Log pengecekan yang terjadi SELAMA insiden ini berlangsung saja:
+        // dari started_at sampai resolved_at (kalau sudah solved), atau sampai
+        // sekarang kalau masih open/on_progress.
+        $incidentLogs = MonitoringLog::where('website_id', $incident->website_id)
+            ->where('checked_at', '>=', $incident->started_at)
+            ->when($incident->resolved_at, function ($q) use ($incident) {
+                $q->where('checked_at', '<=', $incident->resolved_at);
+            })
+            ->orderBy('checked_at')
+            ->get();
+
         $picOptions = User::where('role', 'programmer')->orderBy('name')->get();
 
-        return view('incidents.show', compact('incident', 'latestLog', 'picOptions'));
+        return view('incidents.show', compact('incident', 'latestLog', 'incidentLogs', 'picOptions'));
     }
 
     /**
@@ -157,10 +165,11 @@ class IncidentController extends Controller
                 abort(403, 'Anda bukan PIC incident ini.');
             }
 
-            if (in_array($incident->status, ['solved', 'resolved'])) {
-                abort(403, 'Incident ini sudah selesai dan tidak dapat diubah.');
-            }
-
+            // CATATAN: TIDAK ada blokir "kalau sudah solved tidak bisa update" di sini.
+            // Ini disengaja: kalau website sempat auto-resolve duluan (sistem konfirmasi
+            // online) sebelum PIC sempat mengisi root cause, PIC yang sempat jadi PIC
+            // tetap boleh mengisi laporan investigasi sebagai catatan post-mortem.
+            // Satu-satunya proteksi one-time-submit adalah cek root_cause di bawah ini.
             if ($incident->root_cause) {
                 abort(403, 'Penanganan untuk incident ini sudah dikirim sebelumnya.');
             }
@@ -176,11 +185,12 @@ class IncidentController extends Controller
             $note = $data['note'] ?? null;
             unset($data['note']);
 
-            $resolvedAt = now();
-            $data['status'] = 'solved';
-            $data['resolved_at'] = $resolvedAt;
-            $data['duration_seconds'] = abs($resolvedAt->diffInSeconds($incident->started_at));
-
+            // CATATAN: status TIDAK dipaksa jadi 'solved' di sini.
+            // Root cause & resolution cuma laporan investigasi PIC — bukan bukti
+            // website sudah beneran pulih. Status 'solved' HARUS dari hasil
+            // monitoring nyata (IncidentService::evaluate() saat status = 'online'),
+            // biar resolved_at & duration_seconds akurat, dan biar kalau ternyata
+            // masih down, incident yang sama tetap dipakai (bukan bikin incident baru).
             $incident->update($data);
 
             if ($note) {
@@ -191,25 +201,7 @@ class IncidentController extends Controller
                 ]);
             }
 
-            // --- PERBAIKAN: KIRIM NOTIFIKASI SOLVED KE ADMIN ---
-            $durationFormatted = $incident->started_at->diffForHumans($resolvedAt, [
-                'syntax' => Carbon::DIFF_ABSOLUTE,
-                'parts' => 3,
-            ]);
-
-            $recipients = User::notificationRecipients()->get();
-
-            // 🟢 Kirim Notifikasi Recovery/Solved
-            Notification::send(
-                $recipients,
-                new WebsiteUpNotification(
-                    $incident->website,
-                    $incident,
-                    $durationFormatted
-                )
-            );
-
-            return back()->with('success', 'Incident berhasil diselesaikan dan notifikasi pemulihan telah dikirim.');
+            return back()->with('success', 'Laporan penanganan berhasil dikirim. Incident akan otomatis ditandai Solved setelah sistem mengonfirmasi website kembali online.');
 
         } else {
             abort(403, 'Anda tidak punya akses untuk mengubah incident.');
