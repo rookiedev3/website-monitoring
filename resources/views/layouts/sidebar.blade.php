@@ -160,9 +160,14 @@
     padding: 10px 14px; font-size: 12px; color: #dce9e1; 
     display: flex; align-items: center; gap: 10px; background: transparent; 
     border: none; cursor: pointer; text-align: left; width: 100%; text-decoration: none; white-space: nowrap; 
+    font-family: inherit;
   }
   .popup-item.danger { color: #d94c4c; }
   .popup-item:hover { background: #1f3328; color: #fff; }
+
+  /* Form logout dibuat menyatu tanpa margin/padding tambahan */
+  .logout-form { margin: 0; padding: 0; }
+  .logout-form button.popup-item { width: 100%; }
 
   /* KETIKA SIDEBAR COLLAPSED (DIJADIKAN FIXED AGAR TIDAK TERPOTONG) */
   aside#sidebar.collapsed ~ .user-popup-menu, 
@@ -293,10 +298,20 @@
     <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>Profil User</span>
   </a>
-  <a href="{{ route('logout') }}" class="popup-item danger">
-    <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    <span>Logout</span>
-  </a>
+
+  <!--
+    PERUBAHAN UTAMA:
+    Logout sekarang pakai <button type="submit"> di DALAM form-nya sendiri.
+    Tidak ada lagi ketergantungan pada onclick + getElementById('logout-form'),
+    jadi tidak mungkin gagal submit gara-gara elemen tidak ketemu / ke-render dobel.
+  -->
+  <form action="{{ route('logout') }}" method="POST" class="logout-form">
+    @csrf
+    <button type="submit" class="popup-item danger">
+      <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>Logout</span>
+    </button>
+  </form>
 </div>
 
 <script>
@@ -366,6 +381,11 @@
       }
 
       userPopupMenu.classList.toggle('show');
+    });
+
+    // Cegah klik di dalam popup ikut menutup popup (misal klik area kosong form logout)
+    userPopupMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
     });
 
     window.addEventListener('click', () => {

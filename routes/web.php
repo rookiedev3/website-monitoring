@@ -22,7 +22,7 @@ Route::middleware('guest')->group(function () {
 
 // BUAT YANG SUDAH LOGIN
 Route::middleware('auth')->group(function () {
-    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard Monitoring
     Route::get('/dashboard', [MonitoringController::class, 'index'])->name('dashboard.index');

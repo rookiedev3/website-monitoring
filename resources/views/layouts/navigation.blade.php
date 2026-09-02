@@ -792,14 +792,17 @@
           </svg>
           <span class="popup-text">Profil User</span>
         </a>
-        <a href="{{ route('logout') }}" class="popup-item danger" title="Logout">
-          <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          <span class="popup-text">Logout</span>
-        </a>
+<form action="{{ route('logout') }}" method="POST" style="margin:0; padding:0;">
+  @csrf
+  <button type="submit" class="popup-item danger" title="Logout" style="border:none; background:transparent; font-family:inherit; cursor:pointer;">
+    <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+    <span class="popup-text">Logout</span>
+  </button>
+</form>
       </div>
 
       <button class="user-profile-btn" id="userProfileBtn" title="Akun">
