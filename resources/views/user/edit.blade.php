@@ -89,10 +89,30 @@
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: .05em; }
 
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
+    .form-control { 
+      width: 100%; 
+      background: var(--bg); 
+      border: 1px solid var(--line); 
+      color: var(--ink); 
+      padding: 12px 14px; 
+      border-radius: 10px; 
+      font-size: 13px; 
+      outline: none; 
+      transition: border-color 0.2s ease; 
+    }
     .form-control:focus { border-color: var(--green); }
     .form-control::placeholder { color: var(--muted); }
     .form-control.is-invalid { border-color: var(--red); }
+
+    /* MENCEGAH KOLOM BERUBAH JADI PUTIH SAAT AUTOFILL */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px var(--bg) inset !important;
+      -webkit-text-fill-color: var(--ink) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
 
     .error-text { display: block; color: var(--red); font-size: 11px; margin-top: 6px; font-weight: 600; }
 

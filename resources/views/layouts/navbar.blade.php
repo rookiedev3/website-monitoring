@@ -24,16 +24,17 @@
     transition: left 0.3s ease;
   }
 
-  /* Penyesuaian saat sidebar di-collapse di Desktop */
-  aside#sidebar.collapsed ~ .top-navbar {
-    left: var(--sidebar-collapsed);
+  /* Navbar otomatis memanjang saat body memiliki kelas sidebar-is-collapsed */
+  body.sidebar-is-collapsed .top-navbar {
+    left: var(--sidebar-collapsed) !important;
   }
 
   /* Responsive Mobile Navbar */
   @media (max-width: 768px) {
     .top-navbar {
       left: 0 !important;
-      padding-left: 55px; /* Memberi ruang untuk tombol floating hamburger HP */
+      padding-left: 55px;
+      padding-right: 16px;
     }
   }
 
@@ -153,8 +154,8 @@
     margin-top: 4px;
     flex-shrink: 0;
   }
-  .notif-icon-dot.danger { background: #ef4444; box-shadow: 0 0 8px #ef4444; } /* 🔴 DOWN */
-  .notif-icon-dot.success { background: #22c55e; box-shadow: 0 0 8px #22c55e; } /* 🟢 RECOVERY */
+  .notif-icon-dot.danger { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+  .notif-icon-dot.success { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 
   .notif-content {
     flex: 1;
@@ -189,19 +190,23 @@
     color: var(--muted-color);
     font-size: 12px;
   }
+
+  @media (max-width: 480px) {
+    .notification-dropdown {
+      width: 290px;
+      right: -10px;
+    }
+  }
 </style>
 
 <header class="top-navbar">
-  <!-- Pengecekan Akses: Hanya muncul untuk Super Admin dan Programmer -->
   @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'programmer']))
     @php
-      // Mengambil 10 notifikasi yang belum dibaca
       $notifications = auth()->user()->unreadNotifications()->take(10)->get();
       $unreadCount = auth()->user()->unreadNotifications->count();
     @endphp
 
     <div class="notification-wrapper">
-      <!-- Tombol Lonceng -->
       <button class="notification-btn" id="notifDropdownBtn" title="Notifikasi Status Website">
         <svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -213,7 +218,6 @@
         @endif
       </button>
 
-      <!-- Dropdown Content -->
       <div class="notification-dropdown" id="notifDropdownMenu">
         <div class="notif-header">
           <h3>Notifikasi Gangguan</h3>
@@ -239,7 +243,6 @@
             <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}" 
                class="notif-item {{ $isUnread ? 'unread' : '' }}">
               
-              <!-- Indicator Dot-->
               <span class="notif-icon-dot {{ $colorClass }}"></span>
 
               <div class="notif-content">
@@ -265,13 +268,11 @@
     const notifMenu = document.getElementById('notifDropdownMenu');
 
     if (notifBtn && notifMenu) {
-      // Toggle dropdown saat tombol lonceng diklik
       notifBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         notifMenu.classList.toggle('show');
       });
 
-      // Sembunyikan dropdown jika mengeklik area di luar
       window.addEventListener('click', (e) => {
         if (!notifMenu.contains(e.target) && !notifBtn.contains(e.target)) {
           notifMenu.classList.remove('show');
