@@ -55,6 +55,9 @@ class IncidentController extends Controller
                     'incident_type' => $incident->incident_type,
                     'type_label' => $incident->type_label,
                     'started_at' => $incident->started_at->toIso8601String(),
+                    'resolved_at' => $incident->resolved_at?->toIso8601String(),
+                    'duration' => $incident->formatted_duration,
+                    'is_running' => $incident->status !== 'solved',
                     'status' => $incident->status,
                     'badge_class' => $incident->badge_class,
                     'assigned_to' => $incident->assigned_to,
@@ -165,32 +168,37 @@ class IncidentController extends Controller
                 abort(403, 'Anda bukan PIC incident ini.');
             }
 
-            // CATATAN: TIDAK ada blokir "kalau sudah solved tidak bisa update" di sini.
-            // Ini disengaja: kalau website sempat auto-resolve duluan (sistem konfirmasi
-            // online) sebelum PIC sempat mengisi root cause, PIC yang sempat jadi PIC
-            // tetap boleh mengisi laporan investigasi sebagai catatan post-mortem.
-            // Satu-satunya proteksi one-time-submit adalah cek root_cause di bawah ini.
+            // Laporan (root cause, penyelesaian, catatan) HANYA boleh diisi
+            // SETELAH website kembali online dan sistem sudah menandai incident
+            // ini 'solved'. Selama masih open/on_progress, PIC cukup menangani
+            // dulu di lapangan — laporan baru relevan begitu sudah confirmed up.
+            if ($incident->status !== 'solved') {
+                return back()->with('error', 'Laporan baru bisa diisi setelah website kembali online dan incident berstatus Solved.');
+            }
+
+            // Satu-satunya proteksi one-time-submit: root_cause yang sudah pernah diisi.
             if ($incident->root_cause) {
                 abort(403, 'Penanganan untuk incident ini sudah dikirim sebelumnya.');
             }
 
             $data = $request->validate([
                 'root_cause' => 'required|string',
-                'resolution' => 'nullable|string',
+                'resolution' => 'required|string',
                 'note' => 'nullable|string',
             ], [
                 'root_cause.required' => 'Root cause wajib diisi',
+                'resolution.required' => 'Penyelesaian wajib diisi',
             ]);
 
             $note = $data['note'] ?? null;
             unset($data['note']);
 
-            // CATATAN: status TIDAK dipaksa jadi 'solved' di sini.
-            // Root cause & resolution cuma laporan investigasi PIC — bukan bukti
-            // website sudah beneran pulih. Status 'solved' HARUS dari hasil
-            // monitoring nyata (IncidentService::evaluate() saat status = 'online'),
-            // biar resolved_at & duration_seconds akurat, dan biar kalau ternyata
-            // masih down, incident yang sama tetap dipakai (bukan bikin incident baru).
+            // Catat kapan laporan ini dikirim. Dibandingkan dengan resolved_at + 48 jam
+            // (dihitung di view) untuk menentukan apakah PIC masih dapat "kredit"
+            // sebagai penyelesai, atau incident tetap tercatat Auto-resolved karena
+            // laporan baru masuk setelah batas waktu.
+            $data['report_submitted_at'] = now();
+
             $incident->update($data);
 
             if ($note) {

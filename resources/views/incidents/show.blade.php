@@ -583,11 +583,31 @@
 
       @php
         $user = Auth::user();
-        // Dianggap "beneran diselesaikan PIC" cuma kalau root_cause sudah diisi.
-        // Kalau assignedUser ada tapi root_cause kosong -> berarti auto-resolved
-        // duluan sebelum PIC sempat lapor, JANGAN diklaim sebagai kerjaan PIC.
-        $resolvedByPic = $incident->status === 'solved' && $incident->root_cause;
         $isMyIncident = $incident->assigned_to === $user->id;
+
+        // Batas waktu pelaporan: 48 jam sejak sistem konfirmasi solved (resolved_at).
+        // - Kalau PIC ngirim laporan (report_submitted_at) SEBELUM batas ini -> dianggap
+        //   "diselesaikan oleh PIC" (label & kredit ke PIC).
+        // - Kalau ngirim SETELAH batas ini (atau nggak ngirim sama sekali) -> tetap
+        //   "Auto-resolved (sistem)" selamanya, walau laporannya tetap tersimpan sebagai
+        //   dokumentasi post-mortem.
+        $reportDeadlineHours = 48;
+        $reportDeadline = $incident->resolved_at
+            ? $incident->resolved_at->copy()->addHours($reportDeadlineHours)
+            : null;
+        $isPastReportDeadline = $reportDeadline && now()->gt($reportDeadline);
+
+        $resolvedByPic = $incident->status === 'solved'
+            && $incident->root_cause
+            && $incident->report_submitted_at
+            && $reportDeadline
+            && $incident->report_submitted_at->lte($reportDeadline);
+
+        // Laporan ada, tapi dikirim setelah batas waktu -> tetap dicatat, tapi
+        // TIDAK dapat kredit "diselesaikan oleh PIC".
+        $lateReport = $incident->status === 'solved'
+            && $incident->root_cause
+            && ! $resolvedByPic;
       @endphp
 
       <!-- Informasi Gangguan -->
@@ -631,10 +651,16 @@
           <div class="info-item">
             <span class="info-label">PIC</span>
             <span class="info-value">
-              @if($incident->assignedUser)
+              @if($resolvedByPic)
                 {{ $incident->assignedUser->name }}
-                @if($incident->status === 'solved' && ! $incident->root_cause)
-                  <br><small style="color: var(--muted); font-weight: 400;">(auto-resolved sebelum sempat lapor)</small>
+              @elseif($incident->assignedUser)
+                {{ $incident->assignedUser->name }}
+                @if($incident->status === 'solved' && $lateReport)
+                  <br><small style="color: var(--muted); font-weight: 400;">(laporan post-mortem, lewat batas {{ $reportDeadlineHours }} jam)</small>
+                @elseif($incident->status === 'solved' && ! $incident->root_cause && $isPastReportDeadline)
+                  <br><small style="color: var(--muted); font-weight: 400;">(auto-resolved, batas lapor {{ $reportDeadlineHours }} jam sudah lewat)</small>
+                @elseif($incident->status === 'solved' && ! $incident->root_cause)
+                  <br><small style="color: var(--amber); font-weight: 400;">(auto-resolved, PIC masih punya sisa waktu lapor)</small>
                 @endif
               @elseif($incident->status === 'solved')
                 Auto-resolved (sistem)
@@ -643,16 +669,17 @@
               @endif
             </span>
           </div>
+          @if($incident->status === 'solved' && ! $resolvedByPic)
+            <div class="info-item">
+              <span class="info-label">Diselesaikan Oleh</span>
+              <span class="info-value" style="color: var(--muted);">Auto-resolved (sistem)</span>
+            </div>
+          @endif
           <div class="info-item">
             <span class="info-label">Status Pekerjaan</span>
             <span class="info-value">
               <span
                 class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
-              @if($incident->status !== 'solved' && $incident->root_cause)
-                <span style="display:block; font-size:10px; color: var(--amber); font-weight:600; margin-top:4px;">
-                  Menunggu konfirmasi sistem
-                </span>
-              @endif
             </span>
           </div>
         </div>
@@ -681,24 +708,38 @@
 
       {{-- Update Penanganan — HANYA untuk programmer, ditumpuk di bawah Informasi Gangguan --}}
       @if($user->role === 'programmer')
-        <div class="card" style="margin-bottom: 20px;">
+        <div class="card" style="margin-bottom: 24px;">
           <div class="card-title">Update Penanganan</div>
 
           {{-- Urutan pengecekan:
-               1) solved + root_cause ada -> beneran diselesaikan PIC, tampilkan final
-               2) open -> belum ada yang ambil
-               3) bukan PIC-nya (assigned ke orang lain) -> info aja
-               4) PIC-nya SAYA & root_cause BELUM ada -> tampilkan form laporan.
-                  Ini berlaku baik saat on_progress MAUPUN sudah solved duluan
-                  (auto-resolved) -> PIC tetap boleh isi laporan post-mortem.
-               5) PIC-nya SAYA & root_cause SUDAH ada tapi status belum solved
-                  -> laporan terkirim, tinggal nunggu konfirmasi sistem --}}
+               1) resolvedByPic -> laporan masuk SEBELUM batas 48 jam -> kredit ke PIC
+               2) lateReport    -> laporan ADA tapi masuk SETELAH batas 48 jam -> tetap
+                                   dicatat sebagai dokumentasi, tapi status akhir tetap
+                                   "Auto-resolved (sistem)", bukan "diselesaikan PIC"
+               3) open              -> belum ada yang ambil
+               4) bukan PIC-nya     -> info aja
+               5) PIC-nya SAYA tapi status BELUM solved -> laporan BELUM bisa diisi,
+                  tunggu website kembali online dulu
+               6) PIC-nya SAYA, status SUDAH solved, root_cause BELUM ada -> form
+                  laporan (root cause + penyelesaian + catatan, submit sekali),
+                  dengan sisa waktu 48 jam sejak resolved_at --}}
           @if($resolvedByPic)
             <p style="font-size: 13px; color: var(--muted);">
-              Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
+              Root Cause, Penyelesaian, & Catatan sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
             </p>
             <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">
               ✓ Incident sudah selesai ditangani oleh {{ $incident->assignedUser->name }}.
+            </p>
+
+          @elseif($lateReport)
+            <p style="font-size: 13px; color: var(--muted);">
+              Root Cause, Penyelesaian, & Catatan sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
+            </p>
+            <p style="font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px;">
+              ✓ Website auto-resolved oleh sistem. 
+              Laporan dari
+              {{ $incident->assignedUser->name }} dikirim setelah batas waktu {{ $reportDeadlineHours }} jam,
+              jadi tercatat sebagai dokumentasi post-mortem — status penyelesaian tetap "Auto-resolved".
             </p>
 
           @elseif($incident->status === 'open')
@@ -713,9 +754,7 @@
           @elseif(! $isMyIncident)
             @if($incident->status === 'solved')
               <p style="font-size: 13px; color: var(--muted);">
-                ✓ Website sudah auto-resolved oleh sistem. Incident ini sempat ditugaskan ke
-                <b style="color: #fff;">{{ $incident->assignedUser?->name ?? 'pengguna lain' }}</b>, namun belum
-                sempat ada laporan yang dikirim.
+                ✓ Website sudah auto-resolved oleh sistem. 
               </p>
             @else
               <p style="font-size: 13px; color: var(--muted);">
@@ -723,11 +762,29 @@
               </p>
             @endif
 
+          @elseif($incident->status !== 'solved')
+            {{-- PIC-nya saya, tapi website masih down/belum dikonfirmasi online -->
+                 laporan belum relevan, tangani dulu di lapangan. --}}
+            <p style="font-size: 13px; color: var(--muted);">
+              Kamu jadi PIC incident ini. Silakan tangani dulu — form laporan (Root Cause, Penyelesaian, & Catatan)
+              baru akan muncul di sini setelah sistem mengonfirmasi website kembali online (status berubah jadi
+              <b style="color: #fff;">Solved</b>).
+            </p>
+
           @elseif(! $incident->root_cause)
-            @if($incident->status === 'solved')
-              <p style="font-size: 12px; color: var(--green); margin-bottom: 12px;">
-                ✓ Website sudah auto-resolved oleh sistem sebelum kamu sempat mengirim laporan. Kamu tetap bisa
-                mengisi laporan di bawah ini sebagai dokumentasi (opsional, sifatnya post-mortem).
+            {{-- PIC-nya saya, status SUDAH solved, laporan belum pernah dikirim --}}
+            @if($isPastReportDeadline)
+              <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                ✓ Website sudah auto-resolved oleh sistem. Batas waktu pelaporan {{ $reportDeadlineHours }} jam
+                sudah lewat, jadi status tetap tercatat "Auto-resolved" — tapi kamu tetap bisa isi laporan di
+                bawah ini sebagai dokumentasi (opsional, sifatnya post-mortem).
+              </p>
+            @else
+              <p style="font-size: 12px; color: var(--amber); margin-bottom: 12px;">
+                ⏳ Website sudah online kembali. Kamu punya waktu sampai
+                <b>{{ $reportDeadline->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</b>
+                ({{ $reportDeadlineHours }} jam sejak pulih) untuk isi laporan supaya tercatat sebagai kamu yang
+                menyelesaikan. Lewat dari itu, status tetap tercantum "Auto-resolved".
               </p>
             @endif
             <form id="solve-incident-form" action="{{ route('incidents.update', $incident->id) }}" method="POST">
@@ -748,54 +805,21 @@
               </div>
 
               <div class="form-group">
-                <label>Catatan Awal (opsional)</label>
+                <label>Catatan (opsional)</label>
                 <textarea name="note" class="form-control"
-                  placeholder="Contoh: Sudah rollback plugin, menunggu propagasi">{{ old('note') }}</textarea>
+                  placeholder="Contoh: Sudah dikonfirmasi ulang jam 10:22, aman">{{ old('note') }}</textarea>
               </div>
 
               <p style="font-size: 11px; color: var(--amber); margin-bottom: 12px;">
                 ⚠ Data ini hanya bisa dikirim SEKALI.
-                @if($incident->status !== 'solved')
-                  Status incident TIDAK langsung Solved — sistem akan otomatis menandainya Solved setelah
-                  pengecekan berikutnya memastikan website online kembali.
-                @endif
               </p>
 
               <button type="button" class="btn-primary" onclick="openSolveModal()">
                 <i class="bi bi-check-circle-fill"></i> Kirim Laporan Penanganan
               </button>
             </form>
-
-          @else
-            {{-- PIC-nya saya, root_cause sudah ada, tapi status belum solved --}}
-            <p style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">
-              Laporan penanganan sudah kamu kirim (lihat kolom "Hasil Investigasi" di atas).
-            </p>
-            <p style="font-size: 12px; color: var(--amber);">
-              ⏳ Incident ini akan otomatis ditandai <b>Solved</b> begitu sistem mengonfirmasi website kembali online
-              pada pengecekan berikutnya. Kalau ternyata masih down, incident ini akan tetap dipakai (tidak dibuat
-              incident baru) sampai benar-benar pulih.
-            </p>
           @endif
         </div>
-
-        {{-- Tambah Catatan — SELALU tersedia untuk PIC yang bersangkutan,
-             berapa pun statusnya (open/on_progress/solved) dan sudah/belum
-             kirim laporan. Ini yang tadinya hilang begitu incident solved. --}}
-        @if($isMyIncident)
-          <div class="card" style="margin-bottom: 24px;">
-            <div class="card-title">Tambah Catatan</div>
-            <form action="{{ route('incidents.notes.store', $incident->id) }}" method="POST">
-              @csrf
-              <div class="form-group">
-                <textarea name="note" class="form-control"
-                  placeholder="Tulis update, follow-up, atau catatan tambahan..."
-                  required>{{ old('note') }}</textarea>
-              </div>
-              <button type="submit" class="btn-outline">Kirim Catatan</button>
-            </form>
-          </div>
-        @endif
       @endif
 
       <!-- Riwayat Log Pengecekan (khusus periode insiden ini) -->
@@ -887,17 +911,17 @@
   </main>
 
   {{-- Modal konfirmasi cuma perlu di-render kalau formnya ada di halaman ini --}}
-  @if($user->role === 'programmer' && $isMyIncident && $incident->status !== 'solved' && ! $incident->root_cause)
+  @if($user->role === 'programmer' && $isMyIncident && $incident->status === 'solved' && ! $incident->root_cause && ! $isPastReportDeadline)
     @php
-      $modalSubtitle = 'Setelah dikirim, data hasil investigasi tidak dapat diubah lagi. Status incident TIDAK langsung ditandai Solved — sistem akan menandainya Solved secara otomatis begitu pengecekan berikutnya memastikan website online kembali.';
+      $modalSubtitle = 'Setelah dikirim, laporan ini tidak dapat diubah lagi. Karena masih dalam ' . $reportDeadlineHours . ' jam sejak website pulih, incident ini akan tercatat sebagai "diselesaikan oleh kamu".';
     @endphp
-  @elseif($user->role === 'programmer' && $isMyIncident && $incident->status === 'solved' && ! $incident->root_cause)
+  @elseif($user->role === 'programmer' && $isMyIncident && $incident->status === 'solved' && ! $incident->root_cause && $isPastReportDeadline)
     @php
-      $modalSubtitle = 'Website sudah lebih dulu dikonfirmasi online oleh sistem (auto-resolved). Laporan ini akan tersimpan sebagai dokumentasi post-mortem dan tidak dapat diubah lagi setelah dikirim.';
+      $modalSubtitle = 'Batas waktu pelaporan (' . $reportDeadlineHours . ' jam sejak website pulih) sudah lewat. Laporan ini akan tetap tersimpan sebagai dokumentasi post-mortem, namun status penyelesaian akan tetap tercantum "Auto-resolved (sistem)". Setelah dikirim, laporan tidak dapat diubah lagi.';
     @endphp
   @endif
 
-  @if($user->role === 'programmer' && $isMyIncident && ! $incident->root_cause)
+  @if($user->role === 'programmer' && $isMyIncident && $incident->status === 'solved' && ! $incident->root_cause)
     <!-- MODAL KONFIRMASI KIRIM LAPORAN PENANGANAN -->
     <div id="solve-modal" class="modal-backdrop" onclick="closeSolveModalOnBackdrop(event)">
       <div class="modal-card">

@@ -249,7 +249,7 @@
       border-collapse: collapse;
       text-align: left;
       font-size: 13px;
-      min-width: 650px;
+      min-width: 800px;
     }
 
     th {
@@ -581,6 +581,8 @@
                 <th>Website & Customer</th>
                 <th>Jenis Error</th>
                 <th>Mulai Error</th>
+                <th>Selesai / Resolve</th>
+                <th>Durasi</th>
                 <th>PIC</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -588,7 +590,7 @@
             </thead>
             <tbody id="incident-table-body">
               <tr>
-                <td colspan="6" style="text-align:center; color: var(--muted); padding: 30px;">Memuat data...</td>
+                <td colspan="8" style="text-align:center; color: var(--muted); padding: 30px;">Memuat data...</td>
               </tr>
             </tbody>
           </table>
@@ -725,7 +727,7 @@
       }
 
       if (totalItems === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--muted); padding: 30px;">Tidak ada incident yang sesuai pencarian/filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 30px;">Tidak ada incident yang sesuai pencarian/filter.</td></tr>`;
         renderPaginationControls(0, 1);
         return;
       }
@@ -764,6 +766,18 @@
           }
         }
 
+        // Kolom Selesai/Resolve: pakai resolved_at kalau sudah ada, kalau
+        // masih berjalan (belum solved) tampilkan "-" biar jelas belum pulih.
+        const resolvedHtml = incident.resolved_at
+          ? formatStartedAt(incident.resolved_at)
+          : '<span style="color: var(--muted);">-</span>';
+
+        // Kolom Durasi: pakai string dari accessor formatted_duration (server),
+        // dikasih label "(berjalan)" kalau incident belum solved.
+        const durationHtml = incident.is_running
+          ? `${escapeHtml(incident.duration)} <span style="color: var(--amber); font-size:11px;">(berjalan)</span>`
+          : escapeHtml(incident.duration);
+
         html += `
         <tr>
           <td>
@@ -772,6 +786,8 @@
           </td>
           <td><span style="color:var(--red)">${escapeHtml(incident.type_label)}</span></td>
           <td>${formatStartedAt(incident.started_at)}</td>
+          <td>${resolvedHtml}</td>
+          <td>${durationHtml}</td>
           <td>${picHtml}</td>
           <td><span class="badge ${incident.badge_class}">${badgeLabel(incident.status)}</span></td>
           <td>
