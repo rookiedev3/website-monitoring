@@ -135,8 +135,13 @@
     border-radius: 10px; box-shadow: var(--shadow); 
     display: none; flex-direction: column; overflow: hidden; z-index: 10; 
   }
+  aside#sidebar.collapsed .user-popup-menu {
+    left: 70px;
+    bottom: 10px;
+    width: 160px;
+  }
   .user-popup-menu.show { display: flex; }
-  .popup-item { padding: 8px 12px; font-size: 11px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; text-decoration: none; }
+  .popup-item { padding: 8px 12px; font-size: 11px; color: var(--ink); display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; text-align: left; width: 100%; text-decoration: none; white-space: nowrap; }
   .popup-item.danger { color: var(--red); }
   .popup-item:hover { background: #1f3328; color: #fff; }
 
@@ -161,33 +166,28 @@
   .sidebar-overlay.show { display: block; }
 
   @media (max-width: 768px) {
-    /* Munculkan tombol hamburger di HP */
     .mobile-menu-btn { display: block; }
 
-    /* Sidebar disembunyikan ke kiri secara default di HP */
     aside#sidebar {
       transform: translateX(-100%);
       width: var(--sidebar-width) !important;
     }
     
-    /* Saat dibuka, sidebar bergeser ke layar */
     aside#sidebar.mobile-open {
       transform: translateX(0);
     }
 
-    /* Sembunyikan tombol perkecil desktop di HP */
     .sidebar-toggle-bar {
       display: none;
     }
   }
 </style>
 
-<!-- Tombol Menu Mengambang (Floating Hamburger Button) khusus untuk HP di pojok kiri atas, garis 3  -->
+<!-- Tombol Menu Mengambang (Floating Hamburger Button) khusus untuk HP -->
 <button onclick="toggleMobileSidebar()" style="position: fixed; top: 12px; left: 12px; z-index: 98; background: #17231d; border: 1px solid var(--line); color: #fff; padding: 8px; border-radius: 8px; display: none; align-items: center; justify-content: center; box-shadow: var(--shadow);" id="floatingMenuBtn">
   <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
 
-<!-- Backdrop overlay saat sidebar terbuka di HP -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <aside id="sidebar">
@@ -201,7 +201,6 @@
         <small>Monitoring System</small>
       </div>
     </div>
-    <!-- Tombol close/hamburger di dalam header sidebar khusus mobile -->
     <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">
       <svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -210,25 +209,21 @@
   <div class="menu-list">
     <div class="menu-title">Menu Utama</div>
     
-    <!-- Dashboard -->
     <a href="{{ route('dashboard.index') }}" class="nav-item {{ request()->routeIs('dashboard.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       <span>Dashboard</span>
     </a>
 
-    <!-- Websites -->
     <a href="{{ route('websites.index') }}" class="nav-item {{ request()->routeIs('websites.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 0 1 9-9"/></svg>
       <span>Websites</span>
     </a>
 
-    <!-- Incidents & Errors -->
     <a href="{{ route('incidents.index') }}" class="nav-item {{ request()->routeIs('incidents.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       <span>Incidents & Errors</span>
     </a>
 
-    <!-- Analytics -->
     @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'viewer']))  
     <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
@@ -236,7 +231,6 @@
     </a>
     @endif
 
-    <!-- Settings -->
     @if(auth()->user()->role == 'super_admin')
     <a href="{{ route('settings.index') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.31.4 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09c-.2.6-.82 1-1.51 1z"/></svg>
@@ -244,7 +238,6 @@
     </a>
     @endif
 
-    <!-- Manajemen User -->
     @if(auth()->user()->role == 'super_admin')
     <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }} menu-link">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -253,14 +246,15 @@
     @endif
   </div>
 
- <div class="user-popup-menu" id="userPopupMenu">
-    <a href="{{ route('profile.index') }}" class="popup-item">
+  <div class="user-profile-container">
+    <div class="user-popup-menu" id="userPopupMenu">
+      <a href="{{ route('profile.index') }}" class="popup-item">
         <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Profil User
-    </a>
+        <span>Profil User</span>
+      </a>
       <a href="{{ route('logout') }}" class="popup-item danger">
         <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Logout
+        <span>Logout</span>
       </a>
     </div>
 
@@ -288,7 +282,6 @@
   const sidebarOverlay = document.getElementById('sidebarOverlay');
   const floatingMenuBtn = document.getElementById('floatingMenuBtn');
 
-  // Atur kemunculan tombol menu mengambang otomatis berdasarkan ukuran layar
   function checkScreenSize() {
     if (window.innerWidth <= 768) {
       floatingMenuBtn.style.display = 'flex';
@@ -301,16 +294,19 @@
   window.addEventListener('resize', checkScreenSize);
   window.addEventListener('load', checkScreenSize);
 
-  // Toggle untuk mode desktop (perkecil / expand sidebar)
+  // Toggle mode desktop (perkecil sidebar & sinkronisasi navbar)
   sidebarToggle.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
+    
+    // PERINTAH INI YANG MEMBUAT NAVBAR IKUT MEMANJANG:
+    document.body.classList.toggle('sidebar-is-collapsed');
+
     userPopupMenu.classList.remove('show');
     toggleIcon.innerHTML = sidebar.classList.contains('collapsed') 
       ? '<polyline points="9 18 15 12 9 6"/>' 
       : '<polyline points="15 18 9 12 15 6"/>';
   });
 
-  // Toggle popup profil user
   userProfileBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     userPopupMenu.classList.toggle('show');
@@ -320,13 +316,11 @@
     userPopupMenu.classList.remove('show');
   });
 
-  // Fungsi untuk membuka/menutup sidebar di HP
   window.toggleMobileSidebar = function() {
     sidebar.classList.toggle('mobile-open');
     sidebarOverlay.classList.toggle('show');
   };
 
-  // Klik overlay di HP akan menutup sidebar
   sidebarOverlay.addEventListener('click', () => {
     sidebar.classList.remove('mobile-open');
     sidebarOverlay.classList.remove('show');

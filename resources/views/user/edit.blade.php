@@ -89,10 +89,30 @@
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: .05em; }
 
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
+    .form-control { 
+      width: 100%; 
+      background: var(--bg); 
+      border: 1px solid var(--line); 
+      color: var(--ink); 
+      padding: 12px 14px; 
+      border-radius: 10px; 
+      font-size: 13px; 
+      outline: none; 
+      transition: border-color 0.2s ease; 
+    }
     .form-control:focus { border-color: var(--green); }
     .form-control::placeholder { color: var(--muted); }
     .form-control.is-invalid { border-color: var(--red) !important; }
+
+    /* MENCEGAH KOLOM BERUBAH JADI PUTIH SAAT AUTOFILL */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px var(--bg) inset !important;
+      -webkit-text-fill-color: var(--ink) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
 
     .error-text { display: block; color: var(--red); font-size: 11px; margin-top: 6px; font-weight: 600; }
 
@@ -106,24 +126,30 @@
     .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-primary:hover { opacity: 0.9; }
 
-    /* MEDIA QUERY RESPONSIF MOBILE */
+    /* ==========================================================
+       MEDIA QUERY: RESPONSIF UNTUK LAYAR HP & TABLET (Max 768px)
+       ========================================================== */
     @media (max-width: 768px) {
       main { 
         margin-left: 0 !important; 
         width: 100% !important; 
         padding: 16px;
-        padding-top: 60px;
+        padding-top: 60px; /* Ruang untuk toggle sidebar di mobile */
       }
-      .card { padding: 16px; }
+      .card {
+        padding: 16px;
+      }
       .form-row { 
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr; /* Mengubah form 2 kolom menjadi 1 kolom vertikal */
         gap: 0;
       }
       .form-actions {
         flex-direction: column-reverse;
         gap: 10px;
       }
-      .btn-primary, .btn-secondary { width: 100%; }
+      .btn-primary, .btn-secondary {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -273,7 +299,7 @@
       const passwordError = document.getElementById('passwordError');
       const alertError = document.getElementById('alertError');
 
-      // Reset tampilan error saat user mengetik
+      // Reset tampilan error saat user mulai mengetik ulang
       function resetError() {
         passwordInput.classList.remove('is-invalid');
         confirmInput.classList.remove('is-invalid');
@@ -291,7 +317,7 @@
         let hasError = false;
         let passMsg = '';
 
-        // Hanya validasi jika kolom password atau konfirmasi diisi (karena opsional saat edit)
+        // Pada Edit: Hanya validasi jika salah satu kolom password diisi
         if (passVal.length > 0 || confirmVal.length > 0) {
           if (passVal.length < 8) {
             hasError = true;
@@ -304,21 +330,21 @@
 
         // Jika ada kesalahan
         if (hasError) {
-          e.preventDefault(); // Batalkan submit form
+          e.preventDefault(); // Hentikan pengiriman form
 
-          // Tandai KEDUANYA menjadi merah
+          // Merahkan KEDUANYA (Password Baru & Konfirmasi Password)
           passwordInput.classList.add('is-invalid');
           confirmInput.classList.add('is-invalid');
 
-          // Tampilkan pesan error HANYA DI BAWAH INPUT PASSWORD PERTAMA
+          // Tampilkan teks kesalahan HANYA di bawah kolom Password Pertama
           passwordError.textContent = passMsg;
           passwordError.style.display = 'block';
 
-          // Tampilkan Alert Error di bagian paling atas
+          // Tampilkan Alert Error di bagian atas
           alertError.textContent = 'Terdapat kesalahan pada form password, silakan periksa kembali isian di bawah.';
           alertError.style.display = 'block';
           
-          // Scroll halus ke paling atas
+          // Scroll halus ke atas
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
