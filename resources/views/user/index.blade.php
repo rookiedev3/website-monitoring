@@ -13,7 +13,7 @@
       --card-hover: #17231d;
       --ink: #dce9e1;
       --muted: #82988c;
-      --line: #1b2a22;
+      --line: #2e4a3b;
       --green: #0f9f6e;
       --green-soft: rgba(15, 159, 110, 0.12);
       --red: #d94c4c;
@@ -23,8 +23,8 @@
       --blue: #2563eb;
       --blue-soft: rgba(37, 99, 235, 0.12);
       --shadow: 0 10px 30px rgba(0, 0, 0, .3);
-      --sidebar-width: 260px;
-      --sidebar-collapsed: 76px;
+      --sidebar-width: 215px;
+      --sidebar-collapsed: 62px;
     }
 
     * {
@@ -59,7 +59,6 @@
       flex-direction: column;
       z-index: 100;
       box-shadow: var(--shadow);
-      transition: width 0.3s ease;
     }
 
     aside.collapsed {
@@ -290,17 +289,17 @@
       justify-content: center;
     }
 
-    /* STYLE MAIN CONTENT & RESPONSIF SIDEBAR */
+    /* STYLE MAIN CONTENT & PERGESERAN SIDEBAR */
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      padding: 30px;
+      padding: 24px;
       min-width: 0;
-      width: calc(100% - var(--sidebar-width));
       transition: margin-left 0.3s ease, width 0.3s ease;
+      width: calc(100% - var(--sidebar-width));
     }
 
-    aside.collapsed ~ main {
+    aside#sidebar.collapsed~main {
       margin-left: var(--sidebar-collapsed);
       width: calc(100% - var(--sidebar-collapsed));
     }
@@ -393,7 +392,7 @@
 
     .search-box {
       flex: 1;
-      min-width: 220px;
+      min-width: 250px;
       position: relative;
     }
 
@@ -447,16 +446,17 @@
     }
 
     .table-responsive {
-      overflow-x: auto;
       width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     table {
       width: 100%;
-      min-width: 650px; /* Menjaga agar layout tabel tidak hancur di layar kecil */
       border-collapse: collapse;
       text-align: left;
       font-size: 13px;
+      min-width: 650px;
     }
 
     th {
@@ -489,7 +489,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #1f3328, #24372d);
+      background: linear-gradient(135deg, #17231d, #24372d);
       border: 1px solid var(--line);
       color: var(--green);
       display: grid;
@@ -548,6 +548,7 @@
       display: flex;
       gap: 6px;
       align-items: center;
+      justify-content: center;
     }
 
     .btn-icon {
@@ -604,7 +605,6 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      flex-wrap: wrap;
     }
 
     .btn-page {
@@ -674,23 +674,137 @@
       justify-content: center;
     }
 
-    /* ==========================================================
-       MEDIA QUERY: RESPONSIF UNTUK LAYAR HP & TABLET (Max 768px)
-       ========================================================== */
+    /* MODAL KONFIRMASI HAPUS KUSTOM */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 8, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 16px;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      transform: scale(0.92) translateY(10px);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--red-soft);
+      border: 1px solid rgba(217, 76, 76, 0.3);
+      color: var(--red);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+      animation: pulse-danger 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-danger {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(217, 76, 76, 0.2); }
+      50% { box-shadow: 0 0 0 10px rgba(217, 76, 76, 0); }
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 8px;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    .modal-subtitle strong {
+      color: var(--ink);
+      word-break: break-all;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+      background: var(--card-hover);
+      color: #fff;
+    }
+
+    .btn-delete-confirm {
+      flex: 1;
+      background: var(--red);
+      border: none;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(217, 76, 76, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-delete-confirm:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* MEDIA QUERY: RESPONSIF UNTUK LAYAR HP & TABLET (Max 768px) */
     @media (max-width: 768px) {
       main {
         margin-left: 0 !important;
         width: 100% !important;
-        padding: 16px;
-        padding-top: 60px; /* Ruang untuk toggle sidebar di mobile */
-      }
-
-      .filter-grid {
-        flex-direction: column;
-      }
-
-      .search-box, .filter-dropdown, .filter-dropdown select {
-        width: 100%;
+        padding: 14px;
+        padding-top: 60px;
       }
 
       .page-header {
@@ -698,9 +812,16 @@
         align-items: flex-start;
       }
 
-      .page-header .btn-primary {
+      .filter-grid {
+        flex-direction: column;
+      }
+
+      .search-box {
         width: 100%;
-        justify-content: center;
+      }
+
+      .filter-dropdown select {
+        width: 100%;
       }
     }
 
@@ -713,7 +834,7 @@
 
 <body>
 
-  <!-- MEMANGGIL SIDEBAR -->
+  <!-- MEMANGGIL SIDEBAR & NAVBAR LAYOUT -->
   @include('layouts.navigation')
 
   <!-- MAIN CONTENT -->
@@ -813,15 +934,11 @@
                     @endif
                   </td>
                   <td style="text-align: center;">
-                    <div class="action-btns" style="justify-content: center;">
+                    <div class="action-btns">
                       <a href="{{ route('users.edit', $u) }}" class="btn-icon">Edit</a>
-
-                      <form action="{{ route('users.destroy', $u) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-icon danger">Hapus</button>
-                      </form>
+                      <button type="button" class="btn-icon danger" onclick="openDeleteModal('{{ route('users.destroy', $u) }}', '{{ addslashes($u->name) }}')">
+                        Hapus
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -856,6 +973,30 @@
     </div>
   </main>
 
+  <!-- MODAL KONFIRMASI HAPUS KUSTOM -->
+  <div id="custom-delete-modal" class="modal-backdrop" onclick="closeDeleteModalOnBackdrop(event)">
+    <div class="modal-card">
+      <div class="modal-icon-wrapper">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <h3 class="modal-title">Konfirmasi Hapus</h3>
+      <p class="modal-subtitle">
+        Apakah Anda yakin ingin menghapus user <strong id="modal-target-name">ini</strong>?<br>
+        Data yang telah dihapus tidak dapat dikembalikan.
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Batal</button>
+        <form id="modal-delete-form" method="POST" action="">
+          <input type="hidden" name="_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="btn-delete-confirm">
+            <i class="bi bi-trash3-fill"></i> Hapus User
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   @php
     $usersForJs = $users->map(function ($u) {
       return [
@@ -868,10 +1009,9 @@
     })->values();
   @endphp
 
-  <!-- JAVASCRIPT: SEARCH, FILTER & PAGINATION CLIENT-SIDE -->
+  <!-- JAVASCRIPT: SEARCH, FILTER, PAGINATION & MODAL -->
   <script>
     const csrfToken = "{{ csrf_token() }}";
-
     let rawUsersData = {!! $usersForJs->toJson() !!};
 
     const editUrlTemplate = "{{ route('users.edit', ':id') }}";
@@ -940,6 +1080,9 @@
           ? '<span class="badge-status online">Aktif</span>'
           : '<span class="badge-status down">Nonaktif</span>';
 
+        // Escaping petik untuk nama di JS handler
+        const escapedName = (user.name || '').replace(/'/g, "\\'");
+
         html += `
           <tr>
             <td>
@@ -954,13 +1097,11 @@
             <td>${roleBadgeHtml}</td>
             <td>${statusBadgeHtml}</td>
             <td style="text-align: center;">
-              <div class="action-btns" style="justify-content: center;">
+              <div class="action-btns">
                 <a href="${editUrl}" class="btn-icon">Edit</a>
-                <form action="${destroyUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
-                  <input type="hidden" name="_token" value="${csrfToken}">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="btn-icon danger">Hapus</button>
-                </form>
+                <button type="button" class="btn-icon danger" onclick="openDeleteModal('${destroyUrl}', '${escapedName}')">
+                  Hapus
+                </button>
               </div>
             </td>
           </tr>
@@ -1021,6 +1162,39 @@
       renderTable();
     }
 
+    /* FUNGSI MODAL KONFIRMASI HAPUS */
+    function openDeleteModal(actionUrl, userName) {
+      const modal = document.getElementById('custom-delete-modal');
+      const form = document.getElementById('modal-delete-form');
+      const targetName = document.getElementById('modal-target-name');
+
+      if (form && modal && targetName) {
+        form.action = actionUrl;
+        targetName.textContent = userName ? `"${userName}"` : 'ini';
+        modal.classList.add('active');
+      }
+    }
+
+    function closeDeleteModal() {
+      const modal = document.getElementById('custom-delete-modal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    function closeDeleteModalOnBackdrop(event) {
+      if (event.target.id === 'custom-delete-modal') {
+        closeDeleteModal();
+      }
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeDeleteModal();
+      }
+    });
+
+    /* EVENT LISTENERS FILTER & PAGINATION */
     document.getElementById('btn-prev').addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;

@@ -714,9 +714,9 @@
           <p>Kelola daftar master website customer yang dipantau oleh sistem.</p>
         </div>
         @if(auth()->user()->role == 'super_admin')
-        <a href="{{ route('websites.create') }}" class="btn-primary">
-          + Tambah Website Baru
-        </a>
+          <a href="{{ route('websites.create') }}" class="btn-primary">
+            + Tambah Website Baru
+          </a>
         @endif
       </div>
 
@@ -765,7 +765,7 @@
                 <th style="width: 14%;">Status Pemantauan</th>
                 <th style="width: 14%;">Status Terakhir</th>
                 @if(auth()->user()->role == 'super_admin')
-                <th style="width: 10%; text-align: center;">Aksi</th>
+                  <th style="width: 10%; text-align: center;">Aksi</th>
                 @endif
               </tr>
             </thead>
@@ -807,17 +807,17 @@
                     @endif
                   </td>
                   @if(auth()->user()->role == 'super_admin')
-                  <td style="text-align: center;">
-                    <div class="action-btns">
-                      <a href="{{ route('websites.edit', $site) }}" class="btn-icon">Edit</a>
-                      <form action="{{ route('websites.destroy', $site) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-icon danger">Hapus</button>
-                      </form>
-                    </div>
-                  </td>
+                    <td style="text-align: center;">
+                      <div class="action-btns">
+                        <a href="{{ route('websites.edit', $site) }}" class="btn-icon">Edit</a>
+                        <form action="{{ route('websites.destroy', $site) }}" method="POST"
+                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn-icon danger">Hapus</button>
+                        </form>
+                      </div>
+                    </td>
                   @endif
                 </tr>
               @empty
@@ -850,6 +850,29 @@
 
     </div>
   </main>
+
+  <!-- MODAL CONFIRM DELETE -->
+  <div id="deleteModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; align-items:center; justify-content:center;">
+    <div
+      style="background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; max-width:400px; width:90%; text-align:center;">
+      <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: var(--red);"></i>
+      <h3 style="margin: 12px 0 8px; color:#fff;">Konfirmasi Hapus</h3>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Apakah Anda yakin ingin menghapus website ini?
+        Tindakan ini tidak dapat dibatalkan.</p>
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <button onclick="closeDeleteModal()"
+          style="background:var(--line); border:none; color:#fff; padding:8px 16px; border-radius:8px; cursor:pointer;">Batal</button>
+        <form id="modalDeleteForm" method="POST" action="">
+          <input type="hidden" name="_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit"
+            style="background:var(--red); border:none; color:#fff; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:bold;">Ya,
+            Hapus</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   @php
     $websitesForJs = $websites->map(function ($site) {
@@ -939,17 +962,17 @@
         }
 
         const actionCellHtml = isSuperAdmin ? `
-            <td style="text-align: center;">
-              <div class="action-btns">
-                <a href="${editUrl}" class="btn-icon">Edit</a>
-                <form action="${destroyUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus website ini?')">
-                  <input type="hidden" name="_token" value="${csrfToken}">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="btn-icon danger">Hapus</button>
-                </form>
-              </div>
-            </td>
-        ` : '';
+          <td style="text-align: center;">
+            <div class="action-btns">
+              <a href="${editUrl}" class="btn-icon">Edit</a>
+              <form action="${destroyUrl}" method="POST" onsubmit="return confirmDelete(event)">
+                <input type="hidden" name="_token" value="${csrfToken}">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="button" class="btn-icon danger" onclick="openDeleteModal('${destroyUrl}')">Hapus</button>
+              </form>
+            </div>
+          </td>
+      ` : '';
 
         html += `
           <tr>
@@ -1027,6 +1050,26 @@
     function goToPage(page) {
       currentPage = page;
       renderTable();
+    }
+
+    function confirmDelete(event) {
+      const isConfirmed = confirm('Apakah Anda yakin ingin menghapus website ini? Data yang dihapus tidak dapat dikembalikan.');
+      if (!isConfirmed) {
+        event.preventDefault(); // Menghentikan submit form jika user klik Cancel
+        return false;
+      }
+      return true;
+    }
+
+    function openDeleteModal(actionUrl) {
+      const modal = document.getElementById('deleteModal');
+      const form = document.getElementById('modalDeleteForm');
+      form.action = actionUrl;
+      modal.style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
     }
 
     document.getElementById('btn-prev').addEventListener('click', () => {

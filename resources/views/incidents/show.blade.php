@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detail Incident - Website Monitoring IT Solution</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <style>
     :root {
       --bg: #0b120f;
@@ -307,6 +308,11 @@
       font-weight: 700;
       cursor: pointer;
       width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
     }
 
     .btn-primary:hover {
@@ -370,6 +376,127 @@
     }
 
     /* ==========================================================
+       STYLE MODAL KONFIRMASI KUSTOM & ANIMASI
+       ========================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 8, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 16px;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      transform: scale(0.92) translateY(10px);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--amber-soft);
+      border: 1px solid rgba(217, 139, 29, 0.3);
+      color: var(--amber);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+      animation: pulse-amber 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-amber {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(217, 139, 29, 0.2); }
+      50% { box-shadow: 0 0 0 10px rgba(217, 139, 29, 0); }
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 8px;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+      background: var(--card-hover);
+      color: #fff;
+    }
+
+    .btn-confirm {
+      flex: 1;
+      background: var(--green);
+      border: none;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(15, 159, 110, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-confirm:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================================
        KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
        ========================================================== */
     @media (max-width: 768px) {
@@ -378,7 +505,6 @@
         width: 100% !important;
         padding: 14px;
         padding-top: 60px;
-        /* Ruang untuk tombol navigasi toggle sidebar */
       }
     }
 
@@ -499,19 +625,17 @@
         @endif
       </div>
 
-      {{-- Update Penanganan — HANYA untuk programmer, ditumpuk di bawah Informasi Gangguan --}}
+      {{-- Update Penanganan — HANYA untuk programmer --}}
       @if($user->role === 'programmer')
         <div class="card" style="margin-bottom: 24px;">
           <div class="card-title">Update Penanganan</div>
 
-          {{-- Solved dicek PALING PERTAMA — status final harus menang dari kondisi lain,
-               termasuk saat auto-resolved oleh sistem (assigned_to masih null). --}}
           @if($incident->status === 'solved')
             <p style="font-size: 13px; color: var(--muted);">
               Root Cause & Resolution sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
             </p>
             <p style="font-size: 12px; color: var(--green); text-align: center; margin-top: 12px;">
-              ✓ Incident sudah selesai {{ $incident->assignedUser ? ' ditangano oleh ' . $incident->assignedUser->name : ' Auto-resolved' }}.
+              ✓ Incident sudah selesai {{ $incident->assignedUser ? ' ditangani oleh ' . $incident->assignedUser->name : ' Auto-resolved' }}.
             </p>
 
           @elseif($incident->status === 'open')
@@ -529,8 +653,8 @@
             </p>
 
           @else
-            <form action="{{ route('incidents.update', $incident->id) }}" method="POST"
-              onsubmit="return confirm('Setelah dikirim, data ini tidak bisa diubah lagi dan incident akan ditandai Solved. Lanjutkan?');">
+            <!-- Form Update Incident -->
+            <form id="solve-incident-form" action="{{ route('incidents.update', $incident->id) }}" method="POST">
               @csrf
               @method('PATCH')
 
@@ -557,7 +681,9 @@
                 ⚠ Data ini hanya bisa dikirim SEKALI. Setelah dikirim, incident langsung ditandai Solved.
               </p>
 
-              <button type="submit" class="btn-primary">Simpan & Selesaikan</button>
+              <button type="button" class="btn-primary" onclick="openSolveModal()">
+                <i class="bi bi-check-circle-fill"></i> Simpan & Selesaikan
+              </button>
             </form>
           @endif
         </div>
@@ -592,6 +718,70 @@
 
     </div>
   </main>
+
+  <!-- MODAL KONFIRMASI SIMPAN & SELESAIKAN -->
+  <div id="solve-modal" class="modal-backdrop" onclick="closeSolveModalOnBackdrop(event)">
+    <div class="modal-card">
+      <div class="modal-icon-wrapper">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <h3 class="modal-title">Konfirmasi Selesaikan Incident</h3>
+      <p class="modal-subtitle">
+        Setelah dikirim, data hasil investigasi tidak dapat diubah lagi dan status incident akan langsung ditandai sebagai <strong>Solved</strong>.<br><br>
+        Apakah Anda yakin ingin menyelesaikan penanganan ini?
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeSolveModal()">Batal</button>
+        <button type="button" class="btn-confirm" onclick="submitSolveForm()">
+          <i class="bi bi-check-lg"></i> Ya, Selesaikan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT HANDLER UNTUK MODAL -->
+  <script>
+    function openSolveModal() {
+      const form = document.getElementById('solve-incident-form');
+      if (form) {
+        // Melakukan validasi browser (required fields) sebelum membuka modal
+        if (!form.reportValidity()) {
+          return;
+        }
+      }
+      const modal = document.getElementById('solve-modal');
+      if (modal) {
+        modal.classList.add('active');
+      }
+    }
+
+    function closeSolveModal() {
+      const modal = document.getElementById('solve-modal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    function closeSolveModalOnBackdrop(event) {
+      if (event.target.id === 'solve-modal') {
+        closeSolveModal();
+      }
+    }
+
+    function submitSolveForm() {
+      const form = document.getElementById('solve-incident-form');
+      if (form) {
+        form.submit();
+      }
+    }
+
+    // Menutup modal dengan tombol ESC
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeSolveModal();
+      }
+    });
+  </script>
 
 </body>
 

@@ -92,7 +92,7 @@
     .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
     .form-control:focus { border-color: var(--green); }
     .form-control::placeholder { color: var(--muted); }
-    .form-control.is-invalid { border-color: var(--red); }
+    .form-control.is-invalid { border-color: var(--red) !important; }
 
     .error-text { display: block; color: var(--red); font-size: 11px; margin-top: 6px; font-weight: 600; }
 
@@ -106,30 +106,24 @@
     .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-primary:hover { opacity: 0.9; }
 
-    /* ==========================================================
-       MEDIA QUERY: RESPONSIF UNTUK LAYAR HP & TABLET (Max 768px)
-       ========================================================== */
+    /* MEDIA QUERY RESPONSIF MOBILE */
     @media (max-width: 768px) {
       main { 
         margin-left: 0 !important; 
         width: 100% !important; 
         padding: 16px;
-        padding-top: 60px; /* Ruang untuk tombol toggle sidebar di mobile */
+        padding-top: 60px;
       }
-      .card {
-        padding: 16px;
-      }
+      .card { padding: 16px; }
       .form-row { 
-        grid-template-columns: 1fr; /* Mengubah form 2 kolom menjadi 1 kolom vertikal */
+        grid-template-columns: 1fr; 
         gap: 0;
       }
       .form-actions {
         flex-direction: column-reverse;
         gap: 10px;
       }
-      .btn-primary, .btn-secondary {
-        width: 100%;
-      }
+      .btn-primary, .btn-secondary { width: 100%; }
     }
   </style>
 </head>
@@ -150,14 +144,16 @@
 
       <!-- ALERT ERROR -->
       @if ($errors->any())
-        <div class="alert-error">
+        <div class="alert-error" id="alertError">
           Terdapat {{ $errors->count() }} kesalahan pada form, silakan periksa kembali isian di bawah.
         </div>
+      @else
+        <div class="alert-error" id="alertError" style="display: none;"></div>
       @endif
 
       <!-- FORM CARD -->
       <div class="card">
-        <form action="{{ route('users.store') }}" method="POST">
+        <form action="{{ route('users.store') }}" method="POST" id="userForm">
           @csrf
 
           <!-- NAMA & EMAIL -->
@@ -205,7 +201,9 @@
                 placeholder="Minimal 8 karakter"
                 required>
               @error('password')
-                <span class="error-text">{{ $message }}</span>
+                <span class="error-text" id="passwordError">{{ $message }}</span>
+              @else
+                <span class="error-text" id="passwordError" style="display: none;"></span>
               @enderror
             </div>
 
@@ -215,7 +213,7 @@
                 type="password"
                 id="password_confirmation"
                 name="password_confirmation"
-                class="form-control"
+                class="form-control @error('password') is-invalid @enderror"
                 placeholder="Ulangi password di atas"
                 required>
             </div>
@@ -267,6 +265,67 @@
 
     </div>
   </main>
+
+  <!-- SCRIPT VALIDASI PASSWORD SAAT SIMPAN USER -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const userForm = document.getElementById('userForm');
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('password_confirmation');
+      const passwordError = document.getElementById('passwordError');
+      const alertError = document.getElementById('alertError');
+
+      // Reset tampilan error saat user mulai mengetik ulang
+      function resetError() {
+        passwordInput.classList.remove('is-invalid');
+        confirmInput.classList.remove('is-invalid');
+        passwordError.style.display = 'none';
+      }
+
+      passwordInput.addEventListener('input', resetError);
+      confirmInput.addEventListener('input', resetError);
+
+      // Validasi berjalan HANYA saat tombol "Simpan User" diklik
+      userForm.addEventListener('submit', function(e) {
+        const passVal = passwordInput.value;
+        const confirmVal = confirmInput.value;
+
+        let hasError = false;
+        let passMsg = '';
+
+        // 1. Cek jika password kurang dari 8 karakter
+        if (passVal.length < 8) {
+          hasError = true;
+          passMsg = 'Password minimal harus 8 karakter.';
+        } 
+        // 2. Cek jika password dan konfirmasi password tidak cocok
+        else if (passVal !== confirmVal) {
+          hasError = true;
+          passMsg = 'Konfirmasi password tidak cocok dengan password.';
+        }
+
+        // Jika ada kesalahan
+        if (hasError) {
+          e.preventDefault(); // Batalkan submit form
+
+          // Merahkan KEDUANYA (Password & Konfirmasi Password)
+          passwordInput.classList.add('is-invalid');
+          confirmInput.classList.add('is-invalid');
+
+          // Tampilkan teks error HANYA DI BAWAH FORM PASSWORD PERTAMA
+          passwordError.textContent = passMsg;
+          passwordError.style.display = 'block';
+
+          // Tampilkan Alert Error di bagian paling atas
+          alertError.textContent = 'Terdapat kesalahan pada form password, silakan periksa kembali isian di bawah.';
+          alertError.style.display = 'block';
+          
+          // Scroll halus ke atas
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
