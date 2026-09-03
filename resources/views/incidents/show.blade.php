@@ -165,6 +165,7 @@
       min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
+      margin-top: 0 !important; /* Dihilangkan jarak atasnya */
     }
 
     aside#sidebar.collapsed~main {
@@ -542,14 +543,8 @@
         margin-left: 0 !important;
         width: 100% !important;
         padding: 14px;
-        padding-top: 60px;
-        /* Ruang untuk tombol navigasi toggle sidebar */
+        padding-top: 16px;
       }
-    }
-
-    .main-content,
-    main {
-      margin-top: var(--navbar-height, 60px);
     }
   </style>
 </head>
@@ -585,12 +580,6 @@
         $user = Auth::user();
         $isMyIncident = $incident->assigned_to === $user->id;
 
-        // Batas waktu pelaporan: 48 jam sejak sistem konfirmasi solved (resolved_at).
-        // - Kalau PIC ngirim laporan (report_submitted_at) SEBELUM batas ini -> dianggap
-        //   "diselesaikan oleh PIC" (label & kredit ke PIC).
-        // - Kalau ngirim SETELAH batas ini (atau nggak ngirim sama sekali) -> tetap
-        //   "Auto-resolved (sistem)" selamanya, walau laporannya tetap tersimpan sebagai
-        //   dokumentasi post-mortem.
         $reportDeadlineHours = 48;
         $reportDeadline = $incident->resolved_at
             ? $incident->resolved_at->copy()->addHours($reportDeadlineHours)
@@ -603,8 +592,6 @@
             && $reportDeadline
             && $incident->report_submitted_at->lte($reportDeadline);
 
-        // Laporan ada, tapi dikirim setelah batas waktu -> tetap dicatat, tapi
-        // TIDAK dapat kredit "diselesaikan oleh PIC".
         $lateReport = $incident->status === 'solved'
             && $incident->root_cause
             && ! $resolvedByPic;
@@ -678,16 +665,14 @@
           <div class="info-item">
             <span class="info-label">Status Pekerjaan</span>
             <span class="info-value">
-              <span
-                class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
+              <span class="badge {{ $incident->badge_class }}">{{ ucfirst(str_replace('_', ' ', $incident->status)) }}</span>
             </span>
           </div>
         </div>
 
         @if($incident->root_cause || $incident->resolution)
           <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);">
-            <p
-              style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
+            <p style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: var(--amber); text-transform: uppercase; margin: 0 0 10px;">
               Hasil Investigasi
             </p>
             @if($incident->root_cause)
@@ -706,23 +691,10 @@
         @endif
       </div>
 
-      {{-- Update Penanganan — HANYA untuk programmer, ditumpuk di bawah Informasi Gangguan --}}
       @if($user->role === 'programmer')
         <div class="card" style="margin-bottom: 24px;">
           <div class="card-title">Update Penanganan</div>
 
-          {{-- Urutan pengecekan:
-               1) resolvedByPic -> laporan masuk SEBELUM batas 48 jam -> kredit ke PIC
-               2) lateReport    -> laporan ADA tapi masuk SETELAH batas 48 jam -> tetap
-                                   dicatat sebagai dokumentasi, tapi status akhir tetap
-                                   "Auto-resolved (sistem)", bukan "diselesaikan PIC"
-               3) open              -> belum ada yang ambil
-               4) bukan PIC-nya     -> info aja
-               5) PIC-nya SAYA tapi status BELUM solved -> laporan BELUM bisa diisi,
-                  tunggu website kembali online dulu
-               6) PIC-nya SAYA, status SUDAH solved, root_cause BELUM ada -> form
-                  laporan (root cause + penyelesaian + catatan, submit sekali),
-                  dengan sisa waktu 48 jam sejak resolved_at --}}
           @if($resolvedByPic)
             <p style="font-size: 13px; color: var(--muted);">
               Root Cause, Penyelesaian, & Catatan sudah dikirim dan ditampilkan di kolom "Hasil Investigasi" di atas.
@@ -737,8 +709,7 @@
             </p>
             <p style="font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px;">
               ✓ Website auto-resolved oleh sistem. 
-              Laporan dari
-              {{ $incident->assignedUser->name }} dikirim setelah batas waktu {{ $reportDeadlineHours }} jam,
+              Laporan dari {{ $incident->assignedUser->name }} dikirim setelah batas waktu {{ $reportDeadlineHours }} jam,
               jadi tercatat sebagai dokumentasi post-mortem — status penyelesaian tetap "Auto-resolved".
             </p>
 
@@ -763,8 +734,6 @@
             @endif
 
           @elseif($incident->status !== 'solved')
-            {{-- PIC-nya saya, tapi website masih down/belum dikonfirmasi online -->
-                 laporan belum relevan, tangani dulu di lapangan. --}}
             <p style="font-size: 13px; color: var(--muted);">
               Kamu jadi PIC incident ini. Silakan tangani dulu — form laporan (Root Cause, Penyelesaian, & Catatan)
               baru akan muncul di sini setelah sistem mengonfirmasi website kembali online (status berubah jadi
@@ -772,7 +741,6 @@
             </p>
 
           @elseif(! $incident->root_cause)
-            {{-- PIC-nya saya, status SUDAH solved, laporan belum pernah dikirim --}}
             @if($isPastReportDeadline)
               <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
                 ✓ Website sudah auto-resolved oleh sistem. Batas waktu pelaporan {{ $reportDeadlineHours }} jam
@@ -822,7 +790,7 @@
         </div>
       @endif
 
-      <!-- Riwayat Log Pengecekan (khusus periode insiden ini) -->
+      <!-- Riwayat Log Pengecekan -->
       <div class="card" style="margin-bottom: 20px;">
         <div class="card-title" style="display:flex; align-items:center; gap:8px;">
           <span>Riwayat Log Pengecekan</span>
@@ -910,7 +878,6 @@
     </div>
   </main>
 
-  {{-- Modal konfirmasi cuma perlu di-render kalau formnya ada di halaman ini --}}
   @if($user->role === 'programmer' && $isMyIncident && $incident->status === 'solved' && ! $incident->root_cause && ! $isPastReportDeadline)
     @php
       $modalSubtitle = 'Setelah dikirim, laporan ini tidak dapat diubah lagi. Karena masih dalam ' . $reportDeadlineHours . ' jam sejak website pulih, incident ini akan tercatat sebagai "diselesaikan oleh kamu".';
@@ -922,7 +889,6 @@
   @endif
 
   @if($user->role === 'programmer' && $isMyIncident && $incident->status === 'solved' && ! $incident->root_cause)
-    <!-- MODAL KONFIRMASI KIRIM LAPORAN PENANGANAN -->
     <div id="solve-modal" class="modal-backdrop" onclick="closeSolveModalOnBackdrop(event)">
       <div class="modal-card">
         <div class="modal-icon-wrapper">
@@ -942,12 +908,10 @@
       </div>
     </div>
 
-    <!-- JAVASCRIPT HANDLER UNTUK MODAL -->
     <script>
       function openSolveModal() {
         const form = document.getElementById('solve-incident-form');
         if (form) {
-          // Melakukan validasi browser (required fields) sebelum membuka modal
           if (!form.reportValidity()) {
             return;
           }
@@ -978,7 +942,6 @@
         }
       }
 
-      // Menutup modal dengan tombol ESC
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
           closeSolveModal();

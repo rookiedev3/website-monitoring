@@ -32,6 +32,7 @@
             --shadow: 0 10px 30px rgba(0, 0, 0, .3);
             --sidebar-width: 215px;
             --sidebar-collapsed: 62px;
+            --navbar-height: 60px;
         }
 
         *,
@@ -56,8 +57,8 @@
         }
 
         /* ==========================================================
-           1. KODE RESPONSIF: LAYOUT UTAMA & KONTEN KANAN
-           ========================================================== */
+            1. KODE RESPONSIF: LAYOUT UTAMA & KONTEN KANAN
+            ========================================================== */
         main {
             margin-left: var(--sidebar-width);
             flex: 1;
@@ -65,9 +66,9 @@
             min-width: 0;
             transition: margin-left 0.3s ease, width 0.3s ease;
             width: calc(100% - var(--sidebar-width));
+            margin-top: var(--navbar-height);
         }
 
-        /* Ketika sidebar di-collapse (diperkecil) di laptop */
         aside#sidebar.collapsed~main {
             margin-left: var(--sidebar-collapsed);
             width: calc(100% - var(--sidebar-collapsed));
@@ -123,9 +124,8 @@
         }
 
         /* ==========================================================
-           2. KODE RESPONSIF: KARTU STATISTIK (GRID OTOMATIS)
-           Menggunakan auto-fit agar otomatis turun ke bawah di HP
-           ========================================================== */
+            2. KODE RESPONSIF: KARTU STATISTIK (GRID OTOMATIS)
+            ========================================================== */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -255,8 +255,8 @@
         }
 
         /* ==========================================================
-           3. KODE RESPONSIF: TABEL AGAR BISA DI-SCROLL DI HP
-           ========================================================== */
+            3. KODE RESPONSIF: TABEL AGAR BISA DI-SCROLL DI HP
+            ========================================================== */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -269,7 +269,6 @@
             text-align: left;
             font-size: 13px;
             min-width: 600px;
-            /* Mencegah tabel tertekan terlalu kecil di layar HP */
         }
 
         th {
@@ -450,15 +449,14 @@
         }
 
         /* ==========================================================
-           4. KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
-           ========================================================== */
+            4. KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+            ========================================================== */
         @media (max-width: 768px) {
             main {
                 margin-left: 0 !important;
                 width: 100% !important;
                 padding: 14px;
                 padding-top: 60px;
-                /* Ruang untuk tombol hamburger di atas */
             }
 
             .dashboard-header {
@@ -478,11 +476,6 @@
                 width: 100%;
             }
         }
-
-        .main-content,
-        main {
-            margin-top: var(--navbar-height, 60px);
-        }
     </style>
 </head>
 
@@ -490,7 +483,6 @@
 
     <!-- MEMANGGIL SIDEBAR LARAVEL LAYOUT -->
     @include('layouts.navigation')
-
 
     <!-- MAIN CONTENT -->
     <main>
@@ -556,8 +548,7 @@
                 <div class="card">
                     <div class="card-title">
                         <span><i class="bi bi-globe me-2"></i> Daftar Status Website</span>
-                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">Pengecekan otomatis
-                            berkala</span>
+                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">Pengecekan otomatis berkala</span>
                     </div>
                     <div class="table-responsive">
                         <table>
@@ -582,8 +573,7 @@
                                         </td>
                                         <td>
                                             @if($log)
-                                                <span
-                                                    class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
+                                                <span class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
                                                     ● {{ strtoupper($log->status) }}
                                                 </span>
                                             @else
@@ -597,8 +587,7 @@
                                         </td>
                                         <td>
                                             @if($log && $log->response_time_ms)
-                                                <span
-                                                    style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)' }}; font-weight:700;">
+                                                <span style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)' }}; font-weight:700;">
                                                     {{ number_format($log->response_time_ms) }} ms
                                                 </span>
                                             @else
@@ -671,11 +660,44 @@
                                 </thead>
                                 <tbody id="incident-table-body">
                                     @foreach($activeIncidents as $incident)
+                                        @php
+                                            $rawType = strtolower($incident->incident_type);
+                                            // Tipe gangguan sesuai blueprint: normal, slow, down, ssl warning
+                                            if (str_contains($rawType, 'warning') || str_contains($rawType, 'slow') || str_contains($rawType, 'lambat')) {
+                                                $typeName = 'SLOW';
+                                                $badgeClass = 'badge-warning';
+                                            } elseif (str_contains($rawType, 'ssl')) {
+                                                $typeName = 'SSL WARNING';
+                                                $badgeClass = 'badge-ssl';
+                                            } elseif (str_contains($rawType, 'normal') || str_contains($rawType, 'online')) {
+                                                $typeName = 'NORMAL';
+                                                $badgeClass = 'badge-online';
+                                            } else {
+                                                $typeName = 'DOWN';
+                                                $badgeClass = 'badge-down';
+                                            }
+
+                                            // Status Pekerjaan merujuk ke referensi: 
+                                            // 'on progress' / 'progress' = Oren, 'open' atau lainnya = Merah
+                                            $jobStatus = strtolower(trim($incident->status));
+                                            if (str_contains($jobStatus, 'progress') || str_contains($jobStatus, 'proses')) {
+                                                $jobStyle = 'background: rgba(217, 139, 29, 0.12); color: #d98b1d; border: 1px solid rgba(217, 139, 29, 0.3);';
+                                                $jobStatusText = 'ON PROGRESS';
+                                            } else {
+                                                $jobStyle = 'background: rgba(217, 76, 76, 0.12); color: #d94c4c; border: 1px solid rgba(217, 76, 76, 0.3);';
+                                                $jobStatusText = strtoupper($incident->status);
+                                            }
+                                        @endphp
                                         <tr class="incident-row">
                                             <td><strong style="color:#fff;">{{ $incident->website->website_name }}</strong></td>
-                                            <td><span class="badge badge-down">{{ strtoupper($incident->incident_type) }}</span>
+                                            <td>
+                                                <span class="badge {{ $badgeClass }}">
+                                                    {{ $typeName }}
+                                                </span>
                                             </td>
-                                            <td><span class="badge badge-warning">{{ strtoupper($incident->status) }}</span>
+                                            <td>
+                                                <!-- Menggunakan inline style agar warna On Progress (Oren) dan Open (Merah) tampil akurat -->
+                                                <span class="badge" style="{{ $jobStyle }}">{{ $jobStatusText }}</span>
                                             </td>
                                             <td>{{ $incident->assignedUser?->name ?? 'Belum Ditugaskan' }}</td>
                                             <td style="color:var(--muted); font-size:12px;">
@@ -714,7 +736,7 @@
     <script>
         let rawWebsitesData = [];
         let currentPage = 1;
-        const perPage = 5; // Jumlah data per halaman
+        const perPage = 5;
 
         function fetchRealtimeData() {
             fetch("{{ route('api.dashboard.status') }}")
