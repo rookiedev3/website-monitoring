@@ -643,7 +643,10 @@
               @elseif($incident->assignedUser)
                 {{ $incident->assignedUser->name }}
                 @if($incident->status === 'solved' && $lateReport)
-                  <br><small style="color: var(--muted); font-weight: 400;">(laporan post-mortem, lewat batas {{ $reportDeadlineHours }} jam)</small>
+                  <br><small style="color: var(--muted); font-weight: 400;">(laporan post-mortem
+                    {{-- , lewat batas {{ $reportDeadlineHours }} jam --}}
+                    )
+                  </small>
                 @elseif($incident->status === 'solved' && ! $incident->root_cause && $isPastReportDeadline)
                   <br><small style="color: var(--muted); font-weight: 400;">(auto-resolved, batas lapor {{ $reportDeadlineHours }} jam sudah lewat)</small>
                 @elseif($incident->status === 'solved' && ! $incident->root_cause)
