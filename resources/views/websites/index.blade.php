@@ -498,40 +498,6 @@
       color: var(--blue);
     }
 
-    .badge-status {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .badge-status.online {
-      background: var(--green-soft);
-      color: var(--green);
-    }
-
-    .badge-status.warning {
-      background: var(--amber-soft);
-      color: var(--amber);
-    }
-
-    .badge-status.down {
-      background: var(--red-soft);
-      color: var(--red);
-    }
-
-    .badge-status.ssl_warning {
-      background: var(--blue-soft);
-      color: var(--blue);
-    }
-
-    .badge-status.none {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--muted);
-    }
-
     .action-btns {
       display: flex;
       gap: 6px;
@@ -758,12 +724,11 @@
           <table>
             <thead>
               <tr>
-                <th style="width: 22%;">Customer & Website</th>
-                <th style="width: 16%;">Domain / URL</th>
-                <th style="width: 12%;">Kategori</th>
-                <th style="width: 12%;">Interval Check</th>
-                <th style="width: 14%;">Status Pemantauan</th>
-                <th style="width: 14%;">Status Terakhir</th>
+                <th style="width: 25%;">Customer & Website</th>
+                <th style="width: 20%;">Domain / URL</th>
+                <th style="width: 15%;">Kategori</th>
+                <th style="width: 15%;">Interval Check</th>
+                <th style="width: 15%;">Status Pemantauan</th>
                 @if(auth()->user()->role == 'super_admin')
                   <th style="width: 10%; text-align: center;">Aksi</th>
                 @endif
@@ -793,19 +758,6 @@
                       </button>
                     </form>
                   </td>
-                  <td>
-                    @if($site->last_status == 'online')
-                      <span class="badge-status online">🟢 Online</span>
-                    @elseif($site->last_status == 'warning')
-                      <span class="badge-status warning">🟡 Warning</span>
-                    @elseif($site->last_status == 'down')
-                      <span class="badge-status down">🔴 Down</span>
-                    @elseif($site->last_status == 'ssl_warning')
-                      <span class="badge-status ssl_warning">🔵 SSL Warning</span>
-                    @else
-                      <span class="badge-status none">⚪ Belum Dicek</span>
-                    @endif
-                  </td>
                   @if(auth()->user()->role == 'super_admin')
                     <td style="text-align: center;">
                       <div class="action-btns">
@@ -822,7 +774,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="7" style="text-align: center; color: var(--muted); padding: 30px;">
+                  <td colspan="{{ auth()->user()->role == 'super_admin' ? 6 : 5 }}" style="text-align: center; color: var(--muted); padding: 30px;">
                     Tidak ada data website yang ditemukan.
                   </td>
                 </tr>
@@ -885,7 +837,6 @@
         'category' => $site->category,
         'check_interval' => $site->check_interval,
         'monitoring_status' => $site->monitoring_status,
-        'last_status' => $site->last_status,
       ];
     })->values();
   @endphp
@@ -902,7 +853,7 @@
 
     let currentPage = 1;
     const perPage = 10;
-    const totalColumns = isSuperAdmin ? 7 : 6;
+    const totalColumns = isSuperAdmin ? 6 : 5;
 
     function renderTable() {
       const tbody = document.getElementById('website-table-body');
@@ -950,17 +901,6 @@
         const statusBadgeClass = site.monitoring_status === 'active' ? 'active' : 'paused';
         const statusBadgeText = site.monitoring_status === 'active' ? '● Active' : '⏸ Paused';
 
-        let lastStatusHtml = '<span class="badge-status none">⚪ Belum Dicek</span>';
-        if (site.last_status === 'online') {
-          lastStatusHtml = '<span class="badge-status online">🟢 Online</span>';
-        } else if (site.last_status === 'warning') {
-          lastStatusHtml = '<span class="badge-status warning">🟡 Warning</span>';
-        } else if (site.last_status === 'down') {
-          lastStatusHtml = '<span class="badge-status down">🔴 Down</span>';
-        } else if (site.last_status === 'ssl_warning') {
-          lastStatusHtml = '<span class="badge-status ssl_warning">🔵 SSL Warning</span>';
-        }
-
         const actionCellHtml = isSuperAdmin ? `
           <td style="text-align: center;">
             <div class="action-btns">
@@ -992,7 +932,6 @@
                 <button type="submit" class="badge ${statusBadgeClass}">${statusBadgeText}</button>
               </form>
             </td>
-            <td>${lastStatusHtml}</td>
             ${actionCellHtml}
           </tr>
         `;
