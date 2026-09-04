@@ -128,7 +128,7 @@
             ========================================================== */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -139,6 +139,11 @@
             border-radius: 14px;
             padding: 18px;
             box-shadow: var(--shadow);
+            min-width: 0;
+        }
+
+        .metric-card h3 {
+            white-space: nowrap;
         }
 
         .metric-card span {
@@ -290,6 +295,11 @@
             border-bottom: none;
         }
 
+        /* Website dengan monitoring dijeda ditampilkan sedikit redup */
+        tr.row-paused {
+            opacity: 0.55;
+        }
+
         /* Badges */
         .badge {
             display: inline-flex;
@@ -326,6 +336,12 @@
         .badge-muted {
             background: rgba(255, 255, 255, 0.05);
             color: var(--muted);
+        }
+
+        .badge-paused {
+            background: rgba(130, 152, 140, 0.12);
+            color: var(--muted);
+            border: 1px solid rgba(130, 152, 140, 0.3);
         }
 
         /* Action Buttons */
@@ -449,7 +465,16 @@
         }
 
         /* ==========================================================
-            4. KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+            4. KODE RESPONSIF: LAYAR TABLET (Max-width: 1024px)
+            ========================================================== */
+        @media (max-width: 1024px) {
+            .metrics-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* ==========================================================
+            5. KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
             ========================================================== */
         @media (max-width: 768px) {
             main {
@@ -464,6 +489,10 @@
                 align-items: flex-start;
             }
 
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .filter-grid {
                 flex-direction: column;
             }
@@ -474,6 +503,12 @@
 
             .filter-dropdown select {
                 width: 100%;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -499,7 +534,7 @@
                 </a>
             </div>
 
-            <!-- 4 METRIK STATISTIK -->
+            <!-- 5 METRIK STATISTIK -->
             <div class="metrics-grid">
                 <div class="metric-card">
                     <span>Total Monitored</span>
@@ -521,6 +556,11 @@
                     <h3 style="color:var(--red)" id="stat-down">{{ $stats['down'] }}</h3>
                     <p>Koneksi terputus / SSL error</p>
                 </div>
+                <div class="metric-card">
+                    <span>Paused</span>
+                    <h3 style="color:var(--muted)" id="stat-paused">{{ $stats['paused'] }}</h3>
+                    <p>Monitoring website dijeda</p>
+                </div>
             </div>
 
             <!-- CARDS FILTER STATUS & SEARCH -->
@@ -536,6 +576,7 @@
                             <option value="online">Online (Normal)</option>
                             <option value="warning">Warning (Slow Response)</option>
                             <option value="down">Down / Error / SSL Invalid</option>
+                            <option value="paused">Paused (Monitoring Off)</option>
                         </select>
                     </div>
                 </div>
@@ -566,13 +607,17 @@
                             <tbody id="website-table-body">
                                 @forelse($websites as $web)
                                     @php $log = $web->latestLog; @endphp
-                                    <tr>
+                                    <tr class="{{ $web->monitoring_status === 'paused' ? 'row-paused' : '' }}">
                                         <td>
                                             <strong style="color:#fff;">{{ $web->website_name }}</strong>
                                             <small style="display:block; color:var(--muted);">{{ $web->url }}</small>
                                         </td>
                                         <td>
-                                            @if($log)
+                                            @if($web->monitoring_status === 'paused')
+                                                <span class="badge badge-paused">
+                                                    <i class="bi bi-pause-circle"></i> PAUSED
+                                                </span>
+                                            @elseif($log)
                                                 <span class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
                                                     ● {{ strtoupper($log->status) }}
                                                 </span>
@@ -581,12 +626,16 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span style="font-weight:700; color:#fff;">
-                                                {{ $log ? ($log->http_code ?? 'N/A') : '-' }}
-                                            </span>
+                                            @if($web->monitoring_status === 'paused')
+                                                <span style="color:var(--muted);">-</span>
+                                            @else
+                                                <span style="font-weight:700; color:#fff;">
+                                                    {{ $log ? ($log->http_code ?? 'N/A') : '-' }}
+                                                </span>
+                                            @endif
                                         </td>
                                         <td>
-                                            @if($log && $log->response_time_ms)
+                                            @if($web->monitoring_status !== 'paused' && $log && $log->response_time_ms)
                                                 <span style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)' }}; font-weight:700;">
                                                     {{ number_format($log->response_time_ms) }} ms
                                                 </span>
@@ -595,7 +644,9 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if($log && $log->ssl_valid)
+                                            @if($web->monitoring_status === 'paused')
+                                                <span style="color:var(--muted);">-</span>
+                                            @elseif($log && $log->ssl_valid)
                                                 <span class="badge badge-ssl">
                                                     Valid ({{ $log->ssl_days_left }} Hari)
                                                 </span>
@@ -606,7 +657,11 @@
                                             @endif
                                         </td>
                                         <td style="color:var(--muted); font-size:12px;">
-                                            {{ $log ? $log->checked_at->diffForHumans() : '-' }}
+                                            @if($web->monitoring_status === 'paused')
+                                                Monitoring dijeda
+                                            @else
+                                                {{ $log ? $log->checked_at->diffForHumans() : '-' }}
+                                            @endif
                                         </td>
                                         <td style="text-align:center;">
                                             <a href="{{ route('dashboard.show', $web->id) }}" class="btn-detail">
@@ -747,6 +802,7 @@
                         document.getElementById('stat-online').innerText = data.stats.online ?? 0;
                         document.getElementById('stat-warning').innerText = data.stats.warning ?? 0;
                         document.getElementById('stat-down').innerText = data.stats.down ?? 0;
+                        document.getElementById('stat-paused').innerText = data.stats.paused ?? 0;
                     }
 
                     if (data && data.websites) {
@@ -767,14 +823,16 @@
             const filteredWebsites = rawWebsitesData.filter(web => {
                 const log = web.latest_log || web.latestLog;
                 const currentStatus = log ? log.status : 'none';
+                const isPaused = web.monitoring_status === 'paused';
 
                 const matchesSearch = web.website_name.toLowerCase().includes(searchQuery) ||
                     web.url.toLowerCase().includes(searchQuery);
 
                 let matchesStatus = true;
-                if (statusFilter === 'online') matchesStatus = currentStatus === 'online';
-                else if (statusFilter === 'warning') matchesStatus = currentStatus === 'warning';
-                else if (statusFilter === 'down') matchesStatus = ['down', 'ssl_error'].includes(currentStatus);
+                if (statusFilter === 'online') matchesStatus = !isPaused && currentStatus === 'online';
+                else if (statusFilter === 'warning') matchesStatus = !isPaused && currentStatus === 'warning';
+                else if (statusFilter === 'down') matchesStatus = !isPaused && ['down', 'ssl_error'].includes(currentStatus);
+                else if (statusFilter === 'paused') matchesStatus = isPaused;
 
                 return matchesSearch && matchesStatus;
             });
@@ -801,14 +859,19 @@
 
             paginatedItems.forEach(web => {
                 const log = web.latest_log || web.latestLog;
+                const isPaused = web.monitoring_status === 'paused';
 
                 let statusBadge = '<span class="badge badge-muted">Belum Dicek</span>';
-                let httpCode = '<span style="color:var(--muted);">N/A</span>';
+                let httpCode = '<span style="color:var(--muted);">-</span>';
                 let responseTime = '<span style="color:var(--muted);">-</span>';
                 let sslBadge = '<span style="color:var(--muted);">-</span>';
                 let checkedAt = '-';
 
-                if (log) {
+                if (isPaused) {
+                    // Website dengan monitoring dijeda: status log lama diabaikan
+                    statusBadge = '<span class="badge badge-paused"><i class="bi bi-pause-circle"></i> PAUSED</span>';
+                    checkedAt = '<span style="color:var(--muted);">Monitoring dijeda</span>';
+                } else if (log) {
                     if (log.status === 'online') {
                         statusBadge = '<span class="badge badge-online">● ONLINE</span>';
                     } else if (log.status === 'warning') {
@@ -840,9 +903,10 @@
                 }
 
                 const detailUrl = baseUrl.replace(':id', web.id);
+                const rowClass = isPaused ? 'row-paused' : '';
 
                 html += `
-                <tr>
+                <tr class="${rowClass}">
                     <td>
                         <strong style="color:#fff; display:block;">${web.website_name}</strong>
                         <small style="color:var(--muted);">${web.url}</small>

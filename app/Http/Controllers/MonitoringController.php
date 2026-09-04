@@ -23,6 +23,7 @@ class MonitoringController extends Controller
             'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
             'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
             'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
+            'paused'  => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
         ];
 
         // 3. Ambil insiden aktif (Open / On Progress)
@@ -60,6 +61,7 @@ class MonitoringController extends Controller
             'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
             'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
             'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
+            'paused'  => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
         ];
 
         return response()->json([

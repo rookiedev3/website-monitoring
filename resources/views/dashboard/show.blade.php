@@ -101,11 +101,19 @@
             gap: 16px;
         }
 
+        .header-card.is-paused {
+            border-color: rgba(130, 152, 140, 0.35);
+        }
+
         .header-info h2 {
             font-size: 24px;
             margin: 0 0 6px;
             color: #fff;
             font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .header-info a {
@@ -124,6 +132,26 @@
             gap: 8px;
             margin-top: 14px;
             flex-wrap: wrap;
+        }
+
+        /* Banner peringatan saat monitoring dijeda */
+        .paused-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(130, 152, 140, 0.08);
+            border: 1px solid rgba(130, 152, 140, 0.3);
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .paused-banner i {
+            font-size: 16px;
+            color: var(--muted);
         }
 
         /* Cards Layout */
@@ -208,6 +236,12 @@
             background: rgba(255, 255, 255, 0.05);
             color: var(--muted);
             border: 1px solid var(--line);
+        }
+
+        .badge-paused {
+            background: rgba(130, 152, 140, 0.12);
+            color: var(--muted);
+            border: 1px solid rgba(130, 152, 140, 0.3);
         }
 
         .text-error {
@@ -409,10 +443,31 @@
                 <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
 
+            @php $isPaused = $website->monitoring_status === 'paused'; @endphp
+
+            <!-- BANNER PERINGATAN JIKA MONITORING DIJEDA -->
+            @if($isPaused)
+                <div class="paused-banner">
+                    <i class="bi bi-pause-circle-fill"></i>
+                    <span>Monitoring untuk website ini sedang <strong>dijeda</strong>. Pengecekan otomatis tidak berjalan dan data di bawah adalah riwayat sebelum dijeda.</span>
+                </div>
+            @endif
+
             <!-- HEADER WEBSITE DETAIL -->
-            <div class="header-card">
+            <div class="header-card {{ $isPaused ? 'is-paused' : '' }}">
                 <div class="header-info">
-                    <h2>{{ $website->website_name }}</h2>
+                    <h2>
+                        {{ $website->website_name }}
+                        @if($isPaused)
+                            <span class="badge badge-paused">
+                                <i class="bi bi-pause-circle"></i> PAUSED
+                            </span>
+                        @else
+                            <span class="badge badge-online">
+                                <i class="bi bi-play-circle"></i> ACTIVE
+                            </span>
+                        @endif
+                    </h2>
                     <a href="{{ $website->url }}" target="_blank">
                         {{ $website->url }} <i class="bi bi-box-arrow-up-right ms-1" style="font-size: 11px;"></i>
                     </a>
@@ -422,6 +477,10 @@
                         </span>
                         <span class="badge badge-muted">
                             <i class="bi bi-clock me-1"></i> Interval: Setiap {{ $website->check_interval }} Menit
+                        </span>
+                        <span class="badge {{ $isPaused ? 'badge-paused' : 'badge-online' }}">
+                            <i class="bi {{ $isPaused ? 'bi-pause-circle' : 'bi-check-circle' }} me-1"></i>
+                            Status Monitoring: {{ $isPaused ? 'Paused' : 'Active' }}
                         </span>
                     </div>
                 </div>
@@ -477,7 +536,11 @@
                             @empty
                                 <tr>
                                     <td colspan="5" style="text-align:center; padding: 24px; color:var(--muted);">
-                                        Belum ada riwayat log untuk website ini.
+                                        @if($isPaused)
+                                            Monitoring website ini sedang dijeda dan belum memiliki riwayat log.
+                                        @else
+                                            Belum ada riwayat log untuk website ini.
+                                        @endif
                                     </td>
                                 </tr>
                             @endforelse
