@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="refresh" content="3;url={{ route('login') }}">
   <title>Sesi Berakhir</title>
+          <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
   <style>
     body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#0b120f; color:#dce9e1; font-family: Inter, sans-serif; text-align:center; }
     .box { max-width: 380px; padding: 20px; }

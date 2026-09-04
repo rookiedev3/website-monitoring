@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tambah Website - Website Monitoring IT Solution</title>
+        <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
   <style>
     :root {
       --bg: #0b120f;
