@@ -166,7 +166,7 @@
       min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
-      margin-top: 0 !important; /* Dihilangkan jarak atasnya */
+      margin-top: 30px !important; /* Dihilangkan jarak atasnya */
     }
 
     aside#sidebar.collapsed~main {
