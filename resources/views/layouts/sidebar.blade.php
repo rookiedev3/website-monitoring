@@ -6,9 +6,6 @@
     .nav-layout-scope {
       --sidebar-width: 215px;
       --sidebar-collapsed: 62px;
-      --navbar-height: 60px;
-      --navbar-bg: #16241d;
-      --nav-border: #2e4a3b;
       --line: #2e4a3b;
       --card: #111b16;
       --card-hover: #17231d;
@@ -28,232 +25,7 @@
       padding: 0;
     }
 
-    /* 2. TOP NAVBAR STYLES */
-    .nav-layout-scope .top-navbar {
-      position: fixed;
-      top: 0;
-      right: 0;
-      left: var(--sidebar-width);
-      width: calc(100% - var(--sidebar-width));
-      height: var(--navbar-height);
-      background: var(--navbar-bg);
-      border-bottom: 1px solid var(--nav-border);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 0 24px;
-      z-index: 90;
-      transition: left 0.3s ease, width 0.3s ease;
-    }
-
-    /* NOTIFICATION DROPDOWN STYLES */
-    .nav-layout-scope .notification-wrapper {
-      position: relative;
-    }
-
-    .nav-layout-scope .notification-btn {
-      background: transparent;
-      border: 1px solid var(--nav-border);
-      color: var(--text-color);
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.2s ease;
-    }
-
-    .nav-layout-scope .notification-btn:hover {
-      background: var(--card-hover);
-    }
-
-    .nav-layout-scope .notification-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: #ef4444;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 10px;
-      border: 2px solid var(--navbar-bg);
-      line-height: 1;
-    }
-
-    .nav-layout-scope .notification-dropdown {
-      position: absolute;
-      top: 48px;
-      right: 0;
-      width: 340px;
-      max-height: 420px;
-      background: #17231d;
-      border: 1px solid var(--nav-border);
-      border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 100;
-    }
-
-    .nav-layout-scope .notification-dropdown.show {
-      display: flex;
-    }
-
-    .nav-layout-scope .notif-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--nav-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav-layout-scope .notif-header h3 {
-      font-size: 13px;
-      margin: 0;
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .nav-layout-scope .mark-all-btn {
-      font-size: 11px;
-      color: #4ade80;
-      background: none;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .nav-layout-scope .mark-all-btn:hover {
-      text-decoration: underline;
-    }
-
-    .nav-layout-scope .notif-body {
-      overflow-y: auto;
-      flex: 1;
-    }
-
-    .nav-layout-scope .notif-item-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid rgba(46, 74, 59, 0.5);
-      transition: background 0.2s ease;
-    }
-
-    .nav-layout-scope .notif-item-wrapper:hover {
-      background: var(--card-hover);
-    }
-
-    .nav-layout-scope .notif-item-wrapper.unread {
-      background: rgba(24, 56, 40, 0.4);
-    }
-
-    .nav-layout-scope .notif-item-wrapper .notif-item {
-      flex: 1;
-      border-bottom: none;
-      padding: 12px 36px 12px 16px;
-      display: flex;
-      gap: 12px;
-      text-decoration: none;
-    }
-
-    .nav-layout-scope .notif-icon-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-top: 4px;
-      flex-shrink: 0;
-    }
-
-    .nav-layout-scope .notif-icon-dot.danger {
-      background: #ef4444;
-      box-shadow: 0 0 8px #ef4444;
-    }
-
-    .nav-layout-scope .notif-icon-dot.success {
-      background: #22c55e;
-      box-shadow: 0 0 8px #22c55e;
-    }
-
-    .nav-layout-scope .notif-content {
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .nav-layout-scope .notif-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      margin: 0 0 2px 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .nav-layout-scope .notif-desc {
-      font-size: 11px;
-      color: var(--muted);
-      margin: 0 0 4px 0;
-      line-height: 1.3;
-    }
-
-    .nav-layout-scope .notif-time {
-      font-size: 9px;
-      color: #6b7280;
-    }
-
-    .nav-layout-scope .notif-delete-form {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      margin: 0;
-      z-index: 2;
-    }
-
-    .nav-layout-scope .notif-delete-btn {
-      background: transparent;
-      border: none;
-      color: #6b7280;
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0;
-      transition: all 0.2s ease;
-    }
-
-    .nav-layout-scope .notif-delete-btn svg {
-      width: 14px;
-      height: 14px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .nav-layout-scope .notif-delete-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-    }
-
-    .nav-layout-scope .notif-empty {
-      padding: 24px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    /* 3. SIDEBAR STYLES */
+    /* 2. SIDEBAR STYLES */
     .nav-layout-scope aside#sidebar {
       position: fixed;
       top: 0;
@@ -410,7 +182,7 @@
       display: none;
     }
 
-    /* 4. KARTU AKUN DI BAWAH SIDEBAR */
+    /* 3. KARTU AKUN DI BAWAH SIDEBAR */
     .nav-layout-scope .user-profile-container {
       position: relative;
       border-top: 1px solid var(--line);
@@ -575,12 +347,6 @@
     }
 
     @media (max-width: 768px) {
-      .nav-layout-scope .top-navbar {
-        left: 0 !important;
-        width: 100% !important;
-        padding-left: 55px;
-      }
-
       .nav-layout-scope .mobile-menu-btn {
         display: block;
       }
@@ -599,82 +365,6 @@
       }
     }
   </style>
-
-  <!-- TOP NAVBAR UTAMA & NOTIFIKASI -->
-  <header class="top-navbar">
-    @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'programmer']))
-      @php
-        $notifications = auth()->user()->unreadNotifications()->take(10)->get();
-        $unreadCount = auth()->user()->unreadNotifications->count();
-      @endphp
-
-      <div class="notification-wrapper">
-        <button class="notification-btn" id="notifDropdownBtn" title="Notifikasi Status Website">
-          <svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-          </svg>
-
-          @if($unreadCount > 0)
-            <span class="notification-badge">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
-          @endif
-        </button>
-
-        <div class="notification-dropdown" id="notifDropdownMenu">
-          <div class="notif-header">
-            <h3>Notifikasi Gangguan</h3>
-            @if($unreadCount > 0)
-              <form action="{{ route('notifications.markAllRead') }}" method="POST" style="margin:0;">
-                @csrf
-                <button type="submit" class="mark-all-btn">Tandai Dibaca</button>
-              </form>
-            @endif
-          </div>
-
-          <div class="notif-body">
-            @forelse($notifications as $notif)
-              @php
-                $data = $notif->data;
-                $isUnread = is_null($notif->read_at);
-                $colorClass = $data['color'] ?? (($data['type'] ?? '') === 'website_down' ? 'danger' : 'success');
-                $targetUrl = !empty($data['incident_id'])
-                  ? route('incidents.show', $data['incident_id'])
-                  : ($data['action_url'] ?? route('incidents.index'));
-              @endphp
-
-              <div class="notif-item-wrapper {{ $isUnread ? 'unread' : '' }}">
-                <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}"
-                  class="notif-item">
-                  <span class="notif-icon-dot {{ $colorClass }}"></span>
-                  <div class="notif-content">
-                    <h4 class="notif-title">{{ $data['website_name'] ?? 'Pemberitahuan System' }}</h4>
-                    <p class="notif-desc">{{ $data['message'] ?? 'Status website telah diperbarui.' }}</p>
-                    <span class="notif-time">{{ $notif->created_at->diffForHumans() }}</span>
-                  </div>
-                </a>
-
-                <form action="{{ route('notifications.destroy', $notif->id) }}" method="POST" class="notif-delete-form">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="notif-delete-btn" title="Hapus Notifikasi"
-                    onclick="event.stopPropagation();">
-                    <svg viewBox="0 0 24 24">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                </form>
-              </div>
-            @empty
-              <div class="notif-empty">
-                Tidak ada notifikasi saat ini.
-              </div>
-            @endforelse
-          </div>
-        </div>
-      </div>
-    @endif
-  </header>
 
   <!-- TOMBOL HAMBURGER MOBILE & OVERLAY -->
   <button onclick="toggleMobileSidebar()"
@@ -801,7 +491,7 @@
     </div>
   </aside>
 
-  <!-- POPUP MENU AKUN (DIPISAH KELUAR AGAR POSISI FIXED AMAN SAAT COLLAPSED) -->
+  <!-- POPUP MENU AKUN -->
   @if(auth()->check())
     <div class="user-popup-menu" id="userPopupMenu">
       <a href="{{ route('profile.index') }}" class="popup-item">
@@ -829,24 +519,7 @@
   <!-- SCRIPT PENGENDALI INTERAKSI NAVIGASI -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Notification Dropdown Logic
-      const notifBtn = document.getElementById('notifDropdownBtn');
-      const notifMenu = document.getElementById('notifDropdownMenu');
-
-      if (notifBtn && notifMenu) {
-        notifBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          notifMenu.classList.toggle('show');
-        });
-
-        window.addEventListener('click', (e) => {
-          if (!notifMenu.contains(e.target) && !notifBtn.contains(e.target)) {
-            notifMenu.classList.remove('show');
-          }
-        });
-      }
-
-      // 2. Sidebar & Navigation Responsive Logic
+      // 1. Sidebar Collapse Logic
       const sidebar = document.getElementById('sidebar');
       const sidebarToggle = document.getElementById('sidebarToggle');
       const toggleIcon = document.getElementById('toggleIcon');
@@ -854,7 +527,6 @@
       const userPopupMenu = document.getElementById('userPopupMenu');
       const sidebarOverlay = document.getElementById('sidebarOverlay');
       const floatingMenuBtn = document.getElementById('floatingMenuBtn');
-      const topNavbar = document.querySelector('.top-navbar');
 
       function checkScreenSize() {
         if (window.innerWidth <= 768) {
@@ -874,16 +546,6 @@
           sidebar.classList.toggle('collapsed');
           document.body.classList.toggle('sidebar-is-collapsed');
 
-          if (topNavbar) {
-            if (sidebar.classList.contains('collapsed')) {
-              topNavbar.style.left = '62px';
-              topNavbar.style.width = 'calc(100% - 62px)';
-            } else {
-              topNavbar.style.left = '215px';
-              topNavbar.style.width = 'calc(100% - 215px)';
-            }
-          }
-
           if (userPopupMenu) userPopupMenu.classList.remove('show');
           toggleIcon.innerHTML = sidebar.classList.contains('collapsed')
             ? '<polyline points="9 18 15 12 9 6"/>'
@@ -891,7 +553,7 @@
         });
       }
 
-      // 3. Dynamic User Profile Popup Menu Logic
+      // 2. Dynamic User Profile Popup Menu Logic
       if (userProfileBtn && userPopupMenu) {
         userProfileBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -922,7 +584,7 @@
         });
       }
 
-      // 4. Mobile Drawer Handlers
+      // 3. Mobile Drawer Handlers
       window.toggleMobileSidebar = function () {
         if (sidebar && sidebarOverlay) {
           sidebar.classList.toggle('mobile-open');
