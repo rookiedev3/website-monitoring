@@ -199,24 +199,41 @@
       font-size: 13px;
     }
 
+    /* ==========================================================
+       FILTER CARD (pembungkus filter-bar, disamakan dgn Dashboard)
+       ========================================================== */
+    .filter-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
     /* Filter Bar Responsive */
     .filter-bar {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
       flex-wrap: wrap;
       align-items: center;
     }
 
     .search-input,
     .filter-select {
-      background: var(--card);
+      background: var(--bg);
       border: 1px solid var(--line);
       color: var(--ink);
       padding: 10px 14px;
       border-radius: 10px;
       font-size: 13px;
       outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .search-input:focus,
+    .filter-select:focus {
+      border-color: var(--green);
     }
 
     .search-input {
@@ -556,22 +573,24 @@
         <p style="color: var(--red); margin-bottom: 12px; font-size: 13px;">{{ session('error') }}</p>
       @endif
 
-      {{-- Filter bar: realtime AJAX (client-side), tidak lagi submit/reload halaman --}}
-      <div class="filter-bar">
-        <input type="text" id="search-input" class="search-input"
-          placeholder="Cari website, domain, atau jenis error...">
-        <select id="status-filter" class="filter-select">
-          <option value="">Status: Semua</option>
-          <option value="open">Open</option>
-          <option value="on_progress">On Progress</option>
-          <option value="solved">Solved</option>
-        </select>
-        <select id="pic-filter" class="filter-select">
-          <option value="">PIC: Semua</option>
-          @foreach($picOptions as $pic)
-            <option value="{{ $pic->id }}">{{ $pic->name }}</option>
-          @endforeach
-        </select>
+      {{-- Filter bar dibungkus filter-card, gaya sama dengan Dashboard --}}
+      <div class="filter-card">
+        <div class="filter-bar">
+          <input type="text" id="search-input" class="search-input"
+            placeholder="Cari website, domain, atau jenis error...">
+          <select id="status-filter" class="filter-select">
+            <option value="">Status: Semua</option>
+            <option value="open">Open</option>
+            <option value="on_progress">On Progress</option>
+            <option value="solved">Solved</option>
+          </select>
+          <select id="pic-filter" class="filter-select">
+            <option value="">PIC: Semua</option>
+            @foreach($picOptions as $pic)
+              <option value="{{ $pic->id }}">{{ $pic->name }}</option>
+            @endforeach
+          </select>
+        </div>
       </div>
 
       <div class="card">
