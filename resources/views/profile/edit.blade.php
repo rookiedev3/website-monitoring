@@ -4,82 +4,98 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Profil - Website Monitoring IT Solution</title>
-        <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
+  <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
   <style>
     :root {
-      --bg: #0b120f;
-      --card: #111b16;
-      --card-hover: #17231d;
-      --ink: #dce9e1;
-      --muted: #82988c;
-      --line: #2e4a3b;
-      --green: #0f9f6e;
-      --green-soft: rgba(15, 159, 110, 0.12);
-      --red: #d94c4c;
-      --red-soft: rgba(217, 76, 76, 0.12);
-      --shadow: 0 10px 30px rgba(0,0,0,.3);
-      --sidebar-width: 215px;
-      --sidebar-collapsed: 62px;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --card-hover: #f8fafc;
+      --ink: #172033;
+      --muted: #778195;
+      --line: #e8edf5;
+      --green: #013220;
+      --green-vibrant: #006B3F;
+      --green-soft: #e6f7ee;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --shadow: 0 10px 25px -5px rgba(31, 53, 97, 0.05), 0 8px 10px -6px rgba(31, 53, 97, 0.03);
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 80px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--ink);
       background: var(--bg);
       display: flex;
       min-height: 100vh;
       overflow-x: hidden;
     }
-    a { color: inherit; text-decoration: none; }
 
-    /* STYLE SIDEBAR */
-    aside {
-      position: fixed; top: 0; left: 0; height: 100vh;
-      width: var(--sidebar-width); background: var(--card);
-      border-right: 1px solid var(--line); display: flex;
-      flex-direction: column; z-index: 100; box-shadow: var(--shadow);
+    a {
+      color: inherit;
+      text-decoration: none;
     }
-    aside.collapsed { width: var(--sidebar-collapsed); }
-    .brand-area { padding: 20px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); overflow: hidden; white-space: nowrap; }
-    .logo { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #17231d, #24372d); border: 1px solid var(--line); display: grid; place-items: center; font-weight: 900; color: var(--green); flex-shrink: 0; }
-    .brand-text h1 { font-size: 14px; margin: 0; color: #fff; font-weight: 700; }
-    .brand-text small { font-size: 11px; color: var(--muted); }
-    .menu-list { flex: 1; padding: 16px 10px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 4px; }
-    .menu-title { font-size: 10px; font-weight: 800; letter-spacing: .1em; color: var(--muted); padding: 10px 10px 4px; text-transform: uppercase; white-space: nowrap; }
-    aside.collapsed .menu-title { display: none; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px; color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-    .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
-    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    aside.collapsed .nav-item span { display: none; }
 
-    /* STYLE MAIN CONTENT & PERGESERAN SIDEBAR RESPONSIF */
-    main { 
-      margin-left: var(--sidebar-width); 
-      flex: 1; 
-      padding: 24px; 
-      min-width: 0; 
+    /* ==========================================================
+       KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
+       ========================================================== */
+    main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 85px 12px 16px 12px;
+      min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
     }
-    aside#sidebar.collapsed ~ main { 
-      margin-left: var(--sidebar-collapsed); 
+
+    aside#sidebar.collapsed ~ main {
+      margin-left: var(--sidebar-collapsed);
       width: calc(100% - var(--sidebar-collapsed));
     }
-    .container { max-width: 800px; margin: 0 auto; width: 100%; }
 
-    .page-header { margin-bottom: 24px; }
-    .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
-    .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-    .card { 
-      background: var(--card); 
-      border: 1px solid var(--line); 
-      border-radius: 16px; 
-      padding: 24px; 
-      box-shadow: var(--shadow); 
+    .page-header {
+      margin-bottom: 24px;
+    }
+
+    .page-header h2 {
+      font-size: 22px;
+      margin: 0 0 4px;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: var(--shadow);
       margin-bottom: 20px;
     }
     
@@ -87,12 +103,14 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .card-title-group i {
-      font-size: 18px;
+      font-size: 16px;
       color: var(--green);
     }
 
@@ -107,16 +125,17 @@
     }
     .form-control { 
       width: 100%; 
-      background: var(--bg); 
+      background: #fbfcfe; 
       border: 1px solid var(--line); 
       color: var(--ink); 
       padding: 12px 14px; 
       border-radius: 10px; 
-      font-size: 13px; 
+      font-size: 13px;
+      font-weight: 600;
       outline: none; 
-      transition: border-color 0.2s ease; 
+      transition: border-color 0.2s ease, box-shadow 0.2s ease; 
     }
-    .form-control:focus { border-color: var(--green); }
+    .form-control:focus { border-color: var(--green-vibrant); box-shadow: 0 0 0 3px rgba(0, 107, 63, 0.1); }
     .form-control.is-invalid { border-color: var(--red); }
     .input-icon-right {
       position: absolute;
@@ -124,11 +143,12 @@
       color: var(--muted);
       cursor: pointer;
     }
-    .input-icon-right:hover { color: #fff; }
+    .input-icon-right:hover { color: var(--ink); }
 
     .invalid-feedback {
       display: block;
       font-size: 11px;
+      font-weight: 700;
       color: var(--red);
       margin-top: 6px;
     }
@@ -141,15 +161,15 @@
       border-radius: 10px;
       margin-bottom: 20px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; flex-wrap: wrap; }
     
-    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; display: inline-flex; align-items: center; justify-content: center; }
-    .btn-secondary:hover { color: #fff; background: var(--card-hover); }
+    .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-secondary:hover { color: var(--ink); background: var(--card-hover); }
 
-    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(1, 50, 32, 0.2); }
     .btn-primary:hover { opacity: 0.9; }
 
     /* ==========================================================
@@ -159,11 +179,10 @@
       main { 
         margin-left: 0 !important; 
         width: 100% !important; 
-        padding: 14px;
-        padding-top: 60px; /* Menyediakan ruang untuk toggle bar di mobile */
+        padding: 85px 16px 16px 16px;
       }
       .card {
-        padding: 16px; /* Mengurangi padding card agar pas di layar kecil */
+        padding: 16px; 
       }
       .form-actions { 
         flex-direction: column-reverse; 
@@ -179,8 +198,8 @@
 </head>
 <body>
 
-  <!-- SIDEBAR -->
-  @include('layouts.sidebar')
+  <!-- NAVIGASI & SIDEBAR UTAMA -->
+  @include('layouts.navigation')
 
   <!-- MAIN CONTENT -->
   <main>
@@ -203,7 +222,7 @@
 
         <!-- KARTU: INFORMASI DATA DIRI -->
         <div class="card">
-          <div class="card-title-group" style="margin-bottom: 20px;">
+          <div class="card-title-group" style="margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 12px;">
             <i class="bi bi-person"></i>
             <span>Informasi Data Diri</span>
           </div>
@@ -239,11 +258,11 @@
 
         <!-- KARTU: KEAMANAN & PASSWORD -->
         <div class="card">
-          <div class="card-title-group" style="margin-bottom: 20px;">
+          <div class="card-title-group" style="margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px;">
             <i class="bi bi-key"></i>
             <span>Keamanan & Password</span>
           </div>
-          <p style="font-size: 11px; color: var(--muted); margin-top: -12px; margin-bottom: 20px;">
+          <p style="font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 20px;">
             Kosongkan bagian ini jika Anda tidak ingin mengubah kata sandi.
           </p>
 

@@ -2,16 +2,21 @@
 <div class="nav-layout-scope">
 
   <style>
-    /* 1. LOCAL CSS RESET & VARIABLES (MENCEGAH BENTROKAN GLOBAL) */
+    /* 1. LOCAL CSS RESET & VARIABLES (SIDEBAR GELAP ELEGANT, NAVBAR CLEAN WHITE & SOFT NEUTRAL) */
     .nav-layout-scope {
       --sidebar-width: 215px;
       --sidebar-collapsed: 62px;
       --navbar-height: 60px;
-      --navbar-bg: #16241d;
-      --nav-border: #2e4a3b;
-      --line: #2e4a3b;
-      --text-color: #ffffff;
-      --muted-color: #9ca3af;
+      
+      --sidebar-bg: #0d1712;
+      --navbar-bg: #ffffff;
+      --card-hover: #f1f5f9;
+      
+      --nav-border: #e2e8f0;
+      --line: #22382c;
+      --text-color: #0f172a;
+      --muted-color: #64748b;
+      
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 14px;
       line-height: 1.5;
@@ -26,7 +31,7 @@
       padding: 0;
     }
 
-    /* 2. TOP NAVBAR STYLES */
+    /* 2. TOP NAVBAR STYLES (CLEAN WHITE, MODERN, TIDAK KAKU) */
     .nav-layout-scope .top-navbar {
       position: fixed;
       top: 0;
@@ -42,6 +47,7 @@
       padding: 0 24px;
       z-index: 90;
       transition: left 0.3s ease, width 0.3s ease;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
     }
 
     /* NOTIFICATION DROPDOWN STYLES */
@@ -50,7 +56,7 @@
     }
 
     .nav-layout-scope .notification-btn {
-      background: transparent;
+      background: #f8fafc;
       border: 1px solid var(--nav-border);
       color: var(--text-color);
       width: 38px;
@@ -61,18 +67,19 @@
       justify-content: center;
       cursor: pointer;
       position: relative;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .nav-layout-scope .notification-btn:hover {
-      background: #1f3328;
+      background: var(--card-hover);
+      border-color: #cbd5e1;
     }
 
     .nav-layout-scope .notification-badge {
       position: absolute;
       top: -4px;
       right: -4px;
-      background: #ef4444;
+      background: #dc2626;
       color: #fff;
       font-size: 10px;
       font-weight: 700;
@@ -88,10 +95,10 @@
       right: 0;
       width: 340px;
       max-height: 420px;
-      background: #17231d;
+      background: #ffffff;
       border: 1px solid var(--nav-border);
       border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
       display: none;
       flex-direction: column;
       overflow: hidden;
@@ -108,22 +115,24 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: #f8fafc;
     }
 
     .nav-layout-scope .notif-header h3 {
       font-size: 13px;
       margin: 0;
-      color: #fff;
+      color: var(--text-color);
       font-weight: 700;
     }
 
     .nav-layout-scope .mark-all-btn {
       font-size: 11px;
-      color: #4ade80;
+      color: #059669;
       background: none;
       border: none;
       cursor: pointer;
       text-decoration: none;
+      font-weight: 700;
     }
 
     .nav-layout-scope .mark-all-btn:hover {
@@ -139,16 +148,16 @@
       position: relative;
       display: flex;
       align-items: center;
-      border-bottom: 1px solid rgba(46, 74, 59, 0.5);
+      border-bottom: 1px solid #f1f5f9;
       transition: background 0.2s ease;
     }
 
     .nav-layout-scope .notif-item-wrapper:hover {
-      background: #1f3328;
+      background: #f8fafc;
     }
 
     .nav-layout-scope .notif-item-wrapper.unread {
-      background: rgba(24, 56, 40, 0.4);
+      background: #f0fdf4;
     }
 
     .nav-layout-scope .notif-item-wrapper .notif-item {
@@ -169,13 +178,13 @@
     }
 
     .nav-layout-scope .notif-icon-dot.danger {
-      background: #ef4444;
-      box-shadow: 0 0 8px #ef4444;
+      background: #dc2626;
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
     }
 
     .nav-layout-scope .notif-icon-dot.success {
-      background: #22c55e;
-      box-shadow: 0 0 8px #22c55e;
+      background: #16a34a;
+      box-shadow: 0 0 8px rgba(22, 163, 74, 0.3);
     }
 
     .nav-layout-scope .notif-content {
@@ -186,7 +195,7 @@
     .nav-layout-scope .notif-title {
       font-size: 12px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-color);
       margin: 0 0 2px 0;
       white-space: nowrap;
       overflow: hidden;
@@ -202,7 +211,7 @@
 
     .nav-layout-scope .notif-time {
       font-size: 9px;
-      color: #6b7280;
+      color: #94a3b8;
     }
 
     .nav-layout-scope .notif-delete-form {
@@ -217,7 +226,7 @@
     .nav-layout-scope .notif-delete-btn {
       background: transparent;
       border: none;
-      color: #6b7280;
+      color: #94a3b8;
       width: 24px;
       height: 24px;
       border-radius: 6px;
@@ -240,8 +249,8 @@
     }
 
     .nav-layout-scope .notif-delete-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
+      background: rgba(220, 38, 38, 0.1);
+      color: #dc2626;
     }
 
     .nav-layout-scope .notif-empty {
@@ -251,19 +260,19 @@
       font-size: 12px;
     }
 
-    /* 3. SIDEBAR STYLES */
+    /* 3. SIDEBAR STYLES (TETAP HIJAU GELAP KESAYANGAN) */
     .nav-layout-scope aside#sidebar {
       position: fixed;
       top: 0;
       left: 0;
       height: 100vh;
       width: var(--sidebar-width);
-      background: #16241d;
+      background: var(--sidebar-bg);
       border-right: 1px solid var(--line);
       display: flex;
       flex-direction: column;
       z-index: 100;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
       transition: transform 0.3s ease, width 0.3s ease;
     }
 
@@ -282,7 +291,7 @@
     }
 
     .nav-layout-scope .mobile-menu-btn:hover {
-      background: #1f3328;
+      background: #1b2e25;
     }
 
     .nav-layout-scope .brand-area {
@@ -294,6 +303,7 @@
       border-bottom: 1px solid var(--line);
       overflow: hidden;
       white-space: nowrap;
+      background: rgba(0, 0, 0, 0.15);
     }
 
     .nav-layout-scope .brand-left {
@@ -306,7 +316,7 @@
     .nav-layout-scope .brand-logo {
       width: 32px;
       height: 32px;
-      border-radius: 50%;
+      border-radius: 8px;
       background: #fff;
       display: flex;
       align-items: center;
@@ -335,12 +345,15 @@
       margin: 0;
       color: #fff;
       font-weight: 700;
+      line-height: 1.2;
     }
 
     .nav-layout-scope .brand-text small {
       font-size: 10px;
-      color: var(--muted-color);
+      color: #8fa394;
       display: block;
+      line-height: 1.2;
+      margin-top: 0px;
     }
 
     .nav-layout-scope .menu-list {
@@ -350,14 +363,14 @@
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
 
     .nav-layout-scope .menu-title {
       font-size: 9px;
       font-weight: 800;
       letter-spacing: .08em;
-      color: var(--muted-color);
+      color: #8fa394;
       padding: 8px 10px 4px;
       text-transform: uppercase;
       white-space: nowrap;
@@ -371,9 +384,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 10px;
+      padding: 9px 10px;
       border-radius: 8px;
-      color: var(--muted-color);
+      color: #8fa394;
       font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
@@ -383,14 +396,15 @@
     }
 
     .nav-layout-scope .nav-item:hover {
-      background: #1f3328;
+      background: #1b2e25;
       color: #fff;
     }
 
     .nav-layout-scope .nav-item.active {
-      background: #183828;
+      background: #143625;
       color: #4ade80;
       font-weight: 700;
+      box-shadow: inset 3px 0 0 #4ade80;
     }
 
     .nav-layout-scope .nav-item svg {
@@ -412,6 +426,7 @@
       position: relative;
       border-top: 1px solid var(--line);
       padding: 8px;
+      background: rgba(0, 0, 0, 0.1);
     }
 
     .nav-layout-scope .user-profile-btn {
@@ -428,23 +443,25 @@
       text-align: left;
       white-space: nowrap;
       overflow: hidden;
+      transition: background 0.2s ease;
     }
 
     .nav-layout-scope .user-profile-btn:hover {
-      background: #1f3328;
+      background: #1b2e25;
     }
 
     .nav-layout-scope .user-avatar {
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #24372d;
-      color: #fff;
+      background: #1b3327;
+      color: #4ade80;
       display: grid;
       place-items: center;
       font-weight: 700;
       font-size: 11px;
       flex-shrink: 0;
+      border: 1px solid var(--line);
     }
 
     .nav-layout-scope .user-info {
@@ -463,7 +480,7 @@
     .nav-layout-scope .user-info p {
       font-size: 9px;
       margin: 0;
-      color: var(--muted-color);
+      color: #8fa394;
       text-overflow: ellipsis;
       overflow: hidden;
     }
@@ -482,10 +499,10 @@
       bottom: 60px;
       left: 8px;
       right: 8px;
-      background: #16241d;
+      background: #0d1712;
       border: 1px solid var(--line);
       border-radius: 10px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4);
       display: none;
       flex-direction: column;
       overflow: hidden;
@@ -497,7 +514,7 @@
     }
 
     .nav-layout-scope .popup-item {
-      padding: 8px 12px;
+      padding: 9px 12px;
       font-size: 11px;
       color: #fff;
       display: flex;
@@ -516,7 +533,7 @@
     }
 
     .nav-layout-scope .popup-item:hover {
-      background: #1f3328;
+      background: #1b2e25;
       color: #fff;
     }
 
@@ -548,13 +565,14 @@
       align-items: center;
       justify-content: space-between;
       cursor: pointer;
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
       font-size: 10px;
-      color: var(--muted-color);
+      color: #8fa394;
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
     .nav-layout-scope .sidebar-toggle-bar:hover {
-      background: #1f3328;
+      background: #1b2e25;
       color: #fff;
     }
 
@@ -591,6 +609,7 @@
 
       .nav-layout-scope .mobile-menu-btn {
         display: block;
+        color: var(--text-color);
       }
 
       .nav-layout-scope aside#sidebar {
@@ -624,24 +643,22 @@
           </svg>
 
           @if($unreadCount > 0)
-            <span class="notification-badge" id="notifBadge">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+            <span class="notification-badge">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
           @endif
         </button>
 
         <div class="notification-dropdown" id="notifDropdownMenu">
           <div class="notif-header">
             <h3>Notifikasi Gangguan</h3>
-            <div id="notifMarkAllWrapper">
-              @if($unreadCount > 0)
-                <form action="{{ route('notifications.markAllRead') }}" method="POST" id="notifMarkAllForm" style="margin:0;">
-                  @csrf
-                  <button type="submit" class="mark-all-btn">Tandai Dibaca</button>
-                </form>
-              @endif
-            </div>
+            @if($unreadCount > 0)
+              <form action="{{ route('notifications.markAllRead') }}" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit" class="mark-all-btn">Tandai Dibaca</button>
+              </form>
+            @endif
           </div>
 
-          <div class="notif-body" id="notifBody">
+          <div class="notif-body">
             @forelse($notifications as $notif)
               @php
                 $data = $notif->data;
@@ -652,7 +669,7 @@
                   : ($data['action_url'] ?? route('incidents.index'));
               @endphp
 
-              <div class="notif-item-wrapper {{ $isUnread ? 'unread' : '' }}" data-id="{{ $notif->id }}">
+              <div class="notif-item-wrapper {{ $isUnread ? 'unread' : '' }}">
                 <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}"
                   class="notif-item">
                   <span class="notif-icon-dot {{ $colorClass }}"></span>
@@ -663,7 +680,7 @@
                   </div>
                 </a>
 
-                <form action="{{ route('notifications.destroy', $notif->id) }}" method="POST" class="notif-delete-form" data-id="{{ $notif->id }}">
+                <form action="{{ route('notifications.destroy', $notif->id) }}" method="POST" class="notif-delete-form">
                   @csrf
                   @method('DELETE')
                   <button type="submit" class="notif-delete-btn" title="Hapus Notifikasi"
@@ -688,7 +705,7 @@
 
   <!-- TOMBOL HAMBURGER MOBILE & OVERLAY -->
   <button onclick="toggleMobileSidebar()"
-    style="position: fixed; top: 12px; left: 12px; z-index: 98; background: #17231d; border: 1px solid var(--line); color: #fff; padding: 8px; border-radius: 8px; display: none; align-items: center; justify-content: center;"
+    style="position: fixed; top: 12px; left: 12px; z-index: 98; background: #ffffff; border: 1px solid var(--nav-border); color: var(--text-color); padding: 8px; border-radius: 8px; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"
     id="floatingMenuBtn">
     <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24">
       <line x1="3" y1="12" x2="21" y2="12" />
@@ -708,7 +725,7 @@
         </div>
         <div class="brand-text" style="transition: opacity 0.2s ease;">
           <h1 style="font-size: 13px; margin: 0; color: #ffffff; font-weight: 700; line-height: 1.2;">IT Solution</h1>
-          <small style="font-size: 10px; color: #9ca3af; display: block; line-height: 1.2; margin-top: 0px;">Monitoring
+          <small style="font-size: 10px; color: #8fa394; display: block; line-height: 1.2; margin-top: 0px;">Monitoring
             System</small>
         </div>
       </div>
@@ -850,203 +867,6 @@
             notifMenu.classList.remove('show');
           }
         });
-
-        const csrfToken = "{{ csrf_token() }}";
-        const notifBody = document.getElementById('notifBody');
-        const notifMarkAllWrapper = document.getElementById('notifMarkAllWrapper');
-        let lastNotifSignature = '';
-
-        function escapeHtml(text) {
-          if (!text) return '';
-          return String(text)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-        }
-
-        function updateBadge(count) {
-          let badge = document.getElementById('notifBadge');
-          if (count > 0) {
-            const text = count > 99 ? '99+' : String(count);
-            if (!badge) {
-              badge = document.createElement('span');
-              badge.className = 'notification-badge';
-              badge.id = 'notifBadge';
-              notifBtn.appendChild(badge);
-            }
-            badge.textContent = text;
-            badge.style.display = '';
-          } else if (badge) {
-            badge.style.display = 'none';
-          }
-        }
-
-        function updateMarkAllButton(count) {
-          if (!notifMarkAllWrapper) return;
-          if (count > 0) {
-            if (!document.getElementById('notifMarkAllForm')) {
-              notifMarkAllWrapper.innerHTML = `
-                <form action="{{ route('notifications.markAllRead') }}" method="POST" id="notifMarkAllForm" style="margin:0;">
-                  <input type="hidden" name="_token" value="${csrfToken}">
-                  <button type="submit" class="mark-all-btn">Tandai Dibaca</button>
-                </form>
-              `;
-            }
-          } else {
-            notifMarkAllWrapper.innerHTML = '';
-          }
-        }
-
-        function renderNotifications(items) {
-          if (!notifBody) return;
-          if (!items || items.length === 0) {
-            notifBody.innerHTML = '<div class="notif-empty">Tidak ada notifikasi saat ini.</div>';
-            return;
-          }
-
-          let html = '';
-          items.forEach(notif => {
-            html += `
-              <div class="notif-item-wrapper ${notif.is_unread ? 'unread' : ''}" data-id="${escapeHtml(notif.id)}">
-                <a href="${notif.read_url}" class="notif-item">
-                  <span class="notif-icon-dot ${escapeHtml(notif.color)}"></span>
-                  <div class="notif-content">
-                    <h4 class="notif-title">${escapeHtml(notif.title)}</h4>
-                    <p class="notif-desc">${escapeHtml(notif.message)}</p>
-                    <span class="notif-time">${escapeHtml(notif.time_ago)}</span>
-                  </div>
-                </a>
-                <form action="${notif.delete_url}" method="POST" class="notif-delete-form" data-id="${escapeHtml(notif.id)}">
-                  <input type="hidden" name="_token" value="${csrfToken}">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="notif-delete-btn" title="Hapus Notifikasi" onclick="event.stopPropagation();">
-                    <svg viewBox="0 0 24 24">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                </form>
-              </div>
-            `;
-          });
-          notifBody.innerHTML = html;
-        }
-
-        function fetchNotifications() {
-          fetch("{{ route('api.notifications.index') }}", {
-            headers: {
-              'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          })
-          .then(res => {
-            if (!res.ok) return null;
-            return res.json();
-          })
-          .then(data => {
-            if (!data) return;
-            updateBadge(data.unread_count);
-            updateMarkAllButton(data.unread_count);
-
-            const signature = (data.unread_count || 0) + '_' + (data.notifications || []).map(n => n.id).join('-');
-            if (signature !== lastNotifSignature) {
-              lastNotifSignature = signature;
-              renderNotifications(data.notifications);
-            }
-          })
-          .catch(err => {
-            console.warn('Gagal memuat notifikasi real-time:', err);
-          });
-        }
-
-        // AJAX Hapus Notifikasi
-        if (notifBody) {
-          notifBody.addEventListener('submit', function(e) {
-            const form = e.target.closest('.notif-delete-form');
-            if (!form) return;
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            const itemWrapper = form.closest('.notif-item-wrapper');
-            const deleteUrl = form.action;
-
-            fetch(deleteUrl, {
-              method: 'DELETE',
-              headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-              }
-            })
-            .then(res => res.json())
-            .then(result => {
-              if (result.status === 'success') {
-                if (itemWrapper) {
-                  itemWrapper.style.transition = 'all 0.2s ease';
-                  itemWrapper.style.opacity = '0';
-                  itemWrapper.style.transform = 'translateX(20px)';
-                  setTimeout(() => {
-                    itemWrapper.remove();
-                    const remaining = notifBody.querySelectorAll('.notif-item-wrapper');
-                    if (remaining.length === 0) {
-                      notifBody.innerHTML = '<div class="notif-empty">Tidak ada notifikasi saat ini.</div>';
-                      updateMarkAllButton(0);
-                      updateBadge(0);
-                    } else {
-                      const badge = document.getElementById('notifBadge');
-                      if (badge && badge.style.display !== 'none') {
-                        let count = parseInt(badge.textContent, 10);
-                        if (!isNaN(count) && count > 0) {
-                          updateBadge(count - 1);
-                        }
-                      }
-                    }
-                    lastNotifSignature = '';
-                  }, 200);
-                }
-              }
-            })
-            .catch(err => console.error('Error saat menghapus notifikasi:', err));
-          });
-        }
-
-        // AJAX Tandai Semua Dibaca
-        if (notifMarkAllWrapper) {
-          notifMarkAllWrapper.addEventListener('submit', function(e) {
-            const form = e.target.closest('#notifMarkAllForm');
-            if (!form) return;
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            fetch(form.action, {
-              method: 'POST',
-              headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-              }
-            })
-            .then(res => res.json())
-            .then(result => {
-              if (result.status === 'success') {
-                updateBadge(0);
-                updateMarkAllButton(0);
-                if (notifBody) {
-                  notifBody.innerHTML = '<div class="notif-empty">Tidak ada notifikasi saat ini.</div>';
-                }
-                lastNotifSignature = '';
-              }
-            })
-            .catch(err => console.error('Error tandai semua dibaca:', err));
-          });
-        }
-
-        // Polling setiap 5 detik
-        setInterval(fetchNotifications, 5000);
       }
 
       const sidebar = document.getElementById('sidebar');
