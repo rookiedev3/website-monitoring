@@ -547,6 +547,12 @@
       border: 1px solid rgba(119, 129, 149, 0.2);
     }
 
+    .badge-role.pending {
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+
     .badge-status {
       display: inline-block;
       padding: 4px 10px;
@@ -893,6 +899,7 @@
               <option value="super_admin">Super Admin</option>
               <option value="programmer">Programmer</option>
               <option value="viewer">Viewer</option>
+              <option value="pending">Belum Diatur</option>
             </select>
           </div>
           <div class="filter-dropdown">
@@ -937,8 +944,10 @@
                       <span class="badge-role super_admin">Super Admin</span>
                     @elseif($u->role === 'programmer')
                       <span class="badge-role programmer">Programmer</span>
-                    @else
+                    @elseif($u->role === 'viewer')
                       <span class="badge-role viewer">Viewer</span>
+                    @else
+                      <span class="badge-role pending">Belum Diatur</span>
                     @endif
                   </td>
                   <td>
@@ -1048,7 +1057,8 @@
           (user.name || '').toLowerCase().includes(searchQuery) ||
           (user.email || '').toLowerCase().includes(searchQuery);
 
-        const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+        const matchesRole = roleFilter === 'all' ||
+          (roleFilter === 'pending' ? !user.role : user.role === roleFilter);
 
         let matchesStatus = true;
         if (statusFilter === 'active') {
@@ -1084,11 +1094,13 @@
 
         const initials = (user.name || 'US').substring(0, 2).toUpperCase();
 
-        let roleBadgeHtml = '<span class="badge-role viewer">Viewer</span>';
+        let roleBadgeHtml = '<span class="badge-role pending">Belum Diatur</span>';
         if (user.role === 'super_admin') {
           roleBadgeHtml = '<span class="badge-role super_admin">Super Admin</span>';
         } else if (user.role === 'programmer') {
           roleBadgeHtml = '<span class="badge-role programmer">Programmer</span>';
+        } else if (user.role === 'viewer') {
+          roleBadgeHtml = '<span class="badge-role viewer">Viewer</span>';
         }
 
         const statusBadgeHtml = user.is_active

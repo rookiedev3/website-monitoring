@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\MonitoringSettingController;
@@ -18,6 +19,14 @@ Route::middleware('guest')->group(function () {
         Route::get('/', 'index')->name('login');
         Route::post('/login', 'login')->name('login.proses');
     });
+            // Register
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.proses');
+
+    // Google OAuth
+    Route::get('/auth/google/login', [GoogleController::class, 'redirectLogin'])->name('google.redirect');
+    Route::get('/auth/google/register', [GoogleController::class, 'redirectRegister'])->name('google.redirect.register');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
 });
 
 // BUAT YANG SUDAH LOGIN

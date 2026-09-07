@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | IT Solution Monitoring</title>
+    <title>Register | IT Solution Monitoring</title>
     <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -133,9 +133,9 @@
             color: var(--text-muted);
         }
 
-        /* SISI KANAN: Form Sign In */
+        /* SISI KANAN: Form Register */
         .right-form-side {
-            padding: 40px 60px;
+            padding: 30px 60px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -148,12 +148,12 @@
         }
 
         .form-label {
-            font-size: 12px !important;
+            font-size: 11px !important;
             font-weight: 700 !important;
             color: var(--text-muted) !important;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 6px !important;
+            margin-bottom: 4px !important;
         }
 
         .input-group-custom, .password-container {
@@ -165,17 +165,17 @@
 
         .input-icon {
             position: absolute;
-            left: 18px;
+            left: 16px;
             color: var(--text-muted);
-            font-size: 18px;
+            font-size: 16px;
             z-index: 10;
             transition: color 0.3s ease;
         }
 
         .form-control {
-            border-radius: 14px;
-            padding: 12px 18px 12px 50px;
-            font-size: 14.5px;
+            border-radius: 12px;
+            padding: 10px 16px 10px 46px;
+            font-size: 14px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background-color: rgba(15, 23, 42, 0.6);
             color: var(--text-main);
@@ -183,7 +183,7 @@
         }
 
         .password-container .form-control {
-            padding-right: 50px;
+            padding-right: 46px;
         }
 
         .form-control:focus {
@@ -214,7 +214,7 @@
 
         .password-toggle-btn {
             position: absolute;
-            right: 16px;
+            right: 14px;
             background: transparent;
             border: none;
             color: var(--text-muted);
@@ -222,7 +222,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             z-index: 10;
             transition: color 0.2s ease;
         }
@@ -235,10 +235,10 @@
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #022c22;
             border: none;
-            border-radius: 14px;
-            padding: 14px;
+            border-radius: 12px;
+            padding: 12px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14.5px;
             letter-spacing: 0.3px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px var(--accent-glow);
@@ -266,26 +266,13 @@
             transform: translateY(-2px);
         }
 
-        .form-check-input {
-            background-color: rgba(2, 6, 23, 0.6);
-            border-color: rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            width: 18px;
-            height: 18px;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--accent-green);
-            border-color: var(--accent-green);
-        }
-
         .divider-text {
             display: flex;
             align-items: center;
             text-align: center;
             color: var(--text-muted);
-            font-size: 12px;
-            margin: 14px 0;
+            font-size: 11.5px;
+            margin: 12px 0;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -309,9 +296,9 @@
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-main);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 12px;
-            font-size: 14px;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 13.5px;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -330,25 +317,25 @@
         }
 
         .btn-google img {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
         }
 
-        .register-link-text {
+        .login-link-text {
             text-align: center;
-            font-size: 13.5px;
+            font-size: 13px;
             color: var(--text-muted);
-            margin-top: 14px;
+            margin-top: 12px;
             margin-bottom: 0;
         }
 
-        .register-link-text a {
+        .login-link-text a {
             color: var(--accent-green);
             font-weight: 600;
             text-decoration: none;
         }
 
-        .register-link-text a:hover {
+        .login-link-text a:hover {
             text-decoration: underline;
         }
 
@@ -413,9 +400,9 @@
 
             <div class="left-content">
                 <div class="welcome-subtitle">IT Solution</div>
-                <div class="welcome-title">WEBSITE MONITORING</div>
+                <div class="welcome-title">DAFTAR AKUN</div>
                 <p style="font-size: 15.5px; color: rgba(248, 250, 252, 0.85); margin-top: 14px; line-height: 1.6; max-width: 440px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
-                    Platform pemantauan otomatis status website klien, pelacakan incident, dan kalkulasi uptime secara real-time untuk penanganan tim IT.
+                    Buat akun baru untuk mengakses platform pemantauan status website klien. Akun akan aktif setelah disetujui oleh admin.
                 </p>
             </div>
 
@@ -424,30 +411,32 @@
             </div>
         </div>
 
-        <!-- SISI KANAN: Form Sign In -->
+        <!-- SISI KANAN: Form Register -->
         <div class="right-form-side">
 
             <div class="mb-3">
-                <h3 class="fw-bold mb-1" style="color: #fff; font-size: 28px; letter-spacing: -0.5px;">LOGIN</h3>
-                <p class="mb-0" style="font-size: 13.5px; color: var(--text-muted);">Masukkan kredensial Anda untuk mengakses sistem.</p>
+                <h3 class="fw-bold mb-1" style="color: #fff; font-size: 26px; letter-spacing: -0.5px;">REGISTER</h3>
+                <p class="mb-0" style="font-size: 13px; color: var(--text-muted);">Buat akun baru untuk mengajukan akses ke sistem.</p>
             </div>
 
-            @if (session('success'))
-                <div style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 10px 14px; border-radius: 12px; font-size: 13px; margin-bottom: 16px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 500;">
-                    <i class="bi bi-check-circle-fill me-1"></i> {{ session('success') }}
-                </div>
-            @endif
-
             @if ($errors->any())
-                <div style="background-color: var(--red-glow); color: var(--red-alert); padding: 10px 14px; border-radius: 12px; font-size: 13px; margin-bottom: 16px; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 500;">
+                <div style="background-color: var(--red-glow); color: var(--red-alert); padding: 8px 12px; border-radius: 10px; font-size: 12.5px; margin-bottom: 12px; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 500;">
                     <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ $errors->first() }}
                 </div>
             @endif
 
-            <form action="{{ route('login.proses') }}" method="POST">
+            <form action="{{ route('register.proses') }}" method="POST">
                 @csrf
 
-                <div class="mb-3">
+                <div class="mb-2">
+                    <label class="form-label">Nama Lengkap</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-person input-icon"></i>
+                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required placeholder="Masukkan nama lengkap Anda" autocomplete="name">
+                    </div>
+                </div>
+
+                <div class="mb-2">
                     <label class="form-label">Email</label>
                     <div class="input-group-custom">
                         <i class="bi bi-envelope input-icon"></i>
@@ -455,40 +444,42 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-2">
                     <label class="form-label">Password</label>
                     <div class="password-container">
                         <i class="bi bi-shield-lock input-icon"></i>
-                        <input type="password" name="password" id="password" class="form-control" required placeholder="Masukkan password Anda">
+                        <input type="password" name="password" id="password" class="form-control" required placeholder="Minimal 8 karakter">
                         <button type="button" class="password-toggle-btn" id="togglePassword">
                             <i class="bi bi-eye-slash" id="eyeIcon"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-3" style="font-size: 13px;">
-                    <div class="form-check d-flex align-items-center gap-2">
-                        <input class="form-check-input mt-0" type="checkbox" name="remember" id="remember">
-                        <label class="form-check-label" for="remember" style="color: var(--text-muted); font-weight: 500; cursor: pointer;">
-                            Ingat Saya
-                        </label>
+                <div class="mb-3">
+                    <label class="form-label">Konfirmasi Password</label>
+                    <div class="password-container">
+                        <i class="bi bi-shield-lock input-icon"></i>
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required placeholder="Ulangi password Anda">
+                        <button type="button" class="password-toggle-btn" id="togglePasswordConfirm">
+                            <i class="bi bi-eye-slash" id="eyeIconConfirm"></i>
+                        </button>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-custom-login w-100 mb-1">
-                    LOGIN <i class="bi bi-arrow-right ms-1"></i>
+                <button type="submit" class="btn btn-custom-login w-100">
+                    DAFTAR <i class="bi bi-arrow-right ms-1"></i>
                 </button>
             </form>
 
             <div class="divider-text">atau</div>
 
-            <a href="{{ route('google.redirect') }}" class="btn-google">
+            <a href="{{ route('google.redirect.register') }}" class="btn-google">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
-                Login dengan Google
+                Daftar dengan Google
             </a>
 
-            <p class="register-link-text">
-                Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
+            <p class="login-link-text">
+                Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
             </p>
 
         </div>
@@ -496,15 +487,20 @@
     </div>
 
     <script>
-        const togglePassword = document.getElementById('togglePassword');
-        const password = document.getElementById('password');
-        const eyeIcon = document.getElementById('eyeIcon');
+        function setupToggle(buttonId, inputId, iconId) {
+            const toggleBtn = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
 
-        togglePassword.addEventListener('click', function () {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            eyeIcon.className = type === 'password' ? 'bi bi-eye-slash' : 'bi bi-eye';
-        });
+            toggleBtn.addEventListener('click', function () {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                icon.className = type === 'password' ? 'bi bi-eye-slash' : 'bi bi-eye';
+            });
+        }
+
+        setupToggle('togglePassword', 'password', 'eyeIcon');
+        setupToggle('togglePasswordConfirm', 'password_confirmation', 'eyeIconConfirm');
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
