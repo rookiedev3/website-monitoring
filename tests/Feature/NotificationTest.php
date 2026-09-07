@@ -328,4 +328,148 @@ class NotificationTest extends TestCase
             WebsiteUpNotification::class
         );
     }
+
+    public function test_authenticated_user_can_fetch_notifications_via_api(): void
+    {
+        $programmer = User::factory()->create([
+            'role' => 'programmer',
+            'is_active' => true,
+        ]);
+
+        $website = Website::create([
+            'customer_name' => 'Client H',
+            'website_name' => 'API Notif Test',
+            'url' => 'https://api-notif-example.com',
+            'domain' => 'api-notif-example.com',
+            'check_interval' => 5,
+            'timeout_seconds' => 10,
+            'monitoring_status' => 'active',
+        ]);
+
+        $incident = Incident::create([
+            'website_id' => $website->id,
+            'incident_type' => 'down',
+            'status' => 'open',
+            'started_at' => now(),
+        ]);
+
+        $programmer->notify(new WebsiteDownNotification(
+            $website,
+            $incident,
+            'down',
+            now()->format('d M Y - H:i:s')
+        ));
+
+        $response = $this->actingAs($programmer)
+            ->getJson(route('api.notifications.index'));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'unread_count',
+                'notifications' => [
+                    '*' => [
+                        'id',
+                        'is_unread',
+                        'title',
+                        'message',
+                        'color',
+                        'time_ago',
+                        'read_url',
+                        'delete_url',
+                    ],
+                ],
+            ]);
+
+        $this->assertEquals(1, $response->json('unread_count'));
+    }
+
+    public function test_user_can_mark_all_notifications_as_read_via_ajax(): void
+    {
+        $programmer = User::factory()->create([
+            'role' => 'programmer',
+            'is_active' => true,
+        ]);
+
+        $website = Website::create([
+            'customer_name' => 'Client I',
+            'website_name' => 'AJAX Mark All Test',
+            'url' => 'https://ajax-markall-example.com',
+            'domain' => 'ajax-markall-example.com',
+            'check_interval' => 5,
+            'timeout_seconds' => 10,
+            'monitoring_status' => 'active',
+        ]);
+
+        $incident = Incident::create([
+            'website_id' => $website->id,
+            'incident_type' => 'down',
+            'status' => 'open',
+            'started_at' => now(),
+        ]);
+
+        $programmer->notify(new WebsiteDownNotification(
+            $website,
+            $incident,
+            'down',
+            now()->format('d M Y - H:i:s')
+        ));
+
+        $this->assertEquals(1, $programmer->unreadNotifications()->count());
+
+        $response = $this->actingAs($programmer)
+            ->postJson(route('notifications.markAllRead'));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+            ]);
+
+        $this->assertEquals(0, $programmer->fresh()->unreadNotifications()->count());
+    }
+
+    public function test_user_can_delete_notification_via_ajax(): void
+    {
+        $programmer = User::factory()->create([
+            'role' => 'programmer',
+            'is_active' => true,
+        ]);
+
+        $website = Website::create([
+            'customer_name' => 'Client J',
+            'website_name' => 'AJAX Delete Notif Test',
+            'url' => 'https://ajax-del-example.com',
+            'domain' => 'ajax-del-example.com',
+            'check_interval' => 5,
+            'timeout_seconds' => 10,
+            'monitoring_status' => 'active',
+        ]);
+
+        $incident = Incident::create([
+            'website_id' => $website->id,
+            'incident_type' => 'down',
+            'status' => 'open',
+            'started_at' => now(),
+        ]);
+
+        $programmer->notify(new WebsiteDownNotification(
+            $website,
+            $incident,
+            'down',
+            now()->format('d M Y - H:i:s')
+        ));
+
+        $notification = $programmer->unreadNotifications()->first();
+        $this->assertNotNull($notification);
+
+        $response = $this->actingAs($programmer)
+            ->deleteJson(route('notifications.destroy', $notification->id));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+            ]);
+
+        $this->assertEquals(0, $programmer->fresh()->notifications()->count());
+    }
 }
+

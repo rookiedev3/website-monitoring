@@ -61,13 +61,9 @@ Route::middleware('auth')->group(function () {
         return redirect($target);
     })->name('notifications.readAndRedirect');
 
-    // Tandai semua notifikasi dibaca
-    Route::post('/notifications/mark-all-read', function () {
-        auth()->user()->unreadNotifications->markAsRead();
-
-        return back()->with('success', 'Semua notifikasi telah ditandai dibaca.');
-    })->name('notifications.markAllRead');
-
+    // API & Aksi Notifikasi
+    Route::get('/api/notifications', [NotificationController::class, 'apiIndex'])->name('api.notifications.index');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // BUAT SUPER ADMIN

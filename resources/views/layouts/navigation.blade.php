@@ -624,22 +624,24 @@
           </svg>
 
           @if($unreadCount > 0)
-            <span class="notification-badge">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+            <span class="notification-badge" id="notifBadge">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
           @endif
         </button>
 
         <div class="notification-dropdown" id="notifDropdownMenu">
           <div class="notif-header">
             <h3>Notifikasi Gangguan</h3>
-            @if($unreadCount > 0)
-              <form action="{{ route('notifications.markAllRead') }}" method="POST" style="margin:0;">
-                @csrf
-                <button type="submit" class="mark-all-btn">Tandai Dibaca</button>
-              </form>
-            @endif
+            <div id="notifMarkAllWrapper">
+              @if($unreadCount > 0)
+                <form action="{{ route('notifications.markAllRead') }}" method="POST" id="notifMarkAllForm" style="margin:0;">
+                  @csrf
+                  <button type="submit" class="mark-all-btn">Tandai Dibaca</button>
+                </form>
+              @endif
+            </div>
           </div>
 
-          <div class="notif-body">
+          <div class="notif-body" id="notifBody">
             @forelse($notifications as $notif)
               @php
                 $data = $notif->data;
@@ -650,7 +652,7 @@
                   : ($data['action_url'] ?? route('incidents.index'));
               @endphp
 
-              <div class="notif-item-wrapper {{ $isUnread ? 'unread' : '' }}">
+              <div class="notif-item-wrapper {{ $isUnread ? 'unread' : '' }}" data-id="{{ $notif->id }}">
                 <a href="{{ route('notifications.readAndRedirect', [$notif->id, 'redirect' => $targetUrl]) }}"
                   class="notif-item">
                   <span class="notif-icon-dot {{ $colorClass }}"></span>
@@ -661,7 +663,7 @@
                   </div>
                 </a>
 
-                <form action="{{ route('notifications.destroy', $notif->id) }}" method="POST" class="notif-delete-form">
+                <form action="{{ route('notifications.destroy', $notif->id) }}" method="POST" class="notif-delete-form" data-id="{{ $notif->id }}">
                   @csrf
                   @method('DELETE')
                   <button type="submit" class="notif-delete-btn" title="Hapus Notifikasi"
@@ -848,6 +850,203 @@
             notifMenu.classList.remove('show');
           }
         });
+
+        const csrfToken = "{{ csrf_token() }}";
+        const notifBody = document.getElementById('notifBody');
+        const notifMarkAllWrapper = document.getElementById('notifMarkAllWrapper');
+        let lastNotifSignature = '';
+
+        function escapeHtml(text) {
+          if (!text) return '';
+          return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+
+        function updateBadge(count) {
+          let badge = document.getElementById('notifBadge');
+          if (count > 0) {
+            const text = count > 99 ? '99+' : String(count);
+            if (!badge) {
+              badge = document.createElement('span');
+              badge.className = 'notification-badge';
+              badge.id = 'notifBadge';
+              notifBtn.appendChild(badge);
+            }
+            badge.textContent = text;
+            badge.style.display = '';
+          } else if (badge) {
+            badge.style.display = 'none';
+          }
+        }
+
+        function updateMarkAllButton(count) {
+          if (!notifMarkAllWrapper) return;
+          if (count > 0) {
+            if (!document.getElementById('notifMarkAllForm')) {
+              notifMarkAllWrapper.innerHTML = `
+                <form action="{{ route('notifications.markAllRead') }}" method="POST" id="notifMarkAllForm" style="margin:0;">
+                  <input type="hidden" name="_token" value="${csrfToken}">
+                  <button type="submit" class="mark-all-btn">Tandai Dibaca</button>
+                </form>
+              `;
+            }
+          } else {
+            notifMarkAllWrapper.innerHTML = '';
+          }
+        }
+
+        function renderNotifications(items) {
+          if (!notifBody) return;
+          if (!items || items.length === 0) {
+            notifBody.innerHTML = '<div class="notif-empty">Tidak ada notifikasi saat ini.</div>';
+            return;
+          }
+
+          let html = '';
+          items.forEach(notif => {
+            html += `
+              <div class="notif-item-wrapper ${notif.is_unread ? 'unread' : ''}" data-id="${escapeHtml(notif.id)}">
+                <a href="${notif.read_url}" class="notif-item">
+                  <span class="notif-icon-dot ${escapeHtml(notif.color)}"></span>
+                  <div class="notif-content">
+                    <h4 class="notif-title">${escapeHtml(notif.title)}</h4>
+                    <p class="notif-desc">${escapeHtml(notif.message)}</p>
+                    <span class="notif-time">${escapeHtml(notif.time_ago)}</span>
+                  </div>
+                </a>
+                <form action="${notif.delete_url}" method="POST" class="notif-delete-form" data-id="${escapeHtml(notif.id)}">
+                  <input type="hidden" name="_token" value="${csrfToken}">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="notif-delete-btn" title="Hapus Notifikasi" onclick="event.stopPropagation();">
+                    <svg viewBox="0 0 24 24">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            `;
+          });
+          notifBody.innerHTML = html;
+        }
+
+        function fetchNotifications() {
+          fetch("{{ route('api.notifications.index') }}", {
+            headers: {
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(res => {
+            if (!res.ok) return null;
+            return res.json();
+          })
+          .then(data => {
+            if (!data) return;
+            updateBadge(data.unread_count);
+            updateMarkAllButton(data.unread_count);
+
+            const signature = (data.unread_count || 0) + '_' + (data.notifications || []).map(n => n.id).join('-');
+            if (signature !== lastNotifSignature) {
+              lastNotifSignature = signature;
+              renderNotifications(data.notifications);
+            }
+          })
+          .catch(err => {
+            console.warn('Gagal memuat notifikasi real-time:', err);
+          });
+        }
+
+        // AJAX Hapus Notifikasi
+        if (notifBody) {
+          notifBody.addEventListener('submit', function(e) {
+            const form = e.target.closest('.notif-delete-form');
+            if (!form) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const itemWrapper = form.closest('.notif-item-wrapper');
+            const deleteUrl = form.action;
+
+            fetch(deleteUrl, {
+              method: 'DELETE',
+              headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            })
+            .then(res => res.json())
+            .then(result => {
+              if (result.status === 'success') {
+                if (itemWrapper) {
+                  itemWrapper.style.transition = 'all 0.2s ease';
+                  itemWrapper.style.opacity = '0';
+                  itemWrapper.style.transform = 'translateX(20px)';
+                  setTimeout(() => {
+                    itemWrapper.remove();
+                    const remaining = notifBody.querySelectorAll('.notif-item-wrapper');
+                    if (remaining.length === 0) {
+                      notifBody.innerHTML = '<div class="notif-empty">Tidak ada notifikasi saat ini.</div>';
+                      updateMarkAllButton(0);
+                      updateBadge(0);
+                    } else {
+                      const badge = document.getElementById('notifBadge');
+                      if (badge && badge.style.display !== 'none') {
+                        let count = parseInt(badge.textContent, 10);
+                        if (!isNaN(count) && count > 0) {
+                          updateBadge(count - 1);
+                        }
+                      }
+                    }
+                    lastNotifSignature = '';
+                  }, 200);
+                }
+              }
+            })
+            .catch(err => console.error('Error saat menghapus notifikasi:', err));
+          });
+        }
+
+        // AJAX Tandai Semua Dibaca
+        if (notifMarkAllWrapper) {
+          notifMarkAllWrapper.addEventListener('submit', function(e) {
+            const form = e.target.closest('#notifMarkAllForm');
+            if (!form) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            fetch(form.action, {
+              method: 'POST',
+              headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            })
+            .then(res => res.json())
+            .then(result => {
+              if (result.status === 'success') {
+                updateBadge(0);
+                updateMarkAllButton(0);
+                if (notifBody) {
+                  notifBody.innerHTML = '<div class="notif-empty">Tidak ada notifikasi saat ini.</div>';
+                }
+                lastNotifSignature = '';
+              }
+            })
+            .catch(err => console.error('Error tandai semua dibaca:', err));
+          });
+        }
+
+        // Polling setiap 5 detik
+        setInterval(fetchNotifications, 5000);
       }
 
       const sidebar = document.getElementById('sidebar');

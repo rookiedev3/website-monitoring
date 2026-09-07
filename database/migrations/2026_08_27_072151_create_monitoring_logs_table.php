@@ -28,7 +28,8 @@ return new class extends Migration
             $table->string('error_type')->nullable();
             $table->text('error_message')->nullable();
 
-            $table->timestamp('checked_at');
+            // Updated line below:
+            $table->timestamp('checked_at')->useCurrent();
             $table->timestamp('created_at')->useCurrent();
 
             $table->index(['website_id', 'checked_at']);
