@@ -5,44 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Log - {{ $website->website_name }}</title>
-            <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <style>
         :root {
-            --bg: #0b120f;
-            --card: #111b16;
-            --card-hover: #17231d;
-            --ink: #dce9e1;
-            --muted: #82988c;
-            --line: #1b2a22;
-            --green: #0f9f6e;
-            --green-soft: rgba(15, 159, 110, 0.12);
-            --red: #d94c4c;
-            --red-soft: rgba(217, 76, 76, 0.12);
-            --amber: #d98b1d;
-            --amber-soft: rgba(217, 139, 29, 0.12);
-            --blue: #3b82f6;
-            --blue-soft: rgba(59, 130, 246, 0.12);
-            --shadow: 0 10px 30px rgba(0, 0, 0, .3);
+            --bg: #f4f7fc;
+            --card: #ffffff;
+            --card-hover: #f8fafc;
+            --ink: #172033;
+            --muted: #778195;
+            --line: #e8edf5;
+            --green: #013220;
+            --green-vibrant: #006B3F;
+            --green-soft: #e6f7ee;
+            --red: #dc2626;
+            --red-soft: #fef2f2;
+            --amber: #d97706;
+            --amber-soft: #fef3c7;
+            --blue: #0284c7;
+            --blue-soft: #e0f2fe;
+            --shadow: 0 10px 25px -5px rgba(31, 53, 97, 0.05), 0 8px 10px -6px rgba(31, 53, 97, 0.03);
             --sidebar-width: 260px;
-            --sidebar-collapsed: 76px;
+            --sidebar-collapsed: 80px;
         }
 
         * {
             box-sizing: border-box;
-            transition: width 0.3s ease, padding 0.3s ease;
         }
 
         body {
             margin: 0;
-            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--ink);
             background: var(--bg);
             display: flex;
@@ -55,20 +54,26 @@
             text-decoration: none;
         }
 
+        /* MAIN CONTENT & PERGESERAN SIDEBAR */
         main {
             margin-left: var(--sidebar-width);
             flex: 1;
-            padding: 30px;
+            /* Disesuaikan: Atas 85px agar aman dari navbar, Kiri-Kanan 12px agar melebar konsisten */
+            padding: 85px 12px 16px 12px;
             min-width: 0;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
         }
 
-        aside.collapsed~main {
+        aside#sidebar.collapsed~main {
             margin-left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed));
         }
 
         .container {
-            max-width: 1180px;
-            margin: 0 auto;
+            max-width: none;
+            margin: 0;
+            width: 100%;
         }
 
         /* Tombol Kembali */
@@ -78,13 +83,13 @@
             gap: 8px;
             color: var(--muted);
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 20px;
             transition: color 0.2s ease;
         }
 
         .btn-back:hover {
-            color: #fff;
+            color: var(--ink);
         }
 
         /* Header Card */
@@ -103,13 +108,13 @@
         }
 
         .header-card.is-paused {
-            border-color: rgba(130, 152, 140, 0.35);
+            border-color: rgba(119, 129, 149, 0.35);
         }
 
         .header-info h2 {
-            font-size: 24px;
+            font-size: 22px;
             margin: 0 0 6px;
-            color: #fff;
+            color: var(--ink);
             font-weight: 800;
             display: flex;
             align-items: center;
@@ -118,9 +123,9 @@
         }
 
         .header-info a {
-            color: var(--green);
-            font-size: 14px;
-            font-weight: 500;
+            color: var(--green-vibrant);
+            font-size: 13px;
+            font-weight: 600;
             word-break: break-all;
         }
 
@@ -140,11 +145,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(130, 152, 140, 0.08);
-            border: 1px solid rgba(130, 152, 140, 0.3);
-            color: var(--muted);
+            background: #fef3c7;
+            border: 1px solid rgba(217, 119, 6, 0.25);
+            color: var(--amber);
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             padding: 12px 16px;
             border-radius: 12px;
             margin-bottom: 24px;
@@ -152,14 +157,14 @@
 
         .paused-banner i {
             font-size: 16px;
-            color: var(--muted);
+            color: var(--amber);
         }
 
         /* Cards Layout */
         .card {
             background: var(--card);
             border: 1px solid var(--line);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 20px;
             box-shadow: var(--shadow);
             margin-bottom: 24px;
@@ -167,8 +172,8 @@
 
         .card-title {
             font-size: 15px;
-            font-weight: 700;
-            color: #fff;
+            font-weight: 800;
+            color: var(--ink);
             margin-bottom: 16px;
             display: flex;
             align-items: center;
@@ -177,7 +182,9 @@
 
         /* Table Styling */
         .table-responsive {
+            width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
@@ -185,21 +192,27 @@
             border-collapse: collapse;
             text-align: left;
             font-size: 13px;
+            min-width: 650px;
         }
 
         th {
+            background: #f8fafc;
             color: var(--muted);
-            font-size: 11px;
+            font-size: 10px;
+            font-weight: 700;
             text-transform: uppercase;
-            padding: 12px;
+            letter-spacing: 0.5px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--line);
+            white-space: nowrap;
         }
 
         td {
-            padding: 14px 12px;
+            padding: 14px 14px;
             border-bottom: 1px solid var(--line);
             color: var(--ink);
             vertical-align: middle;
+            font-weight: 600;
         }
 
         tr:last-child td {
@@ -211,16 +224,16 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 4px 10px;
-            border-radius: 99px;
-            font-size: 11px;
-            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
             white-space: nowrap;
         }
 
         .badge-online {
             background: var(--green-soft);
-            color: var(--green);
+            color: #137a48;
         }
 
         .badge-down {
@@ -234,21 +247,22 @@
         }
 
         .badge-muted {
-            background: rgba(255, 255, 255, 0.05);
+            background: #f1f5f9;
             color: var(--muted);
             border: 1px solid var(--line);
         }
 
         .badge-paused {
-            background: rgba(130, 152, 140, 0.12);
+            background: rgba(119, 129, 149, 0.12);
             color: var(--muted);
-            border: 1px solid rgba(130, 152, 140, 0.3);
+            border: 1px solid rgba(119, 129, 149, 0.25);
         }
 
         .text-error {
             color: var(--red);
             font-size: 12px;
             font-family: monospace;
+            font-weight: 600;
         }
 
         /* UI Custom Pagination Layout */
@@ -257,15 +271,16 @@
             justify-content: space-between;
             align-items: center;
             padding-top: 16px;
-            margin-top: 16px;
+            margin-top: 12px;
             border-top: 1px solid var(--line);
             flex-wrap: wrap;
             gap: 12px;
         }
 
         .pagination-info {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--muted);
+            font-weight: 600;
         }
 
         .pagination-buttons {
@@ -275,13 +290,13 @@
         }
 
         .btn-page {
-            background: rgba(255, 255, 255, 0.03);
+            background: #f8fafc;
             border: 1px solid var(--line);
             color: var(--ink);
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -291,9 +306,9 @@
         }
 
         .btn-page:hover:not(:disabled) {
-            background: var(--card-hover);
+            background: var(--green);
             color: #fff;
-            border-color: var(--muted);
+            border-color: var(--green);
         }
 
         .btn-page:disabled {
@@ -318,15 +333,15 @@
             background: transparent;
             color: var(--ink);
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.2s ease;
         }
 
         .page-num:hover {
-            background: var(--card-hover);
-            color: #fff;
+            background: #f8fafc;
+            color: var(--green);
         }
 
         .page-num.active {
@@ -339,6 +354,9 @@
             color: var(--muted);
             font-size: 12px;
             padding: 0 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Laravel Bawaan / Tailwind Pagination Overrides */
@@ -355,15 +373,16 @@
             flex-wrap: wrap;
             gap: 12px;
             width: 100%;
-            font-size: 12px !important;
+            font-size: 11px !important;
             color: var(--muted);
         }
 
         .pagination-wrapper nav>div:first-child,
         .pagination-wrapper nav p {
-            font-size: 12px !important;
+            font-size: 11px !important;
             color: var(--muted) !important;
             margin: 0 !important;
+            font-weight: 600 !important;
         }
 
         .pagination-wrapper nav>div:last-child,
@@ -395,19 +414,19 @@
             justify-content: center !important;
             border-radius: 8px !important;
             border: 1px solid var(--line) !important;
-            background: rgba(255, 255, 255, 0.03) !important;
+            background: #f8fafc !important;
             color: var(--ink) !important;
             font-size: 12px !important;
-            font-weight: 600 !important;
+            font-weight: 700 !important;
             text-decoration: none !important;
             transition: all 0.2s ease !important;
             line-height: 1.4 !important;
         }
 
         .pagination-wrapper a:hover {
-            background: var(--card-hover) !important;
+            background: var(--green) !important;
             color: #fff !important;
-            border-color: var(--muted) !important;
+            border-color: var(--green) !important;
         }
 
         .pagination-wrapper span[aria-current="page"]>span {
@@ -417,15 +436,17 @@
         }
 
         .pagination-wrapper span[aria-disabled="true"]>span {
-            opacity: 0.3 !important;
+            opacity: 0.4 !important;
             cursor: not-allowed !important;
             background: transparent !important;
         }
 
         /* Responsive Design */
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             main {
                 margin-left: 0 !important;
+                width: 100% !important;
+                padding: 85px 16px 16px 16px;
             }
         }
     </style>
@@ -434,7 +455,7 @@
 <body>
 
     <!-- SIDEBAR LARAVEL LAYOUT -->
-    @include('layouts.sidebar')
+    @include('layouts.navigation')
 
     <main>
         <div class="container">
@@ -490,7 +511,7 @@
             <!-- RIWAYAT LOG PENGECEKAN -->
             <div class="card">
                 <div class="card-title">
-                    <i class="bi bi-clock-history text-success"></i>
+                    <i class="bi bi-clock-history" style="color: var(--green-vibrant);"></i>
                     <span>Riwayat Log Pengecekan</span>
                 </div>
                 <div class="table-responsive">
@@ -518,12 +539,12 @@
                                     </td>
                                     <td>
                                         <strong
-                                            style="color:#fff;">{{ $log->formatted_http_code ?? $log->http_code ?? '-' }}</strong>
+                                            style="color:var(--ink);">{{ $log->formatted_http_code ?? $log->http_code ?? '-' }}</strong>
                                     </td>
                                     <td>
                                         @if($log->response_time_ms)
                                             <span
-                                                style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)' }}; font-weight:700;">
+                                                style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : '#137a48' }}; font-weight:700;">
                                                 {{ number_format($log->response_time_ms) }} ms
                                             </span>
                                         @else
@@ -569,18 +590,17 @@
                                 </a>
                             @endif
 
-                            {{-- Nomor Halaman Ringkas (Max 3 Halaman di Sekitar Halaman Aktif) --}}
+                            {{-- Nomor Halaman Ringkas --}}
                             <div class="page-numbers">
                                 @php
                                     $currentPage = $logs->currentPage();
                                     $lastPage = $logs->lastPage();
-                                    $side = 1; // Jumlah halaman yang tampil di kiri/kanan halaman aktif
+                                    $side = 1;
 
                                     $start = max(1, $currentPage - $side);
                                     $end = min($lastPage, $currentPage + $side);
                                 @endphp
 
-                                {{-- Halaman Pertama & Ellipsis Kiri --}}
                                 @if ($start > 1)
                                     <a href="{{ $logs->url(1) }}" class="page-num">1</a>
                                     @if ($start > 2)
@@ -588,7 +608,6 @@
                                     @endif
                                 @endif
 
-                                {{-- Loop Halaman Utama --}}
                                 @for ($p = $start; $p <= $end; $p++)
                                     @if ($p == $currentPage)
                                         <span class="page-num active">{{ $p }}</span>
@@ -597,7 +616,6 @@
                                     @endif
                                 @endfor
 
-                                {{-- Ellipsis Kanan & Halaman Terakhir --}}
                                 @if ($end < $lastPage)
                                     @if ($end < $lastPage - 1)
                                         <span class="page-dots">...</span>

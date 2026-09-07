@@ -4,27 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings - Website Monitoring IT Solution</title>
-        <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
+  <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <style>
     :root {
-      --bg: #0b120f;
-      --card: #111b16;
-      --card-hover: #17231d;
-      --ink: #dce9e1;
-      --muted: #82988c;
-      --line: #2e4a3b;
-      --green: #0f9f6e;
-      --green-soft: rgba(15, 159, 110, 0.12);
-      --red: #d94c4c;
-      --amber: #d98b1d;
-      --shadow: 0 10px 30px rgba(0,0,0,.3);
-      --sidebar-width: 215px;
-      --sidebar-collapsed: 62px;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --card-hover: #f8fafc;
+      --ink: #172033;
+      --muted: #778195;
+      --line: #e8edf5;
+      --green: #013220;
+      --green-vibrant: #006B3F;
+      --green-soft: #e6f7ee;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --blue: #0284c7;
+      --blue-soft: #e0f2fe;
+      --shadow: 0 10px 25px -5px rgba(31, 53, 97, 0.05), 0 8px 10px -6px rgba(31, 53, 97, 0.03);
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 80px;
     }
+
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--ink);
       background: var(--bg);
       display: flex;
@@ -32,32 +42,21 @@
       overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
+
+    /* SIDEBAR STYLE */
     aside {
       position: fixed; top: 0; left: 0; height: 100vh;
-      width: var(--sidebar-width); background: var(--card);
-      border-right: 1px solid var(--line); display: flex;
+      width: var(--sidebar-width); background: #013220;
+      border-right: 1px solid #04472d; display: flex;
       flex-direction: column; z-index: 100; box-shadow: var(--shadow);
     }
     aside.collapsed { width: var(--sidebar-collapsed); }
-    .brand-area { padding: 20px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); overflow: hidden; white-space: nowrap; }
-    .logo { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #17231d, #24372d); border: 1px solid var(--line); display: grid; place-items: center; font-weight: 900; color: var(--green); flex-shrink: 0; }
-    .brand-text h1 { font-size: 14px; margin: 0; color: #fff; font-weight: 700; }
-    .brand-text small { font-size: 11px; color: var(--muted); }
-    .menu-list { flex: 1; padding: 16px 10px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 4px; }
-    .menu-title { font-size: 10px; font-weight: 800; letter-spacing: .1em; color: var(--muted); padding: 10px 10px 4px; text-transform: uppercase; white-space: nowrap; }
-    aside.collapsed .menu-title { display: none; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px; color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-    .nav-item:hover, .nav-item.active { background: var(--card-hover); color: #fff; }
-    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    aside.collapsed .nav-item span { display: none; }
 
-    /* ==========================================================
-       KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
-       ========================================================== */
     main { 
       margin-left: var(--sidebar-width); 
       flex: 1; 
-      padding: 24px; 
+      /* Disesuaikan: Atas 85px agar tidak tertutup navbar, Kiri-Kanan 12px agar melebar konsisten */
+      padding: 85px 12px 16px 12px; 
       min-width: 0; 
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
@@ -66,56 +65,44 @@
       margin-left: var(--sidebar-collapsed); 
       width: calc(100% - var(--sidebar-collapsed));
     }
-    .container { max-width: 900px; margin: 0 auto; width: 100%; }
+    .container { max-width: none; margin: 0; width: 100%; }
 
     .page-header { margin-bottom: 24px; }
-    .page-header h2 { font-size: 24px; margin: 0 0 4px; color: #fff; }
-    .page-header p { margin: 0; color: var(--muted); font-size: 13px; }
+    .page-header h2 { font-size: 22px; margin: 0 0 4px; color: #172033; font-weight: 800; }
+    .page-header p { margin: 0; color: var(--muted); font-size: 12px; font-weight: 600; }
 
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
-    .card-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-    .card-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; word-break: break-word; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .card-title { font-size: 15px; font-weight: 800; color: #172033; margin-bottom: 6px; }
+    .card-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; word-break: break-word; font-weight: 600; }
     
     .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
-    .form-group small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
-    .form-control:focus { border-color: var(--green); }
-    .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
-    .error-text { color: var(--red); font-size: 12px; margin-top: 4px; }
+    .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .form-group small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; font-weight: 600; }
+    .form-control { width: 100%; background: #fbfcfe; border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .form-control:focus { border-color: var(--green-vibrant); background: #ffffff; box-shadow: 0 0 0 3px rgba(0, 107, 63, 0.1); }
+    .form-control:disabled { opacity: 0.5; cursor: not-allowed; background: #f1f5f9; }
+    .error-text { color: var(--red); font-size: 12px; margin-top: 4px; font-weight: 600; }
 
     .slider-container { margin: 20px 0 30px; }
-    .range-slider { width: 100%; accent-color: var(--green); cursor: pointer; height: 6px; background: var(--line); border-radius: 3px; }
-    .slider-marks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; padding: 0 4px; }
-    .slider-marks span.active { color: var(--green); font-weight: bold; }
+    .range-slider { width: 100%; accent-color: var(--green-vibrant); cursor: pointer; height: 6px; background: var(--line); border-radius: 3px; }
+    .slider-marks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; padding: 0 4px; font-weight: 600; }
+    .slider-marks span.active { color: var(--green-vibrant); font-weight: bold; }
 
-    /* ==========================================================
-       KODE RESPONSIF: GRID 2 KOLOM
-       ========================================================== */
     .grid-2col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
     
-    .coming-soon-badge { display: inline-block; background: var(--amber); color: #1a1006; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-left: 8px; text-transform: uppercase; }
-    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .coming-soon-badge { display: inline-block; background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(217, 119, 6, 0.2); font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 20px; margin-left: 8px; text-transform: uppercase; }
+    .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(1, 50, 32, 0.2); transition: opacity 0.2s ease; }
     .btn-primary:hover { opacity: 0.9; }
 
-    /* ==========================================================
-       KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
-       ========================================================== */
     @media (max-width: 768px) {
       main { 
         margin-left: 0 !important; 
         width: 100% !important; 
-        padding: 14px;
-        padding-top: 60px; /* Ruang untuk tombol navigasi toggle sidebar */
+        padding: 85px 16px 16px 16px;
       }
       .grid-2col { 
-        grid-template-columns: 1fr; /* Mengubah form 2 kolom sejajar menjadi 1 kolom bertumpuk ke bawah di HP */
+        grid-template-columns: 1fr; 
       }
-    }
-
-    .main-content,
-    main {
-      margin-top: var(--navbar-height, 60px);
     }
   </style>
 </head>
@@ -132,7 +119,7 @@
       </div>
 
       @if(session('success'))
-        <p style="color: var(--green); margin-bottom: 16px; font-size: 13px;">{{ session('success') }}</p>
+        <p style="color: #137a48; margin-bottom: 16px; font-size: 13px; font-weight: 700;">✓ {{ session('success') }}</p>
       @endif
 
       @php $isAdmin = Auth::user()->role === 'super_admin'; @endphp
@@ -143,13 +130,13 @@
 
         <!-- PENGATURAN MONITORING -->
         <div class="card">
-          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">Konfigurasi Monitoring</div>
+          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;">Konfigurasi Monitoring</div>
 
           <!-- Monitor Interval -->
           <div>
-            <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px;">Default Monitor Interval</div>
+            <div style="font-size: 13px; font-weight: 800; color: #172033; margin-bottom: 4px;">Default Monitor Interval</div>
             <div class="card-desc">
-              Setiap website akan dicek setiap <b id="intervalLabel">{{ $setting->default_interval_minutes }} menit</b> secara default.
+              Setiap website akan dicek setiap <b id="intervalLabel" style="color:#172033;">{{ $setting->default_interval_minutes }} menit</b> secara default.
             </div>
 
             <div class="slider-container">
@@ -239,11 +226,11 @@
 
         <!-- NOTIFIKASI WHATSAPP -->
         <div class="card">
-          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 16px;">
+          <div class="card-title" style="border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;">
             Notifikasi & Alert WhatsApp
             <span class="coming-soon-badge">Belum Aktif</span>
           </div>
-          <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px; font-weight: 600;">
             Fitur ini masih dalam tahap desain — tabel penyimpanan untuk pengaturan WhatsApp belum tersedia di database, jadi input di bawah belum bisa disimpan.
           </p>
 
@@ -262,7 +249,7 @@
             <button type="submit" class="btn-primary">Simpan Perubahan</button>
           </div>
         @else
-          <p style="color: var(--muted); font-size: 12px; text-align: right;">Hanya Super Admin yang dapat mengubah pengaturan ini.</p>
+          <p style="color: var(--muted); font-size: 12px; text-align: right; font-weight: 600;">Hanya Super Admin yang dapat mengubah pengaturan ini.</p>
         @endif
 
       </form>

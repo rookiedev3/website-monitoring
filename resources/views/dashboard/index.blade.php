@@ -10,28 +10,31 @@
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
   <style>
     :root {
-      --bg: #0b120f;
-      --card: #111b16;
-      --card-hover: #17231d;
-      --ink: #dce9e1;
-      --muted: #82988c;
-      --line: #2e4a3b;
-      --green: #0f9f6e;
-      --green-soft: rgba(15, 159, 110, 0.12);
-      --red: #d94c4c;
-      --red-soft: rgba(217, 76, 76, 0.12);
-      --amber: #d98b1d;
-      --amber-soft: rgba(217, 139, 29, 0.12);
-      --blue: #2563eb;
-      --blue-soft: rgba(37, 99, 235, 0.12);
-      --shadow: 0 10px 30px rgba(0, 0, 0, .3);
-      --sidebar-width: 215px;
-      --sidebar-collapsed: 62px;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --card-hover: #f8fafc;
+      --ink: #172033;
+      --muted: #778195;
+      --line: #e8edf5;
+      --green: #013220;
+      --green-vibrant: #006B3F;
+      --green-soft: #e6f7ee;
+      --gold: #C7AB6B;
+      --gold-soft: rgba(199, 171, 107, 0.15);
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --blue: #0284c7;
+      --blue-soft: #e0f2fe;
+      --shadow: 0 10px 25px -5px rgba(31, 53, 97, 0.05), 0 8px 10px -6px rgba(31, 53, 97, 0.03);
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 80px;
     }
 
     * {
@@ -40,7 +43,7 @@
 
     body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--ink);
       background: var(--bg);
       display: flex;
@@ -53,34 +56,15 @@
       text-decoration: none;
     }
 
-    /* STYLE SIDEBAR & NAVBAR INTEGRATION */
-    aside {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: var(--sidebar-width);
-      background: var(--card);
-      border-right: 1px solid var(--line);
-      display: flex;
-      flex-direction: column;
-      z-index: 100;
-      box-shadow: var(--shadow);
-    }
-
-    aside.collapsed {
-      width: var(--sidebar-collapsed);
-    }
-
     /* MAIN CONTENT & PERGESERAN SIDEBAR */
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      padding: 24px;
+      /* Disesuaikan: Atas 85px agar aman dari navbar, Kiri-Kanan 12px agar konsisten melebar */
+      padding: 85px 12px 16px 12px;
       min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
-      margin-top: var(--navbar-height, 60px);
     }
 
     aside#sidebar.collapsed~main {
@@ -89,8 +73,8 @@
     }
 
     .container {
-      max-width: 1180px;
-      margin: 0 auto;
+      max-width: none;
+      margin: 0;
       width: 100%;
     }
 
@@ -105,36 +89,40 @@
     }
 
     .dashboard-header h2 {
-      font-size: 24px;
+      font-size: 22px;
       margin: 0 0 4px;
-      color: #fff;
-      font-weight: 700;
+      color: #172033;
+      font-weight: 800;
     }
 
     .dashboard-header p {
       margin: 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 600;
     }
 
     .btn-refresh {
-      background: var(--card);
+      background: #ffffff;
       border: 1px solid var(--line);
       color: var(--ink);
-      padding: 8px 16px;
+      padding: 9px 18px;
       border-radius: 10px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: background 0.2s ease, color 0.2s ease;
+      gap: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
     }
 
     .btn-refresh:hover {
-      background: var(--card-hover);
-      color: #fff;
+      background: var(--gold);
+      color: #ffffff;
+      border-color: var(--gold);
+      box-shadow: 0 4px 12px rgba(199, 171, 107, 0.3);
     }
 
     /* Metrics Cards Grid */
@@ -148,23 +136,74 @@
     .metric-card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 18px;
       box-shadow: var(--shadow);
       min-width: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .metric-card span {
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(31, 53, 97, 0.08);
+    }
+
+    /* Accent Line Top */
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .metric-card.card-total::before { background: var(--blue); }
+    .metric-card.card-online::before { background: #137a48; }
+    .metric-card.card-warning::before { background: var(--amber); }
+    .metric-card.card-down::before { background: var(--red); }
+    .metric-card.card-paused::before { background: #64748b; }
+
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .metric-header span {
       font-size: 11px;
       color: var(--muted);
       font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
+    .metric-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .card-total .metric-icon { background: var(--blue-soft); color: var(--blue); }
+    .card-online .metric-icon { background: var(--green-soft); color: #137a48; }
+    .card-warning .metric-icon { background: var(--amber-soft); color: var(--amber); }
+    .card-down .metric-icon { background: var(--red-soft); color: var(--red); }
+    .card-paused .metric-icon { background: #f1f5f9; color: #64748b; }
+
     .metric-card h3 {
-      font-size: 26px;
-      margin: 6px 0;
-      color: #fff;
+      font-size: 24px;
+      margin: 0 0 4px;
+      color: #172033;
       font-weight: 800;
       white-space: nowrap;
     }
@@ -173,13 +212,14 @@
       font-size: 11px;
       margin: 0;
       color: var(--muted);
+      font-weight: 600;
     }
 
     /* Filter & Search Bar */
     .filter-card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 16px;
       margin-bottom: 20px;
       box-shadow: var(--shadow);
@@ -199,42 +239,46 @@
 
     .search-box input {
       width: 100%;
-      background: var(--bg);
+      background: #fbfcfe;
       border: 1px solid var(--line);
       color: var(--ink);
-      padding: 10px 12px 10px 36px;
+      padding: 10px 12px 10px 38px;
       border-radius: 10px;
       font-size: 13px;
       outline: none;
-      transition: border-color 0.2s ease;
+      font-weight: 600;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .search-box input:focus {
-      border-color: var(--green);
+      border-color: var(--green-vibrant);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(0, 107, 63, 0.1);
     }
 
     .search-box i {
       position: absolute;
-      left: 12px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--muted);
     }
 
     .filter-dropdown select {
-      background: var(--bg);
+      background: #fbfcfe;
       border: 1px solid var(--line);
       color: var(--ink);
       padding: 10px 14px;
       border-radius: 10px;
       font-size: 13px;
+      font-weight: 700;
       outline: none;
       cursor: pointer;
       transition: border-color 0.2s ease;
     }
 
     .filter-dropdown select:focus {
-      border-color: var(--green);
+      border-color: var(--green-vibrant);
     }
 
     /* Stacked Cards & Tables */
@@ -247,15 +291,15 @@
     .card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 20px;
       box-shadow: var(--shadow);
     }
 
     .card-title {
       font-size: 15px;
-      font-weight: 700;
-      color: #fff;
+      font-weight: 800;
+      color: #172033;
       margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
@@ -283,19 +327,23 @@
     }
 
     th {
+      background: #f8fafc;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      padding: 10px 12px;
+      letter-spacing: 0.5px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       white-space: nowrap;
     }
 
     td {
-      padding: 14px 12px;
+      padding: 14px 14px;
       border-bottom: 1px solid var(--line);
       color: var(--ink);
       vertical-align: middle;
+      font-weight: 600;
     }
 
     tr:last-child td {
@@ -311,43 +359,43 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 800;
       white-space: nowrap;
     }
 
     .badge-online {
-      background: var(--green-soft);
-      color: var(--green);
+      background: #e6f7ee;
+      color: #137a48;
     }
 
     .badge-down {
-      background: var(--red-soft);
+      background: #fef2f2;
       color: var(--red);
     }
 
     .badge-warning {
-      background: var(--amber-soft);
+      background: #fef3c7;
       color: var(--amber);
     }
 
     .badge-ssl {
       background: var(--blue-soft);
-      color: #60a5fa;
-      border: 1px solid rgba(37, 99, 235, 0.3);
+      color: var(--blue);
+      border: 1px solid rgba(2, 132, 199, 0.2);
     }
 
     .badge-muted {
-      background: rgba(255, 255, 255, 0.05);
+      background: #f1f5f9;
       color: var(--muted);
     }
 
     .badge-paused {
-      background: rgba(130, 152, 140, 0.12);
+      background: rgba(119, 129, 149, 0.12);
       color: var(--muted);
-      border: 1px solid rgba(130, 152, 140, 0.3);
+      border: 1px solid rgba(119, 129, 149, 0.25);
     }
 
     /* Action Buttons */
@@ -359,10 +407,10 @@
       padding: 6px 14px;
       border-radius: 8px;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.04);
+      background: #f8fafc;
       color: var(--ink);
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
       white-space: nowrap;
       line-height: 1;
@@ -370,9 +418,9 @@
     }
 
     .btn-detail:hover {
-      background: var(--card-hover);
-      color: #fff;
-      border-color: var(--muted);
+      background: #013220;
+      color: #ffffff;
+      border-color: #013220;
     }
 
     /* Pagination Controls */
@@ -388,8 +436,9 @@
     }
 
     .pagination-info {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
+      font-weight: 600;
     }
 
     .pagination-buttons {
@@ -399,13 +448,13 @@
     }
 
     .btn-page {
-      background: rgba(255, 255, 255, 0.03);
+      background: #f8fafc;
       border: 1px solid var(--line);
       color: var(--ink);
       padding: 6px 12px;
       border-radius: 8px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -414,9 +463,9 @@
     }
 
     .btn-page:hover:not(:disabled) {
-      background: var(--card-hover);
-      color: #fff;
-      border-color: var(--muted);
+      background: #013220;
+      color: #ffffff;
+      border-color: #013220;
     }
 
     .btn-page:disabled {
@@ -440,20 +489,20 @@
       background: transparent;
       color: var(--ink);
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .page-num:hover {
-      background: var(--card-hover);
-      color: #fff;
+      background: #f8fafc;
+      color: #013220;
     }
 
     .page-num.active {
-      background: var(--green);
+      background: #013220;
       color: #fff;
-      border-color: var(--green);
+      border-color: #013220;
     }
 
     .page-dots {
@@ -476,8 +525,7 @@
       main {
         margin-left: 0 !important;
         width: 100% !important;
-        padding: 14px;
-        padding-top: 60px;
+        padding: 85px 16px 16px 16px;
       }
 
       .dashboard-header {
@@ -512,7 +560,7 @@
 
 <body>
 
-  <!-- MEMANGGIL NAVBAR & SIDEBAR (SAMA SEPERTI INDEX 1) -->
+  <!-- MEMANGGIL NAVBAR & SIDEBAR -->
   @include('layouts.navigation')
 
   <!-- MAIN CONTENT DASHBOARD -->
@@ -530,31 +578,50 @@
         </a>
       </div>
 
-      <!-- 5 METRIK STATISTIK -->
+      <!-- 5 METRIK STATISTIK BERWARNA SENADA -->
       <div class="metrics-grid">
-        <div class="metric-card">
-          <span>Total Monitored</span>
+        <div class="metric-card card-total">
+          <div class="metric-header">
+            <span>Total Monitored</span>
+            <div class="metric-icon"><i class="bi bi-globe2"></i></div>
+          </div>
           <h3 id="stat-total">{{ $stats['total'] }}</h3>
-          <p>Total website yang terdaftar</p>
+          <p>Total website terdaftar</p>
         </div>
-        <div class="metric-card">
-          <span>Online (Normal)</span>
-          <h3 style="color:var(--green)" id="stat-online">{{ $stats['online'] }}</h3>
+
+        <div class="metric-card card-online">
+          <div class="metric-header">
+            <span>Online (Normal)</span>
+            <div class="metric-icon"><i class="bi bi-check-circle-fill"></i></div>
+          </div>
+          <h3 style="color:#137a48" id="stat-online">{{ $stats['online'] }}</h3>
           <p>Website berjalan optimal</p>
         </div>
-        <div class="metric-card">
-          <span>Warning (Slow)</span>
+
+        <div class="metric-card card-warning">
+          <div class="metric-header">
+            <span>Warning (Slow)</span>
+            <div class="metric-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          </div>
           <h3 style="color:var(--amber)" id="stat-warning">{{ $stats['warning'] }}</h3>
           <p>Respons lambat (&gt; 3 detik)</p>
         </div>
-        <div class="metric-card">
-          <span>Down / Error</span>
+
+        <div class="metric-card card-down">
+          <div class="metric-header">
+            <span>Down / Error</span>
+            <div class="metric-icon"><i class="bi bi-x-circle-fill"></i></div>
+          </div>
           <h3 style="color:var(--red)" id="stat-down">{{ $stats['down'] }}</h3>
           <p>Koneksi terputus / SSL error</p>
         </div>
-        <div class="metric-card">
-          <span>Paused</span>
-          <h3 style="color:var(--muted)" id="stat-paused">{{ $stats['paused'] }}</h3>
+
+        <div class="metric-card card-paused">
+          <div class="metric-header">
+            <span>Paused</span>
+            <div class="metric-icon"><i class="bi bi-pause-circle-fill"></i></div>
+          </div>
+          <h3 style="color:#64748b" id="stat-paused">{{ $stats['paused'] }}</h3>
           <p>Monitoring website dijeda</p>
         </div>
       </div>
@@ -584,8 +651,8 @@
         <!-- 1. Daftar Status Website -->
         <div class="card">
           <div class="card-title">
-            <span><i class="bi bi-globe me-2"></i> Daftar Status Website</span>
-            <span style="font-size:11px; color:var(--muted); font-weight:normal;">Pengecekan otomatis berkala</span>
+            <span><i class="bi bi-globe me-2" style="color: #006B3F;"></i> Daftar Status Website</span>
+            <span style="font-size:11px; color:var(--muted); font-weight:600;">Pengecekan otomatis berkala</span>
           </div>
           <div class="table-responsive">
             <table>
@@ -605,8 +672,8 @@
                   @php $log = $web->latestLog; @endphp
                   <tr class="{{ $web->monitoring_status === 'paused' ? 'row-paused' : '' }}">
                     <td>
-                      <strong style="color:#fff;">{{ $web->website_name }}</strong>
-                      <small style="display:block; color:var(--muted);">{{ $web->url }}</small>
+                      <strong style="color:#172033;">{{ $web->website_name }}</strong>
+                      <small style="display:block; color:var(--muted); font-weight:600;">{{ $web->url }}</small>
                     </td>
                     <td>
                       @if($web->monitoring_status === 'paused')
@@ -625,14 +692,14 @@
                       @if($web->monitoring_status === 'paused')
                         <span style="color:var(--muted);">-</span>
                       @else
-                        <span style="font-weight:700; color:#fff;">
+                        <span style="font-weight:800; color:#172033;">
                           {{ $log ? ($log->http_code ?? 'N/A') : '-' }}
                         </span>
                       @endif
                     </td>
                     <td>
                       @if($web->monitoring_status !== 'paused' && $log && $log->response_time_ms)
-                        <span style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)' }}; font-weight:700;">
+                        <span style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : '#137a48' }}; font-weight:800;">
                           {{ number_format($log->response_time_ms) }} ms
                         </span>
                       @else
@@ -694,7 +761,7 @@
 
         <!-- 2. Tabel Insiden Aktif -->
         @if($activeIncidents->count() > 0)
-          <div class="card" style="border-color: rgba(217,76,76,0.3);">
+          <div class="card" style="border-color: rgba(220,38,38,0.25);">
             <div class="card-title danger-header">
               <span><i class="bi bi-exclamation-triangle-fill me-2"></i> Insiden Gangguan Aktif</span>
               <span class="badge badge-down">{{ $activeIncidents->count() }} Insiden Perlu Penanganan</span>
@@ -730,15 +797,15 @@
 
                       $jobStatus = strtolower(trim($incident->status));
                       if (str_contains($jobStatus, 'progress') || str_contains($jobStatus, 'proses')) {
-                        $jobStyle = 'background: rgba(217, 139, 29, 0.12); color: #d98b1d; border: 1px solid rgba(217, 139, 29, 0.3);';
+                        $jobStyle = 'background: #fef3c7; color: #d97706; border: 1px solid rgba(217, 119, 6, 0.2);';
                         $jobStatusText = 'ON PROGRESS';
                       } else {
-                        $jobStyle = 'background: rgba(217, 76, 76, 0.12); color: #d94c4c; border: 1px solid rgba(217, 76, 76, 0.3);';
+                        $jobStyle = 'background: #fef2f2; color: var(--red); border: 1px solid rgba(220, 38, 38, 0.2);';
                         $jobStatusText = strtoupper($incident->status);
                       }
                     @endphp
                     <tr class="incident-row">
-                      <td><strong style="color:#fff;">{{ $incident->website->website_name }}</strong></td>
+                      <td><strong style="color:#172033;">{{ $incident->website->website_name }}</strong></td>
                       <td>
                         <span class="badge {{ $badgeClass }}">
                           {{ $typeName }}
@@ -878,12 +945,12 @@
           }
 
           httpCode = log.http_code
-            ? `<span style="font-weight:700; color:#fff;">${log.http_code}</span>`
+            ? `<span style="font-weight:800; color:#172033;">${log.http_code}</span>`
             : '<span style="color:var(--muted);">N/A</span>';
 
           if (log.status !== 'down' && log.response_time_ms) {
-            const latencyColor = log.response_time_ms > 3000 ? 'var(--amber)' : 'var(--green)';
-            responseTime = `<span style="color:${latencyColor}; font-weight:700;">${Number(log.response_time_ms).toLocaleString()} ms</span>`;
+            const latencyColor = log.response_time_ms > 3000 ? 'var(--amber)' : '#137a48';
+            responseTime = `<span style="color:${latencyColor}; font-weight:800;">${Number(log.response_time_ms).toLocaleString()} ms</span>`;
           } else if (log.response_time_ms) {
             responseTime = `<span style="color:var(--muted);">${Number(log.response_time_ms).toLocaleString()} ms</span>`;
           }
@@ -905,7 +972,7 @@
         html += `
           <tr class="${rowClass}">
             <td>
-              <strong style="color:#fff; display:block;">${web.website_name}</strong>
+              <strong style="color:#172033; display:block;">${web.website_name}</strong>
               <small style="color:var(--muted);">${web.url}</small>
             </td>
             <td>${statusBadge}</td>

@@ -5,24 +5,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Incidents & Errors - Website Monitoring IT Solution</title>
-        <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
+  <link rel="icon" type="image/png" href="{{ asset('img/logo.jpeg') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <style>
     :root {
-      --bg: #0b120f;
-      --card: #111b16;
-      --card-hover: #17231d;
-      --ink: #dce9e1;
-      --muted: #82988c;
-      --line: #2e4a3b;
-      --green: #0f9f6e;
-      --green-soft: rgba(15, 159, 110, 0.12);
-      --red: #d94c4c;
-      --red-soft: rgba(217, 76, 76, 0.12);
-      --amber: #d98b1d;
-      --amber-soft: rgba(217, 139, 29, 0.12);
-      --shadow: 0 10px 30px rgba(0, 0, 0, .3);
-      --sidebar-width: 215px;
-      --sidebar-collapsed: 62px;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --card-hover: #f8fafc;
+      --ink: #172033;
+      --muted: #778195;
+      --line: #e8edf5;
+      --green: #013220;
+      --green-vibrant: #006B3F;
+      --green-soft: #e6f7ee;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --blue: #0284c7;
+      --blue-soft: #e0f2fe;
+      --shadow: 0 10px 25px -5px rgba(31, 53, 97, 0.05), 0 8px 10px -6px rgba(31, 53, 97, 0.03);
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 80px;
     }
 
     * {
@@ -31,7 +38,7 @@
 
     body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--ink);
       background: var(--bg);
       display: flex;
@@ -50,8 +57,8 @@
       left: 0;
       height: 100vh;
       width: var(--sidebar-width);
-      background: var(--card);
-      border-right: 1px solid var(--line);
+      background: #013220;
+      border-right: 1px solid #04472d;
       display: flex;
       flex-direction: column;
       z-index: 100;
@@ -67,7 +74,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid #04472d;
       overflow: hidden;
       white-space: nowrap;
     }
@@ -76,8 +83,8 @@
       width: 40px;
       height: 40px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #17231d, #24372d);
-      border: 1px solid var(--line);
+      background: #ffffff;
+      border: 1px solid #04472d;
       display: grid;
       place-items: center;
       font-weight: 900;
@@ -94,7 +101,7 @@
 
     .brand-text small {
       font-size: 11px;
-      color: var(--muted);
+      color: #8fa394;
     }
 
     .menu-list {
@@ -111,7 +118,7 @@
       font-size: 10px;
       font-weight: 800;
       letter-spacing: .1em;
-      color: var(--muted);
+      color: #8fa394;
       padding: 10px 10px 4px;
       text-transform: uppercase;
       white-space: nowrap;
@@ -127,7 +134,7 @@
       gap: 12px;
       padding: 11px 12px;
       border-radius: 10px;
-      color: var(--muted);
+      color: #d1d5db;
       font-size: 13px;
       font-weight: 600;
       white-space: nowrap;
@@ -136,8 +143,9 @@
 
     .nav-item:hover,
     .nav-item.active {
-      background: var(--card-hover);
-      color: #fff;
+      background: #C7AB6B;
+      color: #013220;
+      font-weight: 700;
     }
 
     .nav-item svg {
@@ -156,12 +164,13 @@
     }
 
     /* ==========================================================
-       KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
-       ========================================================== */
+        KODE RESPONSIF: MAIN CONTENT & PERGESERAN SIDEBAR
+        ========================================================== */
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      padding: 24px;
+      /* Disesuaikan: Atas 85px agar aman dari navbar, Kiri-Kanan 12px agar melebar konsisten */
+      padding: 85px 12px 16px 12px;
       min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
@@ -173,8 +182,8 @@
     }
 
     .container {
-      max-width: 1180px;
-      margin: 0 auto;
+      max-width: none;
+      margin: 0;
       width: 100%;
     }
 
@@ -188,24 +197,26 @@
     }
 
     .page-header h2 {
-      font-size: 24px;
+      font-size: 22px;
       margin: 0 0 4px;
-      color: #fff;
+      color: #172033;
+      font-weight: 800;
     }
 
     .page-header p {
       margin: 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 600;
     }
 
     /* ==========================================================
-       FILTER CARD (pembungkus filter-bar, disamakan dgn Dashboard)
-       ========================================================== */
+        FILTER CARD (pembungkus filter-bar)
+        ========================================================== */
     .filter-card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 16px;
       margin-bottom: 20px;
       box-shadow: var(--shadow);
@@ -214,26 +225,29 @@
     /* Filter Bar Responsive */
     .filter-bar {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
       align-items: center;
     }
 
     .search-input,
     .filter-select {
-      background: var(--bg);
+      background: #fbfcfe;
       border: 1px solid var(--line);
       color: var(--ink);
       padding: 10px 14px;
       border-radius: 10px;
       font-size: 13px;
+      font-weight: 600;
       outline: none;
-      transition: border-color 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .search-input:focus,
     .filter-select:focus {
-      border-color: var(--green);
+      border-color: var(--green-vibrant);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(0, 107, 63, 0.1);
     }
 
     .search-input {
@@ -243,19 +257,20 @@
 
     .search-input::placeholder {
       color: var(--muted);
+      font-weight: 600;
     }
 
     .card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 20px;
       box-shadow: var(--shadow);
     }
 
     /* ==========================================================
-       KODE RESPONSIF: TABEL AGAR BISA DIGESER HORIZONTAL DI HP
-       ========================================================== */
+        KODE RESPONSIF: TABEL AGAR BISA DIGESER HORIZONTAL DI HP
+        ========================================================== */
     .table-responsive {
       width: 100%;
       overflow-x: auto;
@@ -271,19 +286,23 @@
     }
 
     th {
+      background: #f8fafc;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      padding: 10px 12px;
+      letter-spacing: 0.5px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       white-space: nowrap;
     }
 
     td {
-      padding: 14px 12px;
+      padding: 14px 14px;
       border-bottom: 1px solid var(--line);
       color: var(--ink);
       vertical-align: middle;
+      font-weight: 600;
     }
 
     tr:last-child td {
@@ -294,10 +313,10 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 800;
       text-transform: uppercase;
       white-space: nowrap;
     }
@@ -314,45 +333,49 @@
 
     .badge.solved {
       background: var(--green-soft);
-      color: var(--green);
+      color: #137a48;
     }
 
     .btn-action {
-      background: var(--line);
-      border: none;
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      display: inline-block;
-      white-space: nowrap;
-    }
-
-    .btn-action:hover {
-      background: var(--card-hover);
-    }
-
-    .assign-btn {
-      background: var(--bg);
+      background: #f8fafc;
       border: 1px solid var(--line);
       color: var(--ink);
       padding: 6px 12px;
       border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      display: inline-block;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:hover {
+      background: #013220;
+      color: #fff;
+      border-color: #013220;
+    }
+
+    .assign-btn {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       white-space: nowrap;
+      transition: all 0.2s ease;
     }
 
     .assign-btn:hover {
-      border-color: var(--green);
-      color: #fff;
+      border-color: var(--green-vibrant);
+      color: #013220;
       background: var(--card-hover);
     }
 
@@ -363,7 +386,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
       display: none;
       place-items: center;
@@ -378,17 +401,17 @@
     .modal-card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 24px;
       width: 100%;
       max-width: 420px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
     .modal-header {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      color: #172033;
       margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
@@ -404,7 +427,7 @@
     }
 
     .modal-close:hover {
-      color: #fff;
+      color: #172033;
     }
 
     .modal-body {
@@ -419,8 +442,8 @@
     }
 
     /* ==========================================================
-       PAGINATION (disamakan dengan Dashboard)
-       ========================================================== */
+        PAGINATION
+        ========================================================== */
     .pagination-container {
       display: flex;
       justify-content: space-between;
@@ -433,8 +456,9 @@
     }
 
     .pagination-info {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
+      font-weight: 600;
     }
 
     .pagination-buttons {
@@ -444,13 +468,13 @@
     }
 
     .btn-page {
-      background: rgba(255, 255, 255, 0.03);
+      background: #f8fafc;
       border: 1px solid var(--line);
       color: var(--ink);
       padding: 6px 12px;
       border-radius: 8px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -460,9 +484,9 @@
     }
 
     .btn-page:hover:not(:disabled) {
-      background: var(--card-hover);
+      background: #013220;
       color: #fff;
-      border-color: var(--muted);
+      border-color: #013220;
     }
 
     .btn-page:disabled {
@@ -486,20 +510,20 @@
       background: transparent;
       color: var(--ink);
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .page-num:hover {
-      background: var(--card-hover);
-      color: #fff;
+      background: #f8fafc;
+      color: #013220;
     }
 
     .page-num.active {
-      background: var(--green);
+      background: #013220;
       color: #fff;
-      border-color: var(--green);
+      border-color: #013220;
     }
 
     .page-dots {
@@ -512,15 +536,13 @@
     }
 
     /* ==========================================================
-       KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
-       ========================================================== */
+        KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
+        ========================================================== */
     @media (max-width: 768px) {
       main {
         margin-left: 0 !important;
         width: 100% !important;
-        padding: 14px;
-        padding-top: 60px;
-        /* Ruang untuk tombol navigasi toggle sidebar */
+        padding: 85px 16px 16px 16px;
       }
 
       .filter-bar {
@@ -543,18 +565,12 @@
         justify-content: center;
       }
     }
-
-    .main-content,
-    main {
-      margin-top: var(--navbar-height, 60px);
-    }
   </style>
 </head>
 
 <body>
 
   @include('layouts.navigation')
-
 
   <main>
     <div class="container">
@@ -567,13 +583,13 @@
       </div>
 
       @if(session('success'))
-        <p style="color: var(--green); margin-bottom: 12px; font-size: 13px;">{{ session('success') }}</p>
+        <p style="color: #137a48; margin-bottom: 12px; font-size: 13px; font-weight: 600;">✓ {{ session('success') }}</p>
       @endif
       @if(session('error'))
-        <p style="color: var(--red); margin-bottom: 12px; font-size: 13px;">{{ session('error') }}</p>
+        <p style="color: var(--red); margin-bottom: 12px; font-size: 13px; font-weight: 600;">✕ {{ session('error') }}</p>
       @endif
 
-      {{-- Filter bar dibungkus filter-card, gaya sama dengan Dashboard --}}
+      {{-- Filter bar dibungkus filter-card --}}
       <div class="filter-card">
         <div class="filter-bar">
           <input type="text" id="search-input" class="search-input"
@@ -610,13 +626,13 @@
             </thead>
             <tbody id="incident-table-body">
               <tr>
-                <td colspan="8" style="text-align:center; color: var(--muted); padding: 30px;">Memuat data...</td>
+                <td colspan="8" style="text-align:center; color: var(--muted); padding: 30px; font-weight: 600;">Memuat data...</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        {{-- ===== Pagination client-side, gaya sama dengan Dashboard ===== --}}
+        {{-- ===== Pagination client-side ===== --}}
         <div class="pagination-container">
           <div class="pagination-info" id="pagination-info">
             Menampilkan 0 - 0 dari 0 data
@@ -647,8 +663,8 @@
           @csrf
           @method('PATCH')
           <div class="modal-body">
-            <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
-              Pilih PIC untuk menangani gangguan pada <b id="modalWebsiteName" style="color: #fff;">-</b>:
+            <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px; font-weight: 600;">
+              Pilih PIC untuk menangani gangguan pada <b id="modalWebsiteName" style="color: #172033;">-</b>:
             </p>
             <div class="form-group">
               <select name="assigned_to" id="modalPicSelect" class="filter-select" style="width: 100%; padding: 12px;"
@@ -661,9 +677,9 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn-action" style="background: transparent; border: 1px solid var(--line);"
+            <button type="button" class="btn-action" style="background: #f8fafc; border: 1px solid var(--line);"
               onclick="closeAssignModal()">Batal</button>
-            <button type="submit" class="btn-action" style="background: var(--green);">Simpan Penugasan</button>
+            <button type="submit" class="btn-action" style="background: var(--green); color: #fff; border-color: var(--green);">Simpan Penugasan</button>
           </div>
         </form>
       </div>
@@ -676,7 +692,7 @@
 
     let rawIncidentsData = [];
     let currentPage = 1;
-    const perPage = 10; // samakan dengan paginate(10) versi server sebelumnya
+    const perPage = 10;
 
     function fetchRealtimeData() {
       fetch("{{ route('api.incidents.status') }}")
@@ -700,7 +716,6 @@
         .replace(/'/g, '&#039;');
     }
 
-    // Format ke gaya "d M, H:i" WIB, sama seperti versi Blade sebelumnya
     function formatStartedAt(isoString) {
       if (!isoString) return '-';
       const date = new Date(isoString);
@@ -747,7 +762,7 @@
       }
 
       if (totalItems === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 30px;">Tidak ada incident yang sesuai pencarian/filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 30px; font-weight:600;">Tidak ada incident yang sesuai pencarian/filter.</td></tr>`;
         renderPaginationControls(0, 1);
         return;
       }
@@ -759,9 +774,6 @@
       let html = '';
 
       paginatedItems.forEach(incident => {
-        // Kolom PIC — tombol assign/ganti PIC HANYA muncul kalau incident
-        // belum solved. Incident yang sudah solved statusnya final, jadi
-        // PIC tidak bisa diubah lagi dari sini.
         let picHtml = '';
         if (incident.assigned_user_name) {
           picHtml = `${escapeHtml(incident.assigned_user_name)}`;
@@ -773,7 +785,7 @@
             </button>`;
           }
         } else if (incident.status === 'solved') {
-          picHtml = `<span style="color: var(--green);">Auto-resolved</span>`;
+          picHtml = `<span style="color: #137a48; font-weight: 700;">Auto-resolved</span>`;
         } else {
           if (userRole === 'super_admin') {
             picHtml = `<button class="assign-btn"
@@ -786,25 +798,21 @@
           }
         }
 
-        // Kolom Selesai/Resolve: pakai resolved_at kalau sudah ada, kalau
-        // masih berjalan (belum solved) tampilkan "-" biar jelas belum pulih.
         const resolvedHtml = incident.resolved_at
           ? formatStartedAt(incident.resolved_at)
           : '<span style="color: var(--muted);">-</span>';
 
-        // Kolom Durasi: pakai string dari accessor formatted_duration (server),
-        // dikasih label "(berjalan)" kalau incident belum solved.
         const durationHtml = incident.is_running
-          ? `${escapeHtml(incident.duration)} <span style="color: var(--amber); font-size:11px;">(berjalan)</span>`
+          ? `${escapeHtml(incident.duration)} <span style="color: var(--amber); font-size:11px; font-weight:700;">(berjalan)</span>`
           : escapeHtml(incident.duration);
 
         html += `
         <tr>
           <td>
-            <b>${escapeHtml(incident.website_name)}</b><br>
+            <b style="color: #172033;">${escapeHtml(incident.website_name)}</b><br>
             <small style="color:var(--muted)">${escapeHtml(incident.customer_name)}</small>
           </td>
-          <td><span style="color:var(--red)">${escapeHtml(incident.type_label)}</span></td>
+          <td><span style="color:var(--red); font-weight:700;">${escapeHtml(incident.type_label)}</span></td>
           <td>${formatStartedAt(incident.started_at)}</td>
           <td>${resolvedHtml}</td>
           <td>${durationHtml}</td>
@@ -900,8 +908,6 @@
     setInterval(fetchRealtimeData, 5000);
 
     @if(Auth::user()->role === 'super_admin')
-      // Delegated click handler buat tombol "Tugaskan PIC" / "Ganti PIC"
-      // yang di-generate lewat JS (karena barisnya dibuat dinamis, bukan Blade lagi)
       document.getElementById('incident-table-body').addEventListener('click', (e) => {
         const btn = e.target.closest('[data-action="assign"]');
         if (!btn) return;
