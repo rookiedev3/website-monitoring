@@ -54,6 +54,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
+    Route::patch('/notifications/toggle-email', [NotificationController::class, 'toggleEmail'])
+    ->name('notifications.toggleEmail');
+
     // Redirect & Tandai dibaca satu notifikasi
     Route::get('/notifications/{id}/read', function ($id, Request $request) {
         $notification = auth()->user()->notifications()->findOrFail($id);

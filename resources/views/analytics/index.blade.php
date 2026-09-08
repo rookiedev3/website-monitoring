@@ -62,7 +62,6 @@
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      /* Disesuaikan: Atas 85px agar tidak tertutup navbar, Kiri-Kanan 12px agar melebar konsisten */
       padding: 85px 12px 16px 12px;
       min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
@@ -105,7 +104,7 @@
 
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 16px;
     }
     .metric-box { background: #f8fafc; border: 1px solid var(--line); border-radius: 14px; padding: 16px; text-align: center; }

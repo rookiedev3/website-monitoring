@@ -27,7 +27,9 @@ class WebsiteUpNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        return $notifiable->email_notifications_enabled
+            ? ['database', 'mail']
+            : ['database'];
     }
 
     public function toMail($notifiable)

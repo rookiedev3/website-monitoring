@@ -850,11 +850,17 @@
     </div>
   </aside>
 
-  <!-- SCRIPT PENGENDALI INTERAKSI NAVIGASI -->
+  <!-- SCRIPT PENGENDALI INTERAKSI NAVIGASI & KONTEN MAIN -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const notifBtn = document.getElementById('notifDropdownBtn');
       const notifMenu = document.getElementById('notifDropdownMenu');
+      const mainContent = document.querySelector('main'); // Menargetkan elemen main di file dashboard
+
+      // Memastikan elemen main punya transisi agar pergerakannya mulus
+      if (mainContent) {
+        mainContent.style.transition = 'margin-left 0.3s ease, width 0.3s ease';
+      }
 
       if (notifBtn && notifMenu) {
         notifBtn.addEventListener('click', (e) => {
@@ -894,19 +900,23 @@
       if (sidebarToggle) {
         sidebarToggle.addEventListener('click', () => {
           sidebar.classList.toggle('collapsed');
+          const isCollapsed = sidebar.classList.contains('collapsed');
 
+          // Menyesuaikan navbar
           if (topNavbar) {
-            if (sidebar.classList.contains('collapsed')) {
-              topNavbar.style.left = '62px';
-              topNavbar.style.width = 'calc(100% - 62px)';
-            } else {
-              topNavbar.style.left = '215px';
-              topNavbar.style.width = 'calc(100% - 215px)';
-            }
+            topNavbar.style.left = isCollapsed ? '62px' : '215px';
+            topNavbar.style.width = isCollapsed ? 'calc(100% - 62px)' : 'calc(100% - 215px)';
+          }
+
+          // KUNCI: Menyesuaikan tag main dashboard yang terpisah secara paksa dan presisi
+          if (mainContent) {
+            mainContent.style.marginLeft = isCollapsed ? '62px' : '215px';
+            mainContent.style.width = isCollapsed ? 'calc(100% - 62px)' : 'calc(100% - 215px)';
           }
 
           if (userPopupMenu) userPopupMenu.classList.remove('show');
-          toggleIcon.innerHTML = sidebar.classList.contains('collapsed')
+          
+          toggleIcon.innerHTML = isCollapsed
             ? '<polyline points="9 18 15 12 9 6"/>'
             : '<polyline points="15 18 9 12 15 6"/>';
         });
