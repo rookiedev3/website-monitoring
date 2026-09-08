@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 class NotificationController extends Controller
 {
     public function apiIndex()
@@ -59,6 +61,17 @@ class NotificationController extends Controller
         }
 
         return redirect()->back()->with('success', 'Notifikasi berhasil dihapus.');
+    }
+
+    public function toggleEmail(Request $request)
+    {
+        $request->validate(['enabled' => 'required|boolean']);
+
+        auth()->user()->update([
+            'email_notifications_enabled' => $request->boolean('enabled'),
+        ]);
+
+        return response()->json(['status' => 'success']);
     }
 }
 

@@ -555,6 +555,71 @@
         grid-template-columns: 1fr;
       }
     }
+
+    .notif-toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      padding: 9px 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .notif-toggle-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: 0.25s;
+      border-radius: 34px;
+    }
+
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: #013220;
+    }
+
+    input:checked + .slider::before {
+      transform: translateX(18px);
+    }
   </style>
 </head>
 
@@ -568,15 +633,29 @@
     <div class="container">
 
       <!-- HEADER & REFRESH ACTION -->
-      <div class="dashboard-header">
-        <div>
-          <h2>Dashboard Uptime Monitoring</h2>
-          <p>Pantauan kondisi teknis dan ketersediaan website secara real-time.</p>
-        </div>
-        <a href="{{ route('dashboard.index') }}" class="btn-refresh">
-          <i class="bi bi-arrow-clockwise"></i> Refresh Data
-        </a>
-      </div>
+<div class="dashboard-header">
+  <div>
+    <h2>Dashboard Uptime Monitoring</h2>
+    <p>Pantauan kondisi teknis dan ketersediaan website secara real-time.</p>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+    <div class="notif-toggle-wrap">
+      <span class="notif-toggle-label">
+        <i class="bi bi-envelope-fill"></i> Notifikasi Email
+      </span>
+      <label class="switch">
+        <input type="checkbox" id="email-notif-toggle"
+          {{ auth()->user()->email_notifications_enabled ? 'checked' : '' }}>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <a href="{{ route('dashboard.index') }}" class="btn-refresh">
+      <i class="bi bi-arrow-clockwise"></i> Refresh Data
+    </a>
+  </div>
+</div>
 
       <!-- 5 METRIK STATISTIK BERWARNA SENADA -->
       <div class="metrics-grid">
@@ -849,6 +928,30 @@
 
   <!-- JAVASCRIPT SYSTEM & REAL-TIME DATA -->
   <script>
+    document.getElementById('email-notif-toggle')?.addEventListener('change', function () {
+  const isChecked = this.checked;
+
+  fetch("{{ route('notifications.toggleEmail') }}", {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+    },
+    body: JSON.stringify({ enabled: isChecked }),
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status !== 'success') {
+        alert('Gagal menyimpan preferensi notifikasi.');
+        this.checked = !isChecked; // rollback kalau gagal
+      }
+    })
+    .catch(() => {
+      alert('Terjadi kesalahan jaringan.');
+      this.checked = !isChecked;
+    });
+});
+
     document.addEventListener('DOMContentLoaded', () => {
       renderIncidentPagination();
     });
