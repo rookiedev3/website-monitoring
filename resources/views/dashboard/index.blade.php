@@ -119,10 +119,10 @@
     }
 
     .btn-refresh:hover {
-      background: var(--gold);
+      background: var(--green-vibrant); /* Mengubah latar belakang menjadi hijau saat di-hover */
       color: #ffffff;
-      border-color: var(--gold);
-      box-shadow: 0 4px 12px rgba(199, 171, 107, 0.3);
+      border-color: var(--green-vibrant); /* Mengubah garis pinggir menjadi hijau */
+      box-shadow: 0 4px 12px rgba(0, 107, 63, 0.3); /* Menyesuaikan bayangan menjadi rona hijau */
     }
 
     /* Metrics Cards Grid */

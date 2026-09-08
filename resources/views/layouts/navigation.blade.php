@@ -56,9 +56,9 @@
     }
 
     .nav-layout-scope .notification-btn {
-      background: #f8fafc;
-      border: 1px solid var(--nav-border);
-      color: var(--text-color);
+      background: #013220; /* Latar belakang hijau tua yang konsisten */
+      border: 1px solid #013220; /* Border hijau tua */
+      color: #ffffff; /* Warna ikon lonceng menjadi putih */
       width: 38px;
       height: 38px;
       border-radius: 10px;
@@ -71,8 +71,9 @@
     }
 
     .nav-layout-scope .notification-btn:hover {
-      background: var(--card-hover);
-      border-color: #cbd5e1;
+      background: #006B3F; /* Hijau vibrant sedikit lebih terang saat di-hover */
+      border-color: #006B3F;
+      color: #ffffff; /* Tetap pertahankan ikon warna putih */
     }
 
     .nav-layout-scope .notification-badge {
