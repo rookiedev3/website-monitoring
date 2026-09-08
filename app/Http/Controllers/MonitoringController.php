@@ -7,26 +7,21 @@ use App\Models\Website;
 
 class MonitoringController extends Controller
 {
-    /**
-     * Menampilkan Dashboard Utama Monitoring Status Website
-     */
     public function index()
     {
-        // 1. Ambil seluruh master website beserta log pengecekan terbarunya
-        $websites = Website::with('latestLog')
-            ->orderBy('website_name')
-            ->get();
+        // Ambil website beserta log terbaru & 30 log terakhir untuk bar chart
+        $websites = Website::with(['latestLog', 'monitoringLogs' => function ($query) {
+            $query->latest('checked_at')->take(30);
+        }])->orderBy('website_name')->get();
 
-        // 2. Ambil ringkasan statistik status terkini
         $stats = [
             'total' => $websites->count(),
             'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
             'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
             'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
-            'paused'  => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
+            'paused' => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
         ];
 
-        // 3. Ambil insiden aktif (Open / On Progress)
         $activeIncidents = Incident::with(['website', 'assignedUser'])
             ->whereIn('status', ['open', 'on_progress'])
             ->latest()
@@ -54,14 +49,28 @@ class MonitoringController extends Controller
 
     public function apiStatus()
     {
-        $websites = Website::with('latestLog')->get();
+        // Ambil data beserta 30 history log untuk AJAX update
+        $websites = Website::with(['latestLog', 'monitoringLogs' => function ($query) {
+            $query->latest('checked_at')->take(30);
+        }])->get();
+
+        // Hitung persentase Uptime 30 pengecekan terakhir
+        $websites->transform(function ($web) {
+            $logs = $web->monitoringLogs;
+            $totalLogs = $logs->count();
+            $upLogs = $logs->filter(fn ($l) => in_array($l->status, ['online', 'warning']))->count();
+
+            $web->uptime_percentage = $totalLogs > 0 ? round(($upLogs / $totalLogs) * 100, 1) : 100;
+
+            return $web;
+        });
 
         $stats = [
             'total' => $websites->count(),
             'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
             'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
             'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
-            'paused'  => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
+            'paused' => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
         ];
 
         return response()->json([

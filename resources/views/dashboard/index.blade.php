@@ -60,7 +60,6 @@
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      /* Disesuaikan: Atas 85px agar aman dari navbar, Kiri-Kanan 12px agar konsisten melebar */
       padding: 85px 12px 16px 12px;
       min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
@@ -153,7 +152,6 @@
       box-shadow: 0 12px 30px rgba(31, 53, 97, 0.08);
     }
 
-    /* Accent Line Top */
     .metric-card::before {
       content: '';
       position: absolute;
@@ -323,7 +321,7 @@
       border-collapse: collapse;
       text-align: left;
       font-size: 13px;
-      min-width: 650px;
+      min-width: 750px;
     }
 
     th {
@@ -366,36 +364,56 @@
       white-space: nowrap;
     }
 
-    .badge-online {
-      background: #e6f7ee;
-      color: #137a48;
+    .badge-online { background: #e6f7ee; color: #137a48; }
+    .badge-down { background: #fef2f2; color: var(--red); }
+    .badge-warning { background: #fef3c7; color: var(--amber); }
+    .badge-ssl { background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(2, 132, 199, 0.2); }
+    .badge-muted { background: #f1f5f9; color: var(--muted); }
+    .badge-paused { background: rgba(119, 129, 149, 0.12); color: var(--muted); border: 1px solid rgba(119, 129, 149, 0.25); }
+
+    /* Uptime Bars Component (Hetrixtools / UptimeRobot Style) */
+    .uptime-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 210px;
     }
 
-    .badge-down {
-      background: #fef2f2;
-      color: var(--red);
+    .uptime-bars {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(0, 0, 0, 0.02);
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.03);
     }
 
-    .badge-warning {
-      background: #fef3c7;
-      color: var(--amber);
+    .uptime-bar {
+      width: 4px;
+      height: 20px;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+      position: relative;
+      cursor: pointer;
     }
 
-    .badge-ssl {
-      background: var(--blue-soft);
-      color: var(--blue);
-      border: 1px solid rgba(2, 132, 199, 0.2);
+    .uptime-bar:hover {
+      transform: scaleY(1.3);
+      opacity: 0.8;
     }
 
-    .badge-muted {
-      background: #f1f5f9;
-      color: var(--muted);
-    }
+    .bar-online { background-color: #10b981; }
+    .bar-warning { background-color: #f59e0b; }
+    .bar-down { background-color: #ef4444; }
+    .bar-empty { background-color: #e2e8f0; }
 
-    .badge-paused {
-      background: rgba(119, 129, 149, 0.12);
-      color: var(--muted);
-      border: 1px solid rgba(119, 129, 149, 0.25);
+    .uptime-percentage {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1e293b;
+      min-width: 42px;
+      text-align: right;
     }
 
     /* Action Buttons */
@@ -514,11 +532,8 @@
       justify-content: center;
     }
 
-    /* RESPONSIF: KHUSUS LAYAR HP & TABLET */
     @media (max-width: 1024px) {
-      .metrics-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
+      .metrics-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 768px) {
@@ -527,43 +542,22 @@
         width: 100% !important;
         padding: 85px 16px 16px 16px;
       }
-
-      .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .filter-grid {
-        flex-direction: column;
-      }
-
-      .search-box {
-        width: 100%;
-      }
-
-      .filter-dropdown select {
-        width: 100%;
-      }
+      .dashboard-header { flex-direction: column; align-items: flex-start; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .filter-grid { flex-direction: column; }
+      .search-box, .filter-dropdown select { width: 100%; }
     }
 
     @media (max-width: 460px) {
-      .metrics-grid {
-        grid-template-columns: 1fr;
-      }
+      .metrics-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- MEMANGGIL NAVBAR & SIDEBAR -->
   @include('layouts.navigation')
 
-  <!-- MAIN CONTENT DASHBOARD -->
   <main>
     <div class="container">
 
@@ -578,7 +572,7 @@
         </a>
       </div>
 
-      <!-- 5 METRIK STATISTIK BERWARNA SENADA -->
+      <!-- METRICS CARDS -->
       <div class="metrics-grid">
         <div class="metric-card card-total">
           <div class="metric-header">
@@ -626,7 +620,7 @@
         </div>
       </div>
 
-      <!-- CARDS FILTER STATUS & SEARCH -->
+      <!-- FILTER & SEARCH BAR -->
       <div class="filter-card">
         <div class="filter-grid">
           <div class="search-box">
@@ -648,7 +642,7 @@
       <!-- STACKED SECTIONS -->
       <div class="dashboard-stack">
 
-        <!-- 1. Daftar Status Website -->
+        <!-- 1. TABEL DAFTAR STATUS WEBSITE WITH UPTIME BARS -->
         <div class="card">
           <div class="card-title">
             <span><i class="bi bi-globe me-2" style="color: #006B3F;"></i> Daftar Status Website</span>
@@ -658,28 +652,32 @@
             <table>
               <thead>
                 <tr>
-                  <th style="width: 30%;">Website / Domain</th>
+                  <th style="width: 25%;">Website / Domain</th>
                   <th style="width: 10%;">Status</th>
-                  <th style="width: 12%;">HTTP Response</th>
-                  <th style="width: 12%;">Latency</th>
-                  <th style="width: 14%;">Masa SSL</th>
-                  <th style="width: 12%;">Dicek Terakhir</th>
-                  <th style="width: 10%; text-align: center;">Aksi</th>
+                  <th style="width: 25%;">Uptime History (30 Checks)</th>
+                  <th style="width: 10%;">Latency</th>
+                  <th style="width: 12%;">Masa SSL</th>
+                  <th style="width: 10%;">Dicek Terakhir</th>
+                  <th style="width: 8%; text-align: center;">Aksi</th>
                 </tr>
               </thead>
               <tbody id="website-table-body">
                 @forelse($websites as $web)
-                  @php $log = $web->latestLog; @endphp
+                  @php
+                    $log = $web->latestLog;
+                    $logsHistory = $web->monitoringLogs->reverse();
+                    $totalLogs = $logsHistory->count();
+                    $upLogs = $logsHistory->filter(fn ($l) => in_array($l->status, ['online', 'warning']))->count();
+                    $uptimePct = $totalLogs > 0 ? round(($upLogs / $totalLogs) * 100, 1) : 100;
+                  @endphp
                   <tr class="{{ $web->monitoring_status === 'paused' ? 'row-paused' : '' }}">
                     <td>
-                      <strong style="color:#172033;">{{ $web->website_name }}</strong>
-                      <small style="display:block; color:var(--muted); font-weight:600;">{{ $web->url }}</small>
+                      <strong style="color:#172033; display:block;">{{ $web->website_name }}</strong>
+                      <small style="color:var(--muted); font-weight:600;">{{ $web->url }}</small>
                     </td>
                     <td>
                       @if($web->monitoring_status === 'paused')
-                        <span class="badge badge-paused">
-                          <i class="bi bi-pause-circle"></i> PAUSED
-                        </span>
+                        <span class="badge badge-paused"><i class="bi bi-pause-circle"></i> PAUSED</span>
                       @elseif($log)
                         <span class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
                           ● {{ strtoupper($log->status) }}
@@ -689,13 +687,24 @@
                       @endif
                     </td>
                     <td>
-                      @if($web->monitoring_status === 'paused')
-                        <span style="color:var(--muted);">-</span>
-                      @else
-                        <span style="font-weight:800; color:#172033;">
-                          {{ $log ? ($log->http_code ?? 'N/A') : '-' }}
-                        </span>
-                      @endif
+                      <div class="uptime-container">
+                        <div class="uptime-bars">
+                          @for($i = 0; $i < (30 - $logsHistory->count()); $i++)
+                            <div class="uptime-bar bar-empty" title="Belum ada data"></div>
+                          @endfor
+                          @foreach($logsHistory as $hLog)
+                            @php
+                              $barClass = 'bar-online';
+                              if ($hLog->status === 'warning') $barClass = 'bar-warning';
+                              elseif (in_array($hLog->status, ['down', 'ssl_error'])) $barClass = 'bar-down';
+                            @endphp
+                            <div class="uptime-bar {{ $barClass }}"
+                                 title="Status: {{ strtoupper($hLog->status) }} ({{ $hLog->response_time_ms ?? 0 }}ms)">
+                            </div>
+                          @endforeach
+                        </div>
+                        <span class="uptime-percentage">{{ $uptimePct }}%</span>
+                      </div>
                     </td>
                     <td>
                       @if($web->monitoring_status !== 'paused' && $log && $log->response_time_ms)
@@ -710,9 +719,7 @@
                       @if($web->monitoring_status === 'paused')
                         <span style="color:var(--muted);">-</span>
                       @elseif($log && $log->ssl_valid)
-                        <span class="badge badge-ssl">
-                          Valid ({{ $log->ssl_days_left }} Hari)
-                        </span>
+                        <span class="badge badge-ssl">Valid ({{ $log->ssl_days_left }} Hari)</span>
                       @elseif($log && $log->ssl_valid === false)
                         <span class="badge badge-down">SSL Expired</span>
                       @else
@@ -720,11 +727,7 @@
                       @endif
                     </td>
                     <td style="color:var(--muted); font-size:12px;">
-                      @if($web->monitoring_status === 'paused')
-                        Monitoring dijeda
-                      @else
-                        {{ $log ? $log->checked_at->diffForHumans() : '-' }}
-                      @endif
+                      {{ $web->monitoring_status === 'paused' ? 'Monitoring dijeda' : ($log ? $log->checked_at->diffForHumans() : '-') }}
                     </td>
                     <td style="text-align:center;">
                       <a href="{{ route('dashboard.show', $web->id) }}" class="btn-detail">
@@ -734,15 +737,14 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">
-                      Belum ada data website. Silakan jalankan Seeder.</td>
+                    <td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">Belum ada data website.</td>
                   </tr>
                 @endforelse
               </tbody>
             </table>
           </div>
 
-          <!-- UI Pagination Navigator -->
+          <!-- Pagination Navigator -->
           <div class="pagination-container">
             <div class="pagination-info" id="pagination-info">
               Menampilkan 0 - 0 dari 0 data
@@ -759,7 +761,7 @@
           </div>
         </div>
 
-        <!-- 2. Tabel Insiden Aktif -->
+        <!-- 2. TABEL INSIDEN AKTIF -->
         @if($activeIncidents->count() > 0)
           <div class="card" style="border-color: rgba(220,38,38,0.25);">
             <div class="card-title danger-header">
@@ -781,22 +783,19 @@
                   @foreach($activeIncidents as $incident)
                     @php
                       $rawType = strtolower($incident->incident_type);
-                      if (str_contains($rawType, 'warning') || str_contains($rawType, 'slow') || str_contains($rawType, 'lambat')) {
+                      if (str_contains($rawType, 'warning') || str_contains($rawType, 'slow')) {
                         $typeName = 'SLOW';
                         $badgeClass = 'badge-warning';
                       } elseif (str_contains($rawType, 'ssl')) {
                         $typeName = 'SSL WARNING';
                         $badgeClass = 'badge-ssl';
-                      } elseif (str_contains($rawType, 'normal') || str_contains($rawType, 'online')) {
-                        $typeName = 'NORMAL';
-                        $badgeClass = 'badge-online';
                       } else {
                         $typeName = 'DOWN';
                         $badgeClass = 'badge-down';
                       }
 
                       $jobStatus = strtolower(trim($incident->status));
-                      if (str_contains($jobStatus, 'progress') || str_contains($jobStatus, 'proses')) {
+                      if (str_contains($jobStatus, 'progress')) {
                         $jobStyle = 'background: #fef3c7; color: #d97706; border: 1px solid rgba(217, 119, 6, 0.2);';
                         $jobStatusText = 'ON PROGRESS';
                       } else {
@@ -806,14 +805,8 @@
                     @endphp
                     <tr class="incident-row">
                       <td><strong style="color:#172033;">{{ $incident->website->website_name }}</strong></td>
-                      <td>
-                        <span class="badge {{ $badgeClass }}">
-                          {{ $typeName }}
-                        </span>
-                      </td>
-                      <td>
-                        <span class="badge" style="{{ $jobStyle }}">{{ $jobStatusText }}</span>
-                      </td>
+                      <td><span class="badge {{ $badgeClass }}">{{ $typeName }}</span></td>
+                      <td><span class="badge" style="{{ $jobStyle }}">{{ $jobStatusText }}</span></td>
                       <td>{{ $incident->assignedUser?->name ?? 'Belum Ditugaskan' }}</td>
                       <td style="color:var(--muted); font-size:12px;">
                         {{ $incident->started_at->locale('id')->diffForHumans() }}
@@ -824,7 +817,7 @@
               </table>
             </div>
 
-            <!-- UI Pagination Navigator Insiden -->
+            <!-- Pagination Navigator Insiden -->
             <div class="pagination-container">
               <div class="pagination-info" id="incident-pagination-info">
                 Menampilkan 0 - 0 dari 0 data
@@ -847,13 +840,12 @@
     </div>
   </main>
 
-  <!-- JAVASCRIPT SYSTEM & REAL-TIME DATA -->
+  <!-- JAVASCRIPT SYSTEM REAL-TIME & AJAX -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       renderIncidentPagination();
     });
 
-    // REAL-TIME AJAX, SEARCH & FILTER STATUS
     let rawWebsitesData = [];
     let currentPage = 1;
     const perPage = 5;
@@ -905,9 +897,7 @@
       const totalItems = filteredWebsites.length;
       const totalPages = Math.ceil(totalItems / perPage) || 1;
 
-      if (currentPage > totalPages) {
-        currentPage = totalPages;
-      }
+      if (currentPage > totalPages) currentPage = totalPages;
 
       if (totalItems === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">Tidak ada website yang sesuai pencarian/filter.</td></tr>`;
@@ -925,9 +915,9 @@
       paginatedItems.forEach(web => {
         const log = web.latest_log || web.latestLog;
         const isPaused = web.monitoring_status === 'paused';
+        const logsHistory = (web.monitoring_logs || web.monitoringLogs || []).slice().reverse();
 
         let statusBadge = '<span class="badge badge-muted">Belum Dicek</span>';
-        let httpCode = '<span style="color:var(--muted);">-</span>';
         let responseTime = '<span style="color:var(--muted);">-</span>';
         let sslBadge = '<span style="color:var(--muted);">-</span>';
         let checkedAt = '-';
@@ -944,28 +934,38 @@
             statusBadge = '<span class="badge badge-down">● DOWN</span>';
           }
 
-          httpCode = log.http_code
-            ? `<span style="font-weight:800; color:#172033;">${log.http_code}</span>`
-            : '<span style="color:var(--muted);">N/A</span>';
-
           if (log.status !== 'down' && log.response_time_ms) {
             const latencyColor = log.response_time_ms > 3000 ? 'var(--amber)' : '#137a48';
             responseTime = `<span style="color:${latencyColor}; font-weight:800;">${Number(log.response_time_ms).toLocaleString()} ms</span>`;
-          } else if (log.response_time_ms) {
-            responseTime = `<span style="color:var(--muted);">${Number(log.response_time_ms).toLocaleString()} ms</span>`;
           }
 
           if (log.ssl_valid) {
             sslBadge = `<span class="badge badge-ssl">Valid (${log.ssl_days_left} Hari)</span>`;
-          } else if (log.ssl_valid === false && log.status !== 'down') {
+          } else if (log.ssl_valid === false) {
             sslBadge = `<span class="badge badge-down">SSL Expired</span>`;
-          } else {
-            sslBadge = `<span class="badge badge-muted">N/A</span>`;
           }
 
           checkedAt = timeAgo(log.checked_at);
         }
 
+        // Render Uptime Bar Items
+        let barsHtml = '';
+        const maxBars = 30;
+        const emptyBarsCount = maxBars - logsHistory.length;
+
+        for (let i = 0; i < emptyBarsCount; i++) {
+          barsHtml += `<div class="uptime-bar bar-empty" title="Belum ada data"></div>`;
+        }
+
+        logsHistory.forEach(hLog => {
+          let barClass = 'bar-online';
+          if (hLog.status === 'warning') barClass = 'bar-warning';
+          else if (['down', 'ssl_error'].includes(hLog.status)) barClass = 'bar-down';
+
+          barsHtml += `<div class="uptime-bar ${barClass}" title="Status: ${hLog.status.toUpperCase()} (${hLog.response_time_ms ?? 0}ms)"></div>`;
+        });
+
+        const uptimePct = web.uptime_percentage ?? 100;
         const detailUrl = baseUrl.replace(':id', web.id);
         const rowClass = isPaused ? 'row-paused' : '';
 
@@ -976,14 +976,18 @@
               <small style="color:var(--muted);">${web.url}</small>
             </td>
             <td>${statusBadge}</td>
-            <td>${httpCode}</td>
+            <td>
+              <div class="uptime-container">
+                <div class="uptime-bars">${barsHtml}</div>
+                <span class="uptime-percentage">${uptimePct}%</span>
+              </div>
+            </td>
             <td>${responseTime}</td>
             <td>${sslBadge}</td>
             <td style="color:var(--muted); font-size:12px;">${checkedAt}</td>
             <td style="text-align:center;">
               <a href="${detailUrl}" class="btn-detail">
-                <i class="bi bi-eye"></i>
-                <span>Detail</span>
+                <i class="bi bi-eye"></i> Detail
               </a>
             </td>
           </tr>
@@ -1080,7 +1084,7 @@
     });
 
     fetchRealtimeData();
-    setInterval(fetchRealtimeData, 5000);
+    setInterval(fetchRealtimeData, 3000);
 
     let currentIncidentPage = 1;
     const incidentPerPage = 5;

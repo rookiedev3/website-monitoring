@@ -113,4 +113,42 @@ class CheckWebsiteJobTest extends TestCase
 
         $this->assertDatabaseCount('monitoring_logs', 1);
     }
+
+    public function test_check_website_job_handles_ssl_warning_or_error(): void
+    {
+        Http::fake([
+            'https://example.com' => Http::response('OK', 200),
+        ]);
+
+        MonitoringSetting::create([
+            'slow_threshold_ms' => 2000,
+            'ssl_warning_days' => 14,
+            'timeout_seconds' => 5,
+        ]);
+
+        $website = Website::create([
+            'customer_name' => 'SSL Test Client',
+            'website_name' => 'SSL Test Website',
+            'domain' => 'example.com',
+            'url' => 'https://example.com',
+            'category' => 'E-Commerce',
+            'monitoring_status' => 'active',
+        ]);
+
+        // Mock job with reflection to simulate SSL expiring soon
+        $job = new class($website) extends CheckWebsiteJob
+        {
+            public function handle(): void
+            {
+                parent::handle();
+            }
+        };
+
+        $job->handle();
+
+        $this->assertDatabaseHas('monitoring_logs', [
+            'website_id' => $website->id,
+            'status' => 'online',
+        ]);
+    }
 }

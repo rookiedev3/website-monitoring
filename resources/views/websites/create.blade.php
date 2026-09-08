@@ -165,13 +165,10 @@
       display: none;
     }
 
-    /* ==========================================================
-        KODE RESPONSIF: STYLE MAIN CONTENT & PERGESERAN SIDEBAR
-        ========================================================== */
+    /* STYLE MAIN CONTENT */
     main { 
       margin-left: var(--sidebar-width); 
       flex: 1; 
-      /* Disesuaikan: Atas 85px agar aman dari navbar, Kiri-Kanan 12px agar konsisten melebar */
       padding: 85px 12px 16px 12px; 
       min-width: 0; 
       transition: margin-left 0.3s ease, width 0.3s ease;
@@ -272,7 +269,6 @@
       cursor: pointer;
     }
 
-    /* MENCEGAH INPUT BERUBAH MENJADI PUTIH SAAT AUTOFILL / DIKETIK */
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
     input:-webkit-autofill:focus, 
@@ -346,6 +342,11 @@
       opacity: 0.9;
     }
 
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     @media (max-width: 768px) {
       main { 
         margin-left: 0 !important; 
@@ -391,7 +392,7 @@
 
       <!-- FORM CARD -->
       <div class="card">
-        <form action="{{ route('websites.store') }}" method="POST">
+        <form action="{{ route('websites.store') }}" method="POST" id="form-website">
           @csrf
 
           <!-- NAMA CUSTOMER & NAMA WEBSITE -->
@@ -422,6 +423,10 @@
             <label for="url">URL Website *</label>
             <input type="url" id="url" name="url" class="form-control @error('url') is-invalid @enderror"
               placeholder="https://client-one.com" value="{{ old('url') }}" required>
+            
+            <!-- Tempat pesan error duplikasi AJAX -->
+            <span id="url-ajax-error" class="error-text" style="display: none;"></span>
+
             @error('url')
               <span class="error-text">{{ $message }}</span>
             @enderror
@@ -494,7 +499,7 @@
           <!-- ACTIONS -->
           <div class="form-actions">
             <a href="{{ route('websites.index') }}" class="btn-secondary">Batal</a>
-            <button type="submit" class="btn-primary">Simpan Website</button>
+            <button type="submit" id="btn-submit" class="btn-primary">Simpan Website</button>
           </div>
 
         </form>
@@ -502,6 +507,64 @@
 
     </div>
   </main>
+
+  <!-- SCRIPT CEK DUPLIKASI URL VIA AJAX -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const urlInput = document.getElementById('url');
+      const ajaxError = document.getElementById('url-ajax-error');
+      const submitBtn = document.getElementById('btn-submit');
+      let isDuplicate = false;
+
+      if (!urlInput) return;
+
+      urlInput.addEventListener('blur', function () {
+        const urlValue = this.value.trim();
+
+        if (!urlValue) {
+          ajaxError.style.display = 'none';
+          urlInput.classList.remove('is-invalid');
+          isDuplicate = false;
+          submitBtn.disabled = false;
+          return;
+        }
+
+        fetch("{{ route('websites.checkUrl') }}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ url: urlValue })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.exists) {
+            urlInput.classList.add('is-invalid');
+            ajaxError.innerText = data.message;
+            ajaxError.style.display = 'block';
+            isDuplicate = true;
+            submitBtn.disabled = true;
+          } else {
+            urlInput.classList.remove('is-invalid');
+            ajaxError.style.display = 'none';
+            isDuplicate = false;
+            submitBtn.disabled = false;
+          }
+        })
+        .catch(err => {
+          console.error('Terjadi kesalahan saat memeriksa URL:', err);
+        });
+      });
+
+      document.getElementById('form-website').addEventListener('submit', function (e) {
+        if (isDuplicate) {
+          e.preventDefault();
+          alert('URL ini sudah terdaftar dalam sistem. Mohon gunakan URL yang lain.');
+        }
+      });
+    });
+  </script>
 
 </body>
 

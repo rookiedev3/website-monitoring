@@ -2,6 +2,7 @@
 
 use App\Jobs\CheckWebsiteJob;
 use App\Models\Website;
+use Illuminate\Support\Facades\Schedule;
 
 // Running setiap menit via Cron Job
 Schedule::call(function () {
@@ -18,4 +19,4 @@ Schedule::call(function () {
             CheckWebsiteJob::dispatch($website);
         }
     }
-})->everyMinute();
+})->everyFiveSeconds();

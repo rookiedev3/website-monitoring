@@ -6,6 +6,7 @@ use App\Models\Incident;
 use App\Models\MonitoringLog;
 use App\Models\MonitoringSetting;
 use App\Models\Website;
+use App\Services\IncidentService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +27,7 @@ class CheckWebsiteJob implements ShouldQueue
 
     public function handle(): void
     {
-        // 0. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM) - Simpan sebagai Array agar aman dari issue unserialize Eloquent Model
+        // 0. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM)
         $settings = Cache::remember('global_monitoring_settings', 3600, function () {
             return MonitoringSetting::first()?->only([
                 'slow_threshold_ms',
@@ -35,12 +36,9 @@ class CheckWebsiteJob implements ShouldQueue
             ]);
         });
 
-        // Tentukan batas threshold dinamis (dengan fallback default jika DB kosong)
         $slowThreshold = $settings['slow_threshold_ms'] ?? 2000;
         $sslWarningDays = $settings['ssl_warning_days'] ?? 14;
-        // Mengambil timeout kustom milik website, jika null pakai global setting
         $timeoutSeconds = $this->website->timeout_seconds ?? ($settings['timeout_seconds'] ?? 10);
-
 
         $startTime = microtime(true);
         $url = $this->website->url;
@@ -52,9 +50,8 @@ class CheckWebsiteJob implements ShouldQueue
         $errorMessage = null;
         $responseTimeMs = null;
 
-        // --- 1. PROSES PENGECEKAN HTTP CLIENT ---
+        // --- 1. PROSES PENGECEKAN HTTP CLIENT (APPLICATION LAYER) ---
         try {
-            // bypass SSL verify di cURL agar error SSL ditangani terpisah
             $response = Http::timeout($timeoutSeconds)
                 ->withOptions(['verify' => false])
                 ->get($url);
@@ -63,7 +60,6 @@ class CheckWebsiteJob implements ShouldQueue
             $httpCode = $response->status();
 
             if ($response->successful()) {
-                // Menggunakan slow_threshold_ms dinamis dari MonitoringSetting
                 if ($responseTimeMs > $slowThreshold) {
                     $status = 'warning';
                     $incidentType = 'slow';
@@ -94,20 +90,35 @@ class CheckWebsiteJob implements ShouldQueue
             $errorMessage = $e->getMessage();
         }
 
-        // --- 2. CEK SSL CERTIFICATE (JIKA TIDAK DOWN) ---
-        $sslInfo = $this->checkSslCertificate($url);
+        // --- 2. PROSES DIAGNOSTIK PING (NETWORK LAYER) ---
+        // Jika koneksi web gagal, gunakan ping untuk memastikan apakah host benar-benar tidak terjangkau
+        if ($status === 'down' && in_array($incidentType, ['down', 'timeout'])) {
+            $pingResult = $this->executePing($url, $timeoutSeconds);
+            if (! $pingResult['success']) {
+                $errorMessage = ($errorMessage ? $errorMessage.' | ' : '').$pingResult['error'];
+            }
+        }
 
-        // Menggunakan ssl_warning_days dinamis dari MonitoringSetting
-        if ($sslInfo['valid'] !== null && (! $sslInfo['valid'] || $sslInfo['days_left'] <= $sslWarningDays) && $status !== 'down') {
-            $status = 'ssl_error';
-            $incidentType = 'ssl';
-            $errorType = 'SSL_INVALID';
-            $errorMessage = $sslInfo['error'] ?? "SSL Kadaluwarsa dalam {$sslInfo['days_left']} hari";
+        // --- 3. CEK SSL CERTIFICATE (JIKA WEBSITE TIDAK DOWN) ---
+        $sslInfo = $this->checkSslCertificate($url, $timeoutSeconds);
+
+        if ($sslInfo['valid'] !== null && $status !== 'down') {
+            if (! $sslInfo['valid']) {
+                $status = 'ssl_error';
+                $incidentType = 'ssl';
+                $errorType = 'SSL_INVALID';
+                $errorMessage = $sslInfo['error'] ?? 'Sertifikat SSL tidak valid atau telah kadaluwarsa';
+            } elseif ($sslInfo['days_left'] <= $sslWarningDays) {
+                $status = 'ssl_error';
+                $incidentType = 'ssl';
+                $errorType = 'SSL_EXPIRING_SOON';
+                $errorMessage = "SSL akan kadaluwarsa dalam {$sslInfo['days_left']} hari";
+            }
         }
 
         $now = Carbon::now();
 
-        // --- 3. REKAM HASIL KE TABEL monitoring_logs ---
+        // --- 4. REKAM HASIL KE TABEL monitoring_logs ---
         MonitoringLog::create([
             'website_id' => $this->website->id,
             'status' => $status,
@@ -121,16 +132,81 @@ class CheckWebsiteJob implements ShouldQueue
             'checked_at' => $now,
         ]);
 
-        // Sinkronkan status terakhir ke tabel websites (dipakai Dashboard & Website Management)
+        // Sinkronkan status terakhir ke tabel websites
         $this->website->update([
             'last_status' => $status,
         ]);
 
-        // --- 4. OTOMATISASI INCIDENT LIFECYCLE ---
-        app(\App\Services\IncidentService::class)->evaluate($this->website, $status, $incidentType);
+        // --- 5. OTOMATISASI INCIDENT LIFECYCLE ---
+        app(IncidentService::class)->evaluate($this->website, $status, $incidentType);
     }
 
-    private function checkSslCertificate(string $url): array
+    /**
+     * Helper untuk mengeksekusi sistem Ping (ICMP) berdasarkan OS
+     *
+     * @return array{success: bool, error: ?string}
+     */
+    private function executePing(string $url, int $timeoutSeconds): array
+    {
+        if (app()->environment('testing')) {
+            return [
+                'success' => true,
+                'error' => null,
+            ];
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+        if (! $host) {
+            $host = preg_replace('#^https?://#i', '', $url);
+            $host = explode('/', $host)[0];
+            $host = explode(':', $host)[0];
+        }
+
+        if (empty($host)) {
+            return [
+                'success' => false,
+                'error' => 'Host tidak valid untuk ping',
+            ];
+        }
+
+        // Batasi timeout ping (maksimal 3 detik) agar tidak membebani worker
+        $timeout = max(1, min($timeoutSeconds, 3));
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $timeoutMs = $timeout * 1000;
+            $command = sprintf('ping -n 1 -w %d %s', $timeoutMs, escapeshellarg($host));
+        } else {
+            $command = sprintf('ping -c 1 -W %d %s', $timeout, escapeshellarg($host));
+        }
+
+        exec($command, $output, $resultCode);
+        $outputStr = implode(' ', $output ?? []);
+
+        $isLost = str_contains($outputStr, '100% loss')
+            || str_contains($outputStr, 'Request timed out')
+            || str_contains($outputStr, 'Destination host unreachable')
+            || str_contains($outputStr, 'could not find host')
+            || str_contains($outputStr, 'tidak dapat menemukan host');
+
+        if ($resultCode === 0 && ! $isLost) {
+            return [
+                'success' => true,
+                'error' => null,
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => "Ping ke host '{$host}' gagal (Packet Loss / Unreachable)",
+        ];
+    }
+
+    /**
+     * Helper untuk memeriksa validitas dan sisa masa aktif sertifikat SSL
+     *
+     * @return array{valid: ?bool, expired_at: ?Carbon, days_left: ?int, error: ?string}
+     */
+    private function checkSslCertificate(string $url, int $timeoutSeconds = 5): array
     {
         $scheme = parse_url($url, PHP_URL_SCHEME);
         if (strtolower($scheme ?? '') !== 'https') {
@@ -142,11 +218,38 @@ class CheckWebsiteJob implements ShouldQueue
             ];
         }
 
-        $host = parse_url($url, PHP_URL_HOST) ?? $url;
-        $port = parse_url($url, PHP_URL_PORT) ?? 443;
+        $host = parse_url($url, PHP_URL_HOST);
+        if (! $host) {
+            return [
+                'valid' => false,
+                'expired_at' => null,
+                'days_left' => 0,
+                'error' => 'Format domain host tidak valid',
+            ];
+        }
 
-        $gcontext = stream_context_create(['ssl' => ['capture_peer_cert' => true]]);
-        $client = @stream_socket_client("ssl://{$host}:{$port}", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $gcontext);
+        $port = parse_url($url, PHP_URL_PORT) ?? 443;
+        $timeout = max(2, min($timeoutSeconds, 10));
+
+        $gcontext = stream_context_create([
+            'ssl' => [
+                'capture_peer_cert' => true,
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'SNI_enabled' => true,
+                'peer_name' => $host,
+                'allow_self_signed' => true,
+            ],
+        ]);
+
+        $client = @stream_socket_client(
+            "ssl://{$host}:{$port}",
+            $errno,
+            $errstr,
+            $timeout,
+            STREAM_CLIENT_CONNECT,
+            $gcontext
+        );
 
         if (! $client) {
             return [
@@ -158,29 +261,48 @@ class CheckWebsiteJob implements ShouldQueue
         }
 
         $cont = stream_context_get_params($client);
-        $cert = isset($cont['options']['ssl']['peer_certificate'])
-            ? openssl_x509_parse($cont['options']['ssl']['peer_certificate'])
-            : null;
+        $peerCert = $cont['options']['ssl']['peer_certificate'] ?? null;
+        $cert = $peerCert ? openssl_x509_parse($peerCert) : null;
 
         fclose($client);
 
-        if (! $cert) {
+        if (! $cert || ! isset($cert['validTo_time_t'])) {
             return [
                 'valid' => false,
                 'expired_at' => null,
                 'days_left' => 0,
-                'error' => 'Sertifikat SSL tidak valid / tidak terbaca',
+                'error' => 'Sertifikat SSL tidak valid atau tidak dapat dibaca',
             ];
         }
 
         $validTo = Carbon::createFromTimestamp($cert['validTo_time_t']);
-        $daysLeft = (int) Carbon::now()->diffInDays($validTo, false);
+        $validFrom = isset($cert['validFrom_time_t']) ? Carbon::createFromTimestamp($cert['validFrom_time_t']) : null;
+        $now = Carbon::now();
+        $daysLeft = (int) $now->diffInDays($validTo, false);
+
+        if ($validFrom && $now->lt($validFrom)) {
+            return [
+                'valid' => false,
+                'expired_at' => $validTo,
+                'days_left' => $daysLeft,
+                'error' => 'Sertifikat SSL belum aktif',
+            ];
+        }
+
+        if ($now->gt($validTo) || $daysLeft < 0) {
+            return [
+                'valid' => false,
+                'expired_at' => $validTo,
+                'days_left' => $daysLeft,
+                'error' => 'Sertifikat SSL telah kadaluwarsa',
+            ];
+        }
 
         return [
-            'valid' => $daysLeft > 0,
+            'valid' => true,
             'expired_at' => $validTo,
             'days_left' => $daysLeft,
-            'error' => $daysLeft <= 0 ? 'Sertifikat SSL telah kadaluwarsa' : null,
+            'error' => null,
         ];
     }
 }

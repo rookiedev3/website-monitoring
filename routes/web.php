@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('websites', WebsiteController::class);
     Route::patch('websites/{website}/toggle-status', [WebsiteController::class, 'toggleStatus'])->name('websites.toggle-status');
+    Route::post('/websites/check-url', [App\Http\Controllers\WebsiteController::class, 'checkUrl'])->name('websites.checkUrl');
 
     Route::resource('incidents', IncidentController::class)->only(['index', 'show', 'update']);
     Route::post('/incidents/{incident}/take', [IncidentController::class, 'take'])->name('incidents.take');
