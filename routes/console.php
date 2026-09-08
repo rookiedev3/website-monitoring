@@ -19,4 +19,4 @@ Schedule::call(function () {
             CheckWebsiteJob::dispatch($website);
         }
     }
-})->everyFiveSeconds();
+})->everyMinute();

@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Incident;
 use App\Models\MonitoringLog;
 use App\Models\MonitoringSetting;
 use App\Models\Website;
@@ -27,118 +26,135 @@ class CheckWebsiteJob implements ShouldQueue
 
     public function handle(): void
     {
-        // 0. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM)
-        $settings = Cache::remember('global_monitoring_settings', 3600, function () {
-            return MonitoringSetting::first()?->only([
-                'slow_threshold_ms',
-                'ssl_warning_days',
-                'timeout_seconds',
-            ]);
-        });
+        // 0. CEK KEBERADAAN DATA & CACHE LOCK
+        if (! $this->website->exists) {
+            return;
+        }
 
-        $slowThreshold = $settings['slow_threshold_ms'] ?? 2000;
-        $sslWarningDays = $settings['ssl_warning_days'] ?? 14;
-        $timeoutSeconds = $this->website->timeout_seconds ?? ($settings['timeout_seconds'] ?? 10);
+        // Mencegah job berjalan ganda untuk website yang sama secara bersamaan
+        $lock = Cache::lock('checking_website_'.$this->website->id, 25);
+        if (! $lock->get()) {
+            return;
+        }
 
-        $startTime = microtime(true);
-        $url = $this->website->url;
-
-        $status = 'online';
-        $incidentType = null;
-        $httpCode = null;
-        $errorType = null;
-        $errorMessage = null;
-        $responseTimeMs = null;
-
-        // --- 1. PROSES PENGECEKAN HTTP CLIENT (APPLICATION LAYER) ---
         try {
-            $response = Http::timeout($timeoutSeconds)
-                ->withOptions(['verify' => false])
-                ->get($url);
+            // 1. AMBIL GLOBAL SETTINGS DENGAN CACHE (1 JAM)
+            $settings = Cache::remember('global_monitoring_settings', 3600, function () {
+                return MonitoringSetting::first()?->only([
+                    'slow_threshold_ms',
+                    'ssl_warning_days',
+                    'timeout_seconds',
+                ]);
+            });
 
-            $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
-            $httpCode = $response->status();
+            $slowThreshold = $settings['slow_threshold_ms'] ?? 2000;
+            $sslWarningDays = $settings['ssl_warning_days'] ?? 14;
+            $timeoutSeconds = $this->website->timeout_seconds ?? ($settings['timeout_seconds'] ?? 10);
 
-            if ($response->successful()) {
-                if ($responseTimeMs > $slowThreshold) {
-                    $status = 'warning';
-                    $incidentType = 'slow';
+            $startTime = microtime(true);
+            $url = $this->website->url;
+
+            $status = 'online';
+            $incidentType = null;
+            $httpCode = null;
+            $errorType = null;
+            $errorMessage = null;
+            $responseTimeMs = null;
+
+            // --- 2. PROSES PENGECEKAN HTTP CLIENT (APPLICATION LAYER) ---
+            try {
+                $response = Http::timeout($timeoutSeconds)
+                    ->withOptions(['verify' => false])
+                    ->get($url);
+
+                $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
+                $httpCode = $response->status();
+
+                if ($response->successful()) {
+                    if ($responseTimeMs > $slowThreshold) {
+                        $status = 'warning';
+                        $incidentType = 'slow';
+                    }
+                } else {
+                    $status = 'down';
+                    $incidentType = 'http_error';
+                    $errorType = 'HTTP_SERVER_ERROR';
+                    $errorMessage = "Server merespons dengan HTTP status: {$httpCode}";
                 }
-            } else {
+            } catch (ConnectionException $e) {
+                $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
                 $status = 'down';
-                $incidentType = 'http_error';
-                $errorType = 'HTTP_SERVER_ERROR';
-                $errorMessage = "Server merespons dengan HTTP status: {$httpCode}";
-            }
-        } catch (ConnectionException $e) {
-            $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
-            $status = 'down';
 
-            if (str_contains(strtolower($e->getMessage()), 'timed out')) {
-                $incidentType = 'timeout';
-                $errorType = 'CONNECTION_TIMEOUT';
-            } else {
+                if (str_contains(strtolower($e->getMessage()), 'timed out')) {
+                    $incidentType = 'timeout';
+                    $errorType = 'CONNECTION_TIMEOUT';
+                } else {
+                    $incidentType = 'down';
+                    $errorType = 'CONNECTION_FAILED';
+                }
+                $errorMessage = $e->getMessage();
+            } catch (\Throwable $e) {
+                $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
+                $status = 'down';
                 $incidentType = 'down';
-                $errorType = 'CONNECTION_FAILED';
+                $errorType = 'UNKNOWN_ERROR';
+                $errorMessage = $e->getMessage();
             }
-            $errorMessage = $e->getMessage();
-        } catch (\Throwable $e) {
-            $responseTimeMs = (int) round((microtime(true) - $startTime) * 1000);
-            $status = 'down';
-            $incidentType = 'down';
-            $errorType = 'UNKNOWN_ERROR';
-            $errorMessage = $e->getMessage();
-        }
 
-        // --- 2. PROSES DIAGNOSTIK PING (NETWORK LAYER) ---
-        // Jika koneksi web gagal, gunakan ping untuk memastikan apakah host benar-benar tidak terjangkau
-        if ($status === 'down' && in_array($incidentType, ['down', 'timeout'])) {
-            $pingResult = $this->executePing($url, $timeoutSeconds);
-            if (! $pingResult['success']) {
-                $errorMessage = ($errorMessage ? $errorMessage.' | ' : '').$pingResult['error'];
+            // --- 3. PROSES DIAGNOSTIK PING (NETWORK LAYER) ---
+            // Hanya dijalankan jika koneksi HTTP gagal total / timeout
+            if ($status === 'down' && in_array($incidentType, ['down', 'timeout'])) {
+                $pingResult = $this->executePing($url, $timeoutSeconds);
+                if (! $pingResult['success']) {
+                    $errorMessage = ($errorMessage ? $errorMessage.' | ' : '').$pingResult['error'];
+                }
             }
-        }
 
-        // --- 3. CEK SSL CERTIFICATE (JIKA WEBSITE TIDAK DOWN) ---
-        $sslInfo = $this->checkSslCertificate($url, $timeoutSeconds);
+            // --- 4. CEK SSL CERTIFICATE (JIKA WEBSITE TIDAK DOWN) ---
+            $sslInfo = $this->checkSslCertificate($url, $timeoutSeconds);
 
-        if ($sslInfo['valid'] !== null && $status !== 'down') {
-            if (! $sslInfo['valid']) {
-                $status = 'ssl_error';
-                $incidentType = 'ssl';
-                $errorType = 'SSL_INVALID';
-                $errorMessage = $sslInfo['error'] ?? 'Sertifikat SSL tidak valid atau telah kadaluwarsa';
-            } elseif ($sslInfo['days_left'] <= $sslWarningDays) {
-                $status = 'ssl_error';
-                $incidentType = 'ssl';
-                $errorType = 'SSL_EXPIRING_SOON';
-                $errorMessage = "SSL akan kadaluwarsa dalam {$sslInfo['days_left']} hari";
+            if ($sslInfo['valid'] !== null && $status !== 'down') {
+                if (! $sslInfo['valid']) {
+                    $status = 'ssl_error';
+                    $incidentType = 'ssl';
+                    $errorType = 'SSL_INVALID';
+                    $errorMessage = $sslInfo['error'] ?? 'Sertifikat SSL tidak valid atau telah kadaluwarsa';
+                } elseif ($sslInfo['days_left'] <= $sslWarningDays) {
+                    $status = 'ssl_error';
+                    $incidentType = 'ssl';
+                    $errorType = 'SSL_EXPIRING_SOON';
+                    $errorMessage = "SSL akan kadaluwarsa dalam {$sslInfo['days_left']} hari";
+                }
             }
+
+            $now = Carbon::now();
+
+            // --- 5. REKAM HASIL KE TABEL monitoring_logs ---
+            MonitoringLog::create([
+                'website_id' => $this->website->id,
+                'status' => $status,
+                'http_code' => $httpCode,
+                'response_time_ms' => $responseTimeMs,
+                'ssl_valid' => $sslInfo['valid'],
+                'ssl_expired_at' => $sslInfo['expired_at'],
+                'ssl_days_left' => $sslInfo['days_left'],
+                'error_type' => $errorType,
+                'error_message' => $errorMessage,
+                'checked_at' => $now,
+            ]);
+
+            // Sinkronkan status terakhir ke tabel websites
+            $this->website->update([
+                'last_status' => $status,
+            ]);
+
+            // --- 6. OTOMATISASI INCIDENT LIFECYCLE ---
+            app(IncidentService::class)->evaluate($this->website, $status, $incidentType);
+
+        } finally {
+            // Selalu lepas lock setelah proses selesai
+            $lock->release();
         }
-
-        $now = Carbon::now();
-
-        // --- 4. REKAM HASIL KE TABEL monitoring_logs ---
-        MonitoringLog::create([
-            'website_id' => $this->website->id,
-            'status' => $status,
-            'http_code' => $httpCode,
-            'response_time_ms' => $responseTimeMs,
-            'ssl_valid' => $sslInfo['valid'],
-            'ssl_expired_at' => $sslInfo['expired_at'],
-            'ssl_days_left' => $sslInfo['days_left'],
-            'error_type' => $errorType,
-            'error_message' => $errorMessage,
-            'checked_at' => $now,
-        ]);
-
-        // Sinkronkan status terakhir ke tabel websites
-        $this->website->update([
-            'last_status' => $status,
-        ]);
-
-        // --- 5. OTOMATISASI INCIDENT LIFECYCLE ---
-        app(IncidentService::class)->evaluate($this->website, $status, $incidentType);
     }
 
     /**
@@ -169,7 +185,6 @@ class CheckWebsiteJob implements ShouldQueue
             ];
         }
 
-        // Batasi timeout ping (maksimal 3 detik) agar tidak membebani worker
         $timeout = max(1, min($timeoutSeconds, 3));
 
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
