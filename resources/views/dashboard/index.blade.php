@@ -372,6 +372,33 @@
     .badge-muted { background: #f1f5f9; color: var(--muted); }
     .badge-paused { background: rgba(119, 129, 149, 0.12); color: var(--muted); border: 1px solid rgba(119, 129, 149, 0.25); }
 
+    /* Status Dot - indikator "hidup" berkedip pelan */
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .status-dot.pulse::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.55;
+      animation: statusDotPulse 2.6s ease-out infinite;
+    }
+
+    @keyframes statusDotPulse {
+      0% { transform: scale(0.5); opacity: 0.55; }
+      70% { transform: scale(2.4); opacity: 0; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
     /* Uptime Bars Component (Hetrixtools / UptimeRobot Style) */
     .uptime-container {
       display: flex;
@@ -440,6 +467,168 @@
       background: #013220;
       color: #ffffff;
       border-color: #013220;
+    }
+
+    /* Live Preview Thumbnail */
+    .preview-thumb-wrap {
+      width: 56px;
+      height: 40px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #f1f5f9;
+      cursor: pointer;
+      display: block;
+      position: relative;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .preview-thumb-wrap:hover {
+      box-shadow: 0 4px 10px rgba(31, 53, 97, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .preview-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+
+    .preview-thumb-wrap i {
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      font-size: 9px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 4px;
+      padding: 1px 3px;
+    }
+
+    /* Preview Modal (Live Preview Besar) */
+    .preview-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .preview-modal-box {
+      background: var(--card);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .preview-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .preview-modal-head h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .preview-modal-head a {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green-vibrant);
+    }
+
+    .preview-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .preview-modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      line-height: 1;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .preview-modal-close:hover {
+      color: var(--ink);
+    }
+
+    .preview-modal-body {
+      background: #f1f5f9;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .preview-modal-body img {
+      width: 100%;
+      display: block;
+    }
+
+    .preview-modal-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .preview-modal-loading i {
+      font-size: 22px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .preview-modal-footer {
+      padding: 10px 18px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-refresh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .preview-refresh-btn:hover {
+      background: #e8edf5;
     }
 
     /* Pagination Controls */
@@ -732,12 +921,13 @@
             <table>
               <thead>
                 <tr>
-                  <th style="width: 25%;">Website / Domain</th>
-                  <th style="width: 10%;">Status</th>
-                  <th style="width: 25%;">Uptime History (30 Checks)</th>
-                  <th style="width: 10%;">Latency</th>
-                  <th style="width: 12%;">Masa SSL</th>
-                  <th style="width: 10%;">Dicek Terakhir</th>
+                  <th style="width: 8%;">Preview</th>
+                  <th style="width: 20%;">Website / Domain</th>
+                  <th style="width: 9%;">Status</th>
+                  <th style="width: 21%;">Uptime History (30 Checks)</th>
+                  <th style="width: 9%;">Latency</th>
+                  <th style="width: 10%;">Masa SSL</th>
+                  <th style="width: 9%;">Dicek Terakhir</th>
                   <th style="width: 8%; text-align: center;">Aksi</th>
                 </tr>
               </thead>
@@ -752,6 +942,15 @@
                   @endphp
                   <tr class="{{ $web->monitoring_status === 'paused' ? 'row-paused' : '' }}">
                     <td>
+                      <span class="preview-thumb-wrap"
+                            onclick="openPreviewModal('{{ addslashes($web->url) }}', '{{ addslashes($web->website_name) }}')"
+                            title="Klik untuk lihat live preview">
+                        <img src="https://api.microlink.io/?url={{ urlencode($web->url) }}&screenshot=true&meta=false&embed=screenshot.url"
+                             loading="lazy" alt="Preview {{ $web->website_name }}">
+                        <i class="bi bi-arrows-fullscreen"></i>
+                      </span>
+                    </td>
+                    <td>
                       <strong style="color:#172033; display:block;">{{ $web->website_name }}</strong>
                       <small style="color:var(--muted); font-weight:600;">{{ $web->url }}</small>
                     </td>
@@ -760,7 +959,7 @@
                         <span class="badge badge-paused"><i class="bi bi-pause-circle"></i> PAUSED</span>
                       @elseif($log)
                         <span class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
-                          ● {{ strtoupper($log->status) }}
+                          <span class="status-dot {{ $log->status === 'online' ? 'pulse' : '' }}"></span> {{ strtoupper($log->status) }}
                         </span>
                       @else
                         <span class="badge badge-muted">Belum Dicek</span>
@@ -779,7 +978,7 @@
                               elseif (in_array($hLog->status, ['down', 'ssl_error'])) $barClass = 'bar-down';
                             @endphp
                             <div class="uptime-bar {{ $barClass }}"
-                                 title="Status: {{ strtoupper($hLog->status) }} ({{ $hLog->response_time_ms ?? 0 }}ms)">
+                                 title="Dicek: {{ $hLog->checked_at->format('d/m/Y H:i:s') }}&#10;Status: {{ strtoupper($hLog->status) }} ({{ $hLog->response_time_ms ?? 0 }}ms)">
                             </div>
                           @endforeach
                         </div>
@@ -817,7 +1016,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">Belum ada data website.</td>
+                    <td colspan="8" style="text-align:center; padding: 24px; color:var(--muted);">Belum ada data website.</td>
                   </tr>
                 @endforelse
               </tbody>
@@ -920,6 +1119,38 @@
     </div>
   </main>
 
+  <!-- MODAL LIVE PREVIEW WEBSITE -->
+  <div id="previewModalOverlay" class="preview-modal-overlay">
+    <div class="preview-modal-box">
+      <div class="preview-modal-head">
+        <div>
+          <h4 id="previewModalTitle">Live Preview</h4>
+          <a id="previewModalLink" href="#" target="_blank" rel="noopener">
+            Buka website asli <i class="bi bi-box-arrow-up-right"></i>
+          </a>
+        </div>
+        <div class="preview-modal-actions">
+          <button type="button" class="preview-refresh-btn" onclick="refreshPreviewModal()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+          <button type="button" class="preview-modal-close" onclick="closePreviewModal()">&times;</button>
+        </div>
+      </div>
+      <div class="preview-modal-body">
+        <div id="previewModalLoading" class="preview-modal-loading">
+          <i class="bi bi-arrow-repeat"></i>
+          <span>Mengambil tampilan terbaru...</span>
+        </div>
+        <img id="previewModalImage" src="" alt="Live preview" style="display:none;">
+      </div>
+      <div class="preview-modal-footer">
+        <small style="color:var(--muted); font-size:11px;">
+          Preview diambil lewat API screenshot pihak ketiga (kuota gratis terbatas ±25-50x/hari), gunakan tombol Refresh secukupnya.
+        </small>
+      </div>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT SYSTEM REAL-TIME & AJAX -->
   <script>
     document.getElementById('email-notif-toggle')?.addEventListener('change', function () {
@@ -1004,7 +1235,7 @@
       if (currentPage > totalPages) currentPage = totalPages;
 
       if (totalItems === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color:var(--muted);">Tidak ada website yang sesuai pencarian/filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color:var(--muted);">Tidak ada website yang sesuai pencarian/filter.</td></tr>`;
         renderPaginationControls(0, 1);
         return;
       }
@@ -1031,11 +1262,11 @@
           checkedAt = '<span style="color:var(--muted);">Monitoring dijeda</span>';
         } else if (log) {
           if (log.status === 'online') {
-            statusBadge = '<span class="badge badge-online">● ONLINE</span>';
+            statusBadge = '<span class="badge badge-online"><span class="status-dot pulse"></span> ONLINE</span>';
           } else if (log.status === 'warning') {
-            statusBadge = '<span class="badge badge-warning">● WARNING</span>';
+            statusBadge = '<span class="badge badge-warning"><span class="status-dot"></span> WARNING</span>';
           } else {
-            statusBadge = '<span class="badge badge-down">● DOWN</span>';
+            statusBadge = '<span class="badge badge-down"><span class="status-dot"></span> DOWN</span>';
           }
 
           if (log.status !== 'down' && log.response_time_ms) {
@@ -1066,15 +1297,26 @@
           if (hLog.status === 'warning') barClass = 'bar-warning';
           else if (['down', 'ssl_error'].includes(hLog.status)) barClass = 'bar-down';
 
-          barsHtml += `<div class="uptime-bar ${barClass}" title="Status: ${hLog.status.toUpperCase()} (${hLog.response_time_ms ?? 0}ms)"></div>`;
+          const checkedLabel = formatCheckedAt(hLog.checked_at);
+          barsHtml += `<div class="uptime-bar ${barClass}" title="Dicek: ${checkedLabel}&#10;Status: ${hLog.status.toUpperCase()} (${hLog.response_time_ms ?? 0}ms)"></div>`;
         });
 
         const uptimePct = web.uptime_percentage ?? 100;
         const detailUrl = baseUrl.replace(':id', web.id);
         const rowClass = isPaused ? 'row-paused' : '';
 
+        const previewUrl = `https://api.microlink.io/?url=${encodeURIComponent(web.url)}&screenshot=true&meta=false&embed=screenshot.url`;
+        const safeUrl = web.url.replace(/'/g, "\\'");
+        const safeName = web.website_name.replace(/'/g, "\\'");
+
         html += `
           <tr class="${rowClass}">
+            <td>
+              <span class="preview-thumb-wrap" onclick="openPreviewModal('${safeUrl}', '${safeName}')" title="Klik untuk lihat live preview">
+                <img src="${previewUrl}" loading="lazy" alt="Preview ${web.website_name}">
+                <i class="bi bi-arrows-fullscreen"></i>
+              </span>
+            </td>
             <td>
               <strong style="color:#172033; display:block;">${web.website_name}</strong>
               <small style="color:var(--muted);">${web.url}</small>
@@ -1148,6 +1390,13 @@
     function goToPage(page) {
       currentPage = page;
       renderTable();
+    }
+
+    function formatCheckedAt(dateString) {
+      if (!dateString) return '-';
+      const d = new Date(dateString);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }
 
     function timeAgo(dateString) {
@@ -1266,6 +1515,66 @@
     document.getElementById('btn-incident-next')?.addEventListener('click', () => {
       currentIncidentPage++;
       renderIncidentPagination();
+    });
+
+    // ===== LIVE PREVIEW MODAL =====
+    let currentPreviewUrl = '';
+
+    function buildPreviewUrl(targetUrl, bust = false) {
+      const params = new URLSearchParams({
+        url: targetUrl,
+        screenshot: 'true',
+        meta: 'false',
+        embed: 'screenshot.url',
+      });
+      if (bust) params.set('refresh', Date.now());
+      return `https://api.microlink.io/?${params.toString()}`;
+    }
+
+    function openPreviewModal(url, name) {
+      currentPreviewUrl = url;
+
+      document.getElementById('previewModalTitle').innerText = name || 'Live Preview';
+      document.getElementById('previewModalLink').href = url;
+
+      const img = document.getElementById('previewModalImage');
+      const loading = document.getElementById('previewModalLoading');
+
+      img.style.display = 'none';
+      loading.style.display = 'flex';
+
+      img.onload = () => {
+        loading.style.display = 'none';
+        img.style.display = 'block';
+      };
+      img.onerror = () => {
+        loading.innerHTML = '<i class="bi bi-exclamation-triangle"></i><span>Gagal memuat preview website ini.</span>';
+      };
+
+      img.src = buildPreviewUrl(url);
+
+      document.getElementById('previewModalOverlay').style.display = 'flex';
+    }
+
+    function refreshPreviewModal() {
+      if (!currentPreviewUrl) return;
+
+      const img = document.getElementById('previewModalImage');
+      const loading = document.getElementById('previewModalLoading');
+
+      img.style.display = 'none';
+      loading.innerHTML = '<i class="bi bi-arrow-repeat"></i><span>Mengambil tampilan terbaru...</span>';
+      loading.style.display = 'flex';
+
+      img.src = buildPreviewUrl(currentPreviewUrl, true);
+    }
+
+    function closePreviewModal() {
+      document.getElementById('previewModalOverlay').style.display = 'none';
+    }
+
+    document.getElementById('previewModalOverlay').addEventListener('click', (e) => {
+      if (e.target.id === 'previewModalOverlay') closePreviewModal();
     });
   </script>
 </body>

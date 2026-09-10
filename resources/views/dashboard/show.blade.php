@@ -258,6 +258,33 @@
             border: 1px solid rgba(119, 129, 149, 0.25);
         }
 
+        /* Status Dot - indikator "hidup" berkedip pelan */
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .status-dot.pulse::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.55;
+            animation: statusDotPulse 2.6s ease-out infinite;
+        }
+
+        @keyframes statusDotPulse {
+            0% { transform: scale(0.5); opacity: 0.55; }
+            70% { transform: scale(2.4); opacity: 0; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+
         .text-error {
             color: var(--red);
             font-size: 12px;
@@ -441,6 +468,137 @@
             background: transparent !important;
         }
 
+        /* Live Preview Card */
+        .preview-card-body {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: #f1f5f9;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .preview-card-body img {
+            width: 100%;
+            display: block;
+        }
+
+        .preview-card-body .preview-hint {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .preview-card-body:hover .preview-hint {
+            background: rgba(15, 23, 42, 0.35);
+            opacity: 1;
+        }
+
+        .preview-card-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .preview-card-loading i {
+            font-size: 22px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .preview-refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f8fafc;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .preview-refresh-btn:hover {
+            background: #e8edf5;
+        }
+
+        /* Modal Live Preview (Ukuran Besar) */
+        .preview-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .preview-modal-box {
+            background: var(--card);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+
+        .preview-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .preview-modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .preview-modal-body {
+            background: #f1f5f9;
+            min-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-modal-body img {
+            width: 100%;
+            display: block;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             main {
@@ -486,7 +644,7 @@
                             </span>
                         @else
                             <span class="badge badge-online">
-                                <i class="bi bi-play-circle"></i> ACTIVE
+                                <span class="status-dot pulse"></span> ACTIVE
                             </span>
                         @endif
                     </h2>
@@ -501,11 +659,35 @@
                             <i class="bi bi-clock me-1"></i> Interval: Setiap {{ $website->check_interval }} Menit
                         </span>
                         <span class="badge {{ $isPaused ? 'badge-paused' : 'badge-online' }}">
-                            <i class="bi {{ $isPaused ? 'bi-pause-circle' : 'bi-check-circle' }} me-1"></i>
+                            <span class="status-dot {{ $isPaused ? '' : 'pulse' }}"></span>
                             Status Monitoring: {{ $isPaused ? 'Paused' : 'Active' }}
                         </span>
                     </div>
                 </div>
+            </div>
+
+            <!-- LIVE PREVIEW WEBSITE -->
+            <div class="card">
+                <div class="card-title" style="justify-content: space-between;">
+                    <span>
+                        <i class="bi bi-display" style="color: var(--green-vibrant);"></i>
+                        Live Preview
+                    </span>
+                    <button type="button" class="preview-refresh-btn" onclick="refreshInlinePreview()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+                <div class="preview-card-body" id="inlinePreviewBody" onclick="openPreviewModal()">
+                    <div class="preview-card-loading" id="inlinePreviewLoading">
+                        <i class="bi bi-arrow-repeat"></i>
+                        <span>Mengambil tampilan terbaru...</span>
+                    </div>
+                    <img id="inlinePreviewImage" src="" alt="Live preview {{ $website->website_name }}" style="display:none;">
+                    <div class="preview-hint"><i class="bi bi-arrows-fullscreen me-1"></i> Klik untuk perbesar</div>
+                </div>
+                {{-- <small style="color:var(--muted); font-size:11px; display:block; margin-top:8px;">
+                    Preview diambil lewat API screenshot pihak ketiga (kuota gratis terbatas ±25-50x/hari), gunakan tombol Refresh secukupnya.
+                </small> --}}
             </div>
 
             <!-- RIWAYAT LOG PENGECEKAN -->
@@ -641,6 +823,84 @@
 
         </div>
     </main>
+
+    <!-- MODAL LIVE PREVIEW BESAR -->
+    <div id="previewModalOverlay" class="preview-modal-overlay">
+        <div class="preview-modal-box">
+            <div class="preview-modal-head">
+                <h4 style="margin:0; font-size:14px; font-weight:800; color:var(--ink);">
+                    {{ $website->website_name }}
+                </h4>
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <button type="button" class="preview-refresh-btn" onclick="refreshInlinePreview(true)">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                    <button type="button" class="preview-modal-close" onclick="closePreviewModal()">&times;</button>
+                </div>
+            </div>
+            <div class="preview-modal-body">
+                <img id="previewModalImage" src="" alt="Live preview besar {{ $website->website_name }}" style="display:none;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const previewWebsiteUrl = @json($website->url);
+
+        function buildPreviewUrl(bust = false) {
+            const params = new URLSearchParams({
+                url: previewWebsiteUrl,
+                screenshot: 'true',
+                meta: 'false',
+                embed: 'screenshot.url',
+            });
+            if (bust) params.set('refresh', Date.now());
+            return `https://api.microlink.io/?${params.toString()}`;
+        }
+
+        function loadInlinePreview(bust = false) {
+            const img = document.getElementById('inlinePreviewImage');
+            const loading = document.getElementById('inlinePreviewLoading');
+
+            img.style.display = 'none';
+            loading.style.display = 'flex';
+
+            img.onload = () => {
+                loading.style.display = 'none';
+                img.style.display = 'block';
+            };
+            img.onerror = () => {
+                loading.innerHTML = '<i class="bi bi-exclamation-triangle"></i><span>Gagal memuat preview website ini.</span>';
+            };
+
+            img.src = buildPreviewUrl(bust);
+        }
+
+        function refreshInlinePreview(alsoModal = false) {
+            loadInlinePreview(true);
+
+            if (alsoModal) {
+                const modalImg = document.getElementById('previewModalImage');
+                modalImg.src = buildPreviewUrl(true);
+            }
+        }
+
+        function openPreviewModal() {
+            const modalImg = document.getElementById('previewModalImage');
+            modalImg.src = buildPreviewUrl();
+            document.getElementById('previewModalOverlay').style.display = 'flex';
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModalOverlay').style.display = 'none';
+        }
+
+        document.getElementById('previewModalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'previewModalOverlay') closePreviewModal();
+        });
+
+        loadInlinePreview();
+    </script>
 
 </body>
 
