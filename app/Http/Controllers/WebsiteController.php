@@ -56,9 +56,11 @@ class WebsiteController extends Controller
         $website = Website::create($validated);
 
         if ($website->monitoring_status === 'active') {
-            CheckWebsiteHttpJob::dispatch($website);
-            CheckWebsiteSslJob::dispatch($website);
-            CheckWebsitePingJob::dispatch($website);
+            dispatch(function () use ($website) {
+                CheckWebsiteHttpJob::dispatch($website);
+                CheckWebsiteSslJob::dispatch($website);
+                CheckWebsitePingJob::dispatch($website);
+            })->afterResponse();
         }
 
         return redirect()
@@ -79,6 +81,13 @@ class WebsiteController extends Controller
 
         $website->update($data);
 
+        if ($website->monitoring_status === 'active') {
+            dispatch(function () use ($website) {
+                CheckWebsiteHttpJob::dispatch($website);
+                CheckWebsiteSslJob::dispatch($website);
+                CheckWebsitePingJob::dispatch($website);
+            })->afterResponse();
+        }
         return redirect()->route('websites.index')->with('success', 'Data website berhasil diperbarui.');
     }
 
