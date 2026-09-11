@@ -65,6 +65,7 @@
       flex-direction: column;
       z-index: 100;
       box-shadow: var(--shadow);
+      transition: width 0.3s ease;
     }
 
     aside.collapsed {
@@ -165,28 +166,35 @@
       display: none;
     }
 
-    main { 
-      margin-left: var(--sidebar-width); 
-      flex: 1; 
-      padding: 85px 12px 16px 12px; 
-      min-width: 0; 
+    /* STYLE MAIN CONTENT */
+    main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 85px 12px 16px 12px;
+      min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
     }
-    
-    aside#sidebar.collapsed ~ main { 
-      margin-left: var(--sidebar-collapsed); 
+
+    aside#sidebar.collapsed~main {
+      margin-left: var(--sidebar-collapsed);
       width: calc(100% - var(--sidebar-collapsed));
     }
 
-    .container { 
-      max-width: none; 
-      margin: 0; 
+    .container {
+      max-width: none;
+      margin: 0;
       width: 100%;
     }
 
+    /* Page header diselaraskan dengan incidents/show */
     .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 14px;
     }
 
     .page-header h2 {
@@ -201,6 +209,28 @@
       color: var(--muted);
       font-size: 12px;
       font-weight: 600;
+    }
+
+    .btn-secondary {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--card-hover);
+      color: var(--green);
+      border-color: var(--muted);
     }
 
     .alert-error {
@@ -222,6 +252,18 @@
       box-shadow: var(--shadow);
     }
 
+    /* Card title diselaraskan dengan incidents/show */
+    .card-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
     .form-group {
       margin-bottom: 20px;
     }
@@ -236,32 +278,37 @@
       letter-spacing: 0.5px;
     }
 
-    .form-control { 
-      width: 100%; 
-      background: #fbfcfe; 
-      border: 1px solid var(--line); 
-      color: var(--ink); 
-      padding: 10px 14px; 
-      border-radius: 10px; 
-      font-size: 13px; 
+    .form-control {
+      width: 100%;
+      background: #fbfcfe;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
       font-weight: 600;
-      outline: none; 
-      transition: border-color 0.2s ease, box-shadow 0.2s ease; 
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    
-    .form-control:focus { 
-      border-color: var(--green-vibrant); 
+
+    .form-control:focus {
+      border-color: var(--green-vibrant);
       background: #ffffff;
       box-shadow: 0 0 0 3px rgba(0, 107, 63, 0.1);
     }
-    
-    .form-control::placeholder { 
-      color: var(--muted); 
+
+    .form-control::placeholder {
+      color: var(--muted);
       font-weight: 500;
     }
-    
-    .form-control.is-invalid { 
-      border-color: var(--red); 
+
+    .form-control.is-invalid {
+      border-color: var(--red);
+    }
+
+    .form-control:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
 
     select.form-control {
@@ -269,8 +316,8 @@
     }
 
     input:-webkit-autofill,
-    input:-webkit-autofill:hover, 
-    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
     input:-webkit-autofill:active {
       -webkit-box-shadow: 0 0 0 30px #fbfcfe inset !important;
       -webkit-text-fill-color: var(--ink) !important;
@@ -285,40 +332,20 @@
       font-weight: 600;
     }
 
-    .form-row { 
-      display: grid; 
-      grid-template-columns: repeat(2, minmax(0, 1fr)); 
-      gap: 16px; 
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
     }
 
-    .form-actions { 
-      display: flex; 
-      justify-content: flex-end; 
-      gap: 12px; 
-      margin-top: 30px; 
-      border-top: 1px solid var(--line); 
-      padding-top: 20px; 
-      flex-wrap: wrap; 
-    }
-
-    .btn-secondary {
-      background: #f8fafc;
-      border: 1px solid var(--line);
-      color: var(--ink);
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      transition: all 0.2s ease;
-    }
-
-    .btn-secondary:hover {
-      background: var(--card-hover);
-      color: var(--green);
-      border-color: var(--muted);
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 30px;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+      flex-wrap: wrap;
     }
 
     .btn-primary {
@@ -332,7 +359,7 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       box-shadow: 0 4px 12px rgba(1, 50, 32, 0.2);
       transition: opacity 0.2s ease;
     }
@@ -342,24 +369,46 @@
     }
 
     .btn-primary:disabled {
-      opacity: 0.5;
+      opacity: 0.6;
       cursor: not-allowed;
     }
 
+    /* Spinner untuk loading state tombol submit */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     @media (max-width: 768px) {
-      main { 
-        margin-left: 0 !important; 
-        width: 100% !important; 
+      main {
+        margin-left: 0 !important;
+        width: 100% !important;
         padding: 85px 16px 16px 16px;
       }
-      .form-row { 
+
+      .form-row {
         grid-template-columns: 1fr;
       }
+
       .form-actions {
         flex-direction: column-reverse;
         width: 100%;
       }
-      .btn-primary, .btn-secondary {
+
+      .btn-primary,
+      .btn-secondary {
         width: 100%;
         justify-content: center;
       }
@@ -376,10 +425,15 @@
   <main>
     <div class="container">
 
-      <!-- PAGE HEADER -->
+      <!-- PAGE HEADER (diselaraskan dengan incidents/show) -->
       <div class="page-header">
-        <h2>Edit Website</h2>
-        <p>Perbarui informasi atau konfigurasi pemantauan website customer.</p>
+        <div>
+          <h2>Edit Website</h2>
+          <p>Perbarui informasi atau konfigurasi pemantauan website customer.</p>
+        </div>
+        <a href="{{ route('websites.index') }}" class="btn-secondary">
+          &larr; Kembali ke Daftar Website
+        </a>
       </div>
 
       <!-- ALERT ERROR -->
@@ -391,6 +445,8 @@
 
       <!-- FORM CARD -->
       <div class="card">
+        <div class="card-title">Form Data Website</div>
+
         <form action="{{ route('websites.update', $website->id) }}" method="POST" id="form-website">
           @csrf
           @method('PUT')
@@ -423,10 +479,6 @@
             <label for="url">URL Website *</label>
             <input type="url" id="url" name="url" class="form-control @error('url') is-invalid @enderror"
               placeholder="https://client-one.com" value="{{ old('url', $website->url) }}" required>
-            
-            <!-- Pesan error duplikasi AJAX -->
-            <span id="url-ajax-error" class="error-text" style="display: none;"></span>
-
             @error('url')
               <span class="error-text">{{ $message }}</span>
             @enderror
@@ -500,8 +552,11 @@
 
           <!-- ACTIONS -->
           <div class="form-actions">
-            <a href="{{ route('websites.index') }}" class="btn-secondary">Batal</a>
-            <button type="submit" id="btn-submit" class="btn-primary">Perbarui Website</button>
+            <a href="{{ route('websites.index') }}" class="btn-secondary" id="btn-cancel">Batal</a>
+            <button type="submit" id="btn-submit" class="btn-primary">
+              <span id="btn-submit-icon"><i class="bi bi-save2-fill"></i></span>
+              <span id="btn-submit-text">Perbarui Website</span>
+            </button>
           </div>
 
         </form>
@@ -510,64 +565,19 @@
     </div>
   </main>
 
-  <!-- SCRIPT CEK DUPLIKASI URL VIA AJAX (IGNORE CURRENT ID) -->
+  <!-- SCRIPT LOADING STATE SAAT SUBMIT -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const urlInput = document.getElementById('url');
-      const ajaxError = document.getElementById('url-ajax-error');
+      const form = document.getElementById('form-website');
       const submitBtn = document.getElementById('btn-submit');
-      const websiteId = "{{ $website->id }}";
-      let isDuplicate = false;
+      const submitIcon = document.getElementById('btn-submit-icon');
+      const submitText = document.getElementById('btn-submit-text');
 
-      if (!urlInput) return;
-
-      urlInput.addEventListener('blur', function () {
-        const urlValue = this.value.trim();
-
-        if (!urlValue) {
-          ajaxError.style.display = 'none';
-          urlInput.classList.remove('is-invalid');
-          isDuplicate = false;
-          submitBtn.disabled = false;
-          return;
-        }
-
-        fetch("{{ route('websites.checkUrl') }}", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: JSON.stringify({ 
-            url: urlValue,
-            ignore_id: websiteId
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.exists) {
-            urlInput.classList.add('is-invalid');
-            ajaxError.innerText = data.message;
-            ajaxError.style.display = 'block';
-            isDuplicate = true;
-            submitBtn.disabled = true;
-          } else {
-            urlInput.classList.remove('is-invalid');
-            ajaxError.style.display = 'none';
-            isDuplicate = false;
-            submitBtn.disabled = false;
-          }
-        })
-        .catch(err => {
-          console.error('Terjadi kesalahan saat memeriksa URL:', err);
-        });
-      });
-
-      document.getElementById('form-website').addEventListener('submit', function (e) {
-        if (isDuplicate) {
-          e.preventDefault();
-          alert('URL ini sudah terdaftar pada data lain. Mohon gunakan URL yang berbeda.');
-        }
+      form.addEventListener('submit', function () {
+        // tampilkan loading state pada tombol simpan agar tidak double-submit
+        submitBtn.disabled = true;
+        submitIcon.innerHTML = '<span class="spinner"></span>';
+        submitText.innerText = 'Menyimpan...';
       });
     });
   </script>
