@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\WebsiteRequest;
 use App\Jobs\CheckWebsiteJob;
+use App\Jobs\CheckWebsiteHttpJob;
+use App\Jobs\CheckWebsitePingJob;
+use App\Jobs\CheckWebsiteSslJob;
 use App\Models\MonitoringSetting;
 use App\Models\Website;
 use Illuminate\Http\Request;
@@ -53,7 +56,9 @@ class WebsiteController extends Controller
         $website = Website::create($validated);
 
         if ($website->monitoring_status === 'active') {
-            CheckWebsiteJob::dispatch($website);
+            CheckWebsiteHttpJob::dispatch($website);
+            CheckWebsiteSslJob::dispatch($website);
+            CheckWebsitePingJob::dispatch($website);
         }
 
         return redirect()
