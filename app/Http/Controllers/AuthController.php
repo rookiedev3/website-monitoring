@@ -73,33 +73,33 @@ class AuthController extends Controller
     }
 
     public function showRegister()
-{
-    return view('auth.register');
-}
+    {
+        return view('auth.register');
+    }
 
-public function register(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8|confirmed',
-    ], [
-        'name.required' => 'Nama tidak boleh kosong',
-        'email.required' => 'Email tidak boleh kosong',
-        'email.unique' => 'Email sudah terdaftar',
-        'password.required' => 'Password tidak boleh kosong',
-        'password.min' => 'Password minimal 8 karakter',
-        'password.confirmed' => 'Konfirmasi password tidak cocok',
-    ]);
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'name.required' => 'Nama tidak boleh kosong',
+            'email.required' => 'Email tidak boleh kosong',
+            'email.unique' => 'Email sudah terdaftar',
+            'password.required' => 'Password tidak boleh kosong',
+            'password.min' => 'Password minimal 8 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
+        ]);
 
-    User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'role' => null,
-        'is_active' => false,
-    ]);
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => null,
+            'is_active' => false,
+        ]);
 
-    return redirect()->route('login')->with('success', 'Registrasi berhasil. Akun kamu menunggu persetujuan admin sebelum bisa login.');
-}
+        return redirect()->route('login')->with('success', 'Registrasi berhasil. Akun kamu menunggu persetujuan admin sebelum bisa login.');
+    }
 }

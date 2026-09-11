@@ -14,17 +14,17 @@ class AnalyticsController extends Controller
     {
         [$startDate, $endDate, $range] = $this->resolveDateRange($request);
 
-        $stats    = $this->buildStats($startDate, $endDate);
+        $stats = $this->buildStats($startDate, $endDate);
         $rankings = $this->buildRankings($startDate, $endDate);
 
         return view('analytics.index', [
-            'stats'      => $stats,
+            'stats' => $stats,
             'mostStable' => $rankings['most_stable'],
             'mostErrors' => $rankings['most_errors'],
-            'slowest'    => $rankings['slowest'],
-            'range'      => $range,
-            'startDate'  => $startDate->format('Y-m-d'),
-            'endDate'    => $endDate->format('Y-m-d'),
+            'slowest' => $rankings['slowest'],
+            'range' => $range,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
         ]);
     }
 
@@ -36,17 +36,17 @@ class AnalyticsController extends Controller
     private function resolveDateRange(Request $request): array
     {
         $range = $request->input('range', '7days');
-        $now   = Carbon::now();
+        $now = Carbon::now();
 
         switch ($range) {
             case 'today':
                 $start = $now->copy()->startOfDay();
-                $end   = $now->copy()->endOfDay();
+                $end = $now->copy()->endOfDay();
                 break;
 
             case '30days':
                 $start = $now->copy()->subDays(29)->startOfDay();
-                $end   = $now->copy()->endOfDay();
+                $end = $now->copy()->endOfDay();
                 break;
 
             case 'custom':
@@ -68,7 +68,7 @@ class AnalyticsController extends Controller
             default:
                 $range = '7days';
                 $start = $now->copy()->subDays(6)->startOfDay();
-                $end   = $now->copy()->endOfDay();
+                $end = $now->copy()->endOfDay();
                 break;
         }
 
@@ -86,7 +86,7 @@ class AnalyticsController extends Controller
             ->whereNotNull('response_time_ms')
             ->avg('response_time_ms');
 
-        $totalLogs  = (clone $logsQuery)->count();
+        $totalLogs = (clone $logsQuery)->count();
         $onlineLogs = (clone $logsQuery)->where('status', 'online')->count();
 
         $uptimePercentage = $totalLogs > 0
@@ -107,11 +107,11 @@ class AnalyticsController extends Controller
             ->avg('duration_seconds');
 
         return [
-            'avg_response_time'      => $avgResponseTime ? (int) round($avgResponseTime) : null,
-            'total_incidents'        => $totalIncidents,
+            'avg_response_time' => $avgResponseTime ? (int) round($avgResponseTime) : null,
+            'total_incidents' => $totalIncidents,
             'total_downtime_minutes' => $totalDowntimeSeconds ? (int) round($totalDowntimeSeconds / 60) : 0,
-            'uptime_percentage'      => $uptimePercentage,
-            'recovery_time_minutes'  => $avgRecoverySeconds ? (int) round($avgRecoverySeconds / 60) : null,
+            'uptime_percentage' => $uptimePercentage,
+            'recovery_time_minutes' => $avgRecoverySeconds ? (int) round($avgRecoverySeconds / 60) : null,
         ];
     }
 
@@ -131,16 +131,16 @@ class AnalyticsController extends Controller
             ->get();
 
         $withMetrics = $websites->map(function ($website) {
-            $logs        = $website->monitoringLogs;
-            $totalLogs   = $logs->count();
-            $onlineLogs  = $logs->where('status', 'online')->count();
+            $logs = $website->monitoringLogs;
+            $totalLogs = $logs->count();
+            $onlineLogs = $logs->where('status', 'online')->count();
             $avgResponse = $logs->whereNotNull('response_time_ms')->avg('response_time_ms');
 
             return (object) [
-                'website'          => $website,
-                'uptime'           => $totalLogs > 0 ? round(($onlineLogs / $totalLogs) * 100, 2) : null,
-                'avg_response_time'=> $avgResponse ? (int) round($avgResponse) : null,
-                'incidents_count'  => $website->incidents_count,
+                'website' => $website,
+                'uptime' => $totalLogs > 0 ? round(($onlineLogs / $totalLogs) * 100, 2) : null,
+                'avg_response_time' => $avgResponse ? (int) round($avgResponse) : null,
+                'incidents_count' => $website->incidents_count,
             ];
         });
 
@@ -165,7 +165,7 @@ class AnalyticsController extends Controller
         return [
             'most_stable' => $mostStable,
             'most_errors' => $mostErrors,
-            'slowest'     => $slowest,
+            'slowest' => $slowest,
         ];
     }
 }

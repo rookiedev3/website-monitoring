@@ -114,15 +114,18 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
       transition: all 0.2s ease;
     }
 
     .btn-refresh:hover {
-      background: var(--green-vibrant); /* Mengubah latar belakang menjadi hijau saat di-hover */
+      background: var(--green-vibrant);
+      /* Mengubah latar belakang menjadi hijau saat di-hover */
       color: #ffffff;
-      border-color: var(--green-vibrant); /* Mengubah garis pinggir menjadi hijau */
-      box-shadow: 0 4px 12px rgba(0, 107, 63, 0.3); /* Menyesuaikan bayangan menjadi rona hijau */
+      border-color: var(--green-vibrant);
+      /* Mengubah garis pinggir menjadi hijau */
+      box-shadow: 0 4px 12px rgba(0, 107, 63, 0.3);
+      /* Menyesuaikan bayangan menjadi rona hijau */
     }
 
     /* Metrics Cards Grid */
@@ -162,11 +165,25 @@
       height: 4px;
     }
 
-    .metric-card.card-total::before { background: var(--blue); }
-    .metric-card.card-online::before { background: #137a48; }
-    .metric-card.card-warning::before { background: var(--amber); }
-    .metric-card.card-down::before { background: var(--red); }
-    .metric-card.card-paused::before { background: #64748b; }
+    .metric-card.card-total::before {
+      background: var(--blue);
+    }
+
+    .metric-card.card-online::before {
+      background: #137a48;
+    }
+
+    .metric-card.card-warning::before {
+      background: var(--amber);
+    }
+
+    .metric-card.card-down::before {
+      background: var(--red);
+    }
+
+    .metric-card.card-paused::before {
+      background: #64748b;
+    }
 
     .metric-header {
       display: flex;
@@ -193,11 +210,30 @@
       font-size: 16px;
     }
 
-    .card-total .metric-icon { background: var(--blue-soft); color: var(--blue); }
-    .card-online .metric-icon { background: var(--green-soft); color: #137a48; }
-    .card-warning .metric-icon { background: var(--amber-soft); color: var(--amber); }
-    .card-down .metric-icon { background: var(--red-soft); color: var(--red); }
-    .card-paused .metric-icon { background: #f1f5f9; color: #64748b; }
+    .card-total .metric-icon {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .card-online .metric-icon {
+      background: var(--green-soft);
+      color: #137a48;
+    }
+
+    .card-warning .metric-icon {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .card-down .metric-icon {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .card-paused .metric-icon {
+      background: #f1f5f9;
+      color: #64748b;
+    }
 
     .metric-card h3 {
       font-size: 24px;
@@ -365,12 +401,37 @@
       white-space: nowrap;
     }
 
-    .badge-online { background: #e6f7ee; color: #137a48; }
-    .badge-down { background: #fef2f2; color: var(--red); }
-    .badge-warning { background: #fef3c7; color: var(--amber); }
-    .badge-ssl { background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(2, 132, 199, 0.2); }
-    .badge-muted { background: #f1f5f9; color: var(--muted); }
-    .badge-paused { background: rgba(119, 129, 149, 0.12); color: var(--muted); border: 1px solid rgba(119, 129, 149, 0.25); }
+    .badge-online {
+      background: #e6f7ee;
+      color: #137a48;
+    }
+
+    .badge-down {
+      background: #fef2f2;
+      color: var(--red);
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: var(--amber);
+    }
+
+    .badge-ssl {
+      background: var(--blue-soft);
+      color: var(--blue);
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    .badge-muted {
+      background: #f1f5f9;
+      color: var(--muted);
+    }
+
+    .badge-paused {
+      background: rgba(119, 129, 149, 0.12);
+      color: var(--muted);
+      border: 1px solid rgba(119, 129, 149, 0.25);
+    }
 
     /* Status Dot - indikator "hidup" berkedip pelan */
     .status-dot {
@@ -394,9 +455,20 @@
     }
 
     @keyframes statusDotPulse {
-      0% { transform: scale(0.5); opacity: 0.55; }
-      70% { transform: scale(2.4); opacity: 0; }
-      100% { transform: scale(2.4); opacity: 0; }
+      0% {
+        transform: scale(0.5);
+        opacity: 0.55;
+      }
+
+      70% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
     }
 
     /* Uptime Bars Component (Hetrixtools / UptimeRobot Style) */
@@ -414,7 +486,7 @@
       background: rgba(0, 0, 0, 0.02);
       padding: 4px 6px;
       border-radius: 6px;
-      border: 1px solid rgba(0,0,0,0.03);
+      border: 1px solid rgba(0, 0, 0, 0.03);
     }
 
     .uptime-bar {
@@ -431,10 +503,21 @@
       opacity: 0.8;
     }
 
-    .bar-online { background-color: #10b981; }
-    .bar-warning { background-color: #f59e0b; }
-    .bar-down { background-color: #ef4444; }
-    .bar-empty { background-color: #e2e8f0; }
+    .bar-online {
+      background-color: #10b981;
+    }
+
+    .bar-warning {
+      background-color: #f59e0b;
+    }
+
+    .bar-down {
+      background-color: #ef4444;
+    }
+
+    .bar-empty {
+      background-color: #e2e8f0;
+    }
 
     .uptime-percentage {
       font-size: 12px;
@@ -602,8 +685,13 @@
     }
 
     @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .preview-modal-footer {
@@ -723,7 +811,9 @@
     }
 
     @media (max-width: 1024px) {
-      .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+      .metrics-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
     @media (max-width: 768px) {
@@ -732,14 +822,30 @@
         width: 100% !important;
         padding: 85px 16px 16px 16px;
       }
-      .dashboard-header { flex-direction: column; align-items: flex-start; }
-      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-      .filter-grid { flex-direction: column; }
-      .search-box, .filter-dropdown select { width: 100%; }
+
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filter-grid {
+        flex-direction: column;
+      }
+
+      .search-box,
+      .filter-dropdown select {
+        width: 100%;
+      }
     }
 
     @media (max-width: 460px) {
-      .metrics-grid { grid-template-columns: 1fr; }
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .notif-toggle-wrap {
@@ -750,7 +856,7 @@
       border: 1px solid var(--line);
       padding: 9px 16px;
       border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
     }
 
     .notif-toggle-label {
@@ -780,7 +886,10 @@
     .slider {
       position: absolute;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-color: #cbd5e1;
       transition: 0.25s;
       border-radius: 34px;
@@ -796,14 +905,14 @@
       background-color: white;
       transition: 0.25s;
       border-radius: 50%;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
-    input:checked + .slider {
+    input:checked+.slider {
       background-color: #013220;
     }
 
-    input:checked + .slider::before {
+    input:checked+.slider::before {
       transform: translateX(18px);
     }
   </style>
@@ -817,29 +926,29 @@
     <div class="container">
 
       <!-- HEADER & REFRESH ACTION -->
-<div class="dashboard-header">
-  <div>
-    <h2>Dashboard Uptime Monitoring</h2>
-    <p>Pantauan kondisi teknis dan ketersediaan website secara real-time.</p>
-  </div>
+      <div class="dashboard-header">
+        <div>
+          <h2>Dashboard Uptime Monitoring</h2>
+          <p>Pantauan kondisi teknis dan ketersediaan website secara real-time.</p>
+        </div>
 
-  <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-    <div class="notif-toggle-wrap">
-      <span class="notif-toggle-label">
-        <i class="bi bi-envelope-fill"></i> Notifikasi Email
-      </span>
-      <label class="switch">
-        <input type="checkbox" id="email-notif-toggle"
-          {{ auth()->user()->email_notifications_enabled ? 'checked' : '' }}>
-        <span class="slider"></span>
-      </label>
-    </div>
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+          <div class="notif-toggle-wrap">
+            <span class="notif-toggle-label">
+              <i class="bi bi-envelope-fill"></i> Notifikasi Email
+            </span>
+            <label class="switch">
+              <input type="checkbox" id="email-notif-toggle"
+                {{ auth()->user()->email_notifications_enabled ? 'checked' : '' }}>
+              <span class="slider"></span>
+            </label>
+          </div>
 
-    <a href="{{ route('dashboard.index') }}" class="btn-refresh">
-      <i class="bi bi-arrow-clockwise"></i> Refresh Data
-    </a>
-  </div>
-</div>
+          <a href="{{ route('dashboard.index') }}" class="btn-refresh">
+            <i class="bi bi-arrow-clockwise"></i> Refresh Data
+          </a>
+        </div>
+      </div>
 
       <!-- METRICS CARDS -->
       <div class="metrics-grid">
@@ -933,188 +1042,194 @@
               </thead>
               <tbody id="website-table-body">
                 @forelse($websites as $web)
-                  @php
-                    $log = $web->latestLog;
-                    $logsHistory = $web->monitoringLogs->reverse();
-                    $totalLogs = $logsHistory->count();
-                    $upLogs = $logsHistory->filter(fn ($l) => in_array($l->status, ['online', 'warning']))->count();
-                    $uptimePct = $totalLogs > 0 ? round(($upLogs / $totalLogs) * 100, 1) : 100;
-                  @endphp
-                  <tr class="{{ $web->monitoring_status === 'paused' ? 'row-paused' : '' }}">
-                    <td>
-                      <span class="preview-thumb-wrap"
-                            onclick="openPreviewModal('{{ addslashes($web->url) }}', '{{ addslashes($web->website_name) }}')"
-                            title="Klik untuk lihat live preview">
-                        <img src="https://api.microlink.io/?url={{ urlencode($web->url) }}&screenshot=true&meta=false&embed=screenshot.url"
-                             loading="lazy" alt="Preview {{ $web->website_name }}">
-                        <i class="bi bi-arrows-fullscreen"></i>
-                      </span>
-                    </td>
-                    <td>
-                      <strong style="color:#172033; display:block;">{{ $web->website_name }}</strong>
-                      <small style="color:var(--muted); font-weight:600;">{{ $web->url }}</small>
-                    </td>
-                    <td>
-                      @if($web->monitoring_status === 'paused')
-                        <span class="badge badge-paused"><i class="bi bi-pause-circle"></i> PAUSED</span>
-                      @elseif($log)
-                        <span class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
-                          <span class="status-dot {{ $log->status === 'online' ? 'pulse' : '' }}"></span> {{ strtoupper($log->status) }}
-                        </span>
-                      @else
-                        <span class="badge badge-muted">Belum Dicek</span>
-                      @endif
-                    </td>
-                    <td>
-                      <div class="uptime-container">
-                        <div class="uptime-bars">
-                          @for($i = 0; $i < (30 - $logsHistory->count()); $i++)
-                            <div class="uptime-bar bar-empty" title="Belum ada data"></div>
-                          @endfor
-                          @foreach($logsHistory as $hLog)
-                            @php
-                              $barClass = 'bar-online';
-                              if ($hLog->status === 'warning') $barClass = 'bar-warning';
-                              elseif (in_array($hLog->status, ['down', 'ssl_error'])) $barClass = 'bar-down';
-                            @endphp
-                            <div class="uptime-bar {{ $barClass }}"
-                                 title="Dicek: {{ $hLog->checked_at->format('d/m/Y H:i:s') }}&#10;Status: {{ strtoupper($hLog->status) }} ({{ $hLog->response_time_ms ?? 0 }}ms)">
-                            </div>
-                          @endforeach
-                        </div>
-                        <span class="uptime-percentage">{{ $uptimePct }}%</span>
-                      </div>
-                    </td>
-                    <td>
-                      @if($web->monitoring_status !== 'paused' && $log && $log->response_time_ms)
-                        <span style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : '#137a48' }}; font-weight:800;">
-                          {{ number_format($log->response_time_ms) }} ms
-                        </span>
-                      @else
-                        <span style="color:var(--muted);">-</span>
-                      @endif
-                    </td>
-                    <td>
-                      @if($web->monitoring_status === 'paused')
-                        <span style="color:var(--muted);">-</span>
-                      @elseif($log && $log->ssl_valid)
-                        <span class="badge badge-ssl">Valid ({{ $log->ssl_days_left }} Hari)</span>
-                      @elseif($log && $log->ssl_valid === false)
-                        <span class="badge badge-down">SSL Expired</span>
-                      @else
-                        <span style="color:var(--muted);">-</span>
-                      @endif
-                    </td>
-                    <td style="color:var(--muted); font-size:12px;">
-                      {{ $web->monitoring_status === 'paused' ? 'Monitoring dijeda' : ($log ? $log->checked_at->diffForHumans() : '-') }}
-                    </td>
-                    <td style="text-align:center;">
-                      <a href="{{ route('dashboard.show', $web->id) }}" class="btn-detail">
-                        <i class="bi bi-eye"></i> Detail
-                      </a>
-                    </td>
-                  </tr>
-                @empty
-                  <tr>
-                    <td colspan="8" style="text-align:center; padding: 24px; color:var(--muted);">Belum ada data website.</td>
-                  </tr>
-                @endforelse
-              </tbody>
-            </table>
-          </div>
+                @php
+                $log = $web->latestLog;
+                @endphp
+                <tr class="{{ $web->monitoring_status === 'paused' ? 'row-paused' : '' }}">
+                  <td>
+                    <span class="preview-thumb-wrap"
+                      onclick="openPreviewModal('{{ addslashes($web->url) }}', '{{ addslashes($web->website_name) }}')"
+                      title="Klik untuk lihat live preview">
+                      <img src="https://api.microlink.io/?url={{ urlencode($web->url) }}&screenshot=true&meta=false&embed=screenshot.url"
+                        loading="lazy" alt="Preview {{ $web->website_name }}">
+                      <i class="bi bi-arrows-fullscreen"></i>
+                    </span>
+                  </td>
+                  <td>
+                    <strong style="color:#172033; display:block;">{{ $web->website_name }}</strong>
+                    <small style="color:var(--muted); font-weight:600;">{{ $web->url }}</small>
+                  </td>
+                  <td>
+                    @if($web->monitoring_status === 'paused')
+                    <span class="badge badge-paused"><i class="bi bi-pause-circle"></i> PAUSED</span>
+                    @elseif($log)
+                    <span class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
+                      <span class="status-dot {{ $log->status === 'online' ? 'pulse' : '' }}"></span> {{ strtoupper($log->status) }}
+                    </span>
+                    @else
+                    <span class="badge badge-muted">Belum Dicek</span>
+                    @endif
+                  </td>
+                  <td>
+                    @php
+                    // Sumber data sekarang Cache (file/database) ring buffer (real-time),
+                    // BUKAN relasi pingLogs dari database.
+                    $pingHistory = collect($web->ping_history ?? []);
+                    $totalPing = $pingHistory->count();
+                    $emptyPingCount = max(0, 30 - $totalPing);
+                    $uptimePct = $web->uptime_percentage ?? 100;
+                    @endphp
 
-          <!-- Pagination Navigator -->
-          <div class="pagination-container">
-            <div class="pagination-info" id="pagination-info">
-              Menampilkan 0 - 0 dari 0 data
-            </div>
-            <div class="pagination-buttons">
-              <button id="btn-prev" class="btn-page" disabled>
-                <i class="bi bi-chevron-left"></i> Prev
-              </button>
-              <div id="page-numbers" class="page-numbers"></div>
-              <button id="btn-next" class="btn-page" disabled>
-                Next <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
+                    <div class="uptime-container">
+                      <div class="uptime-bars">
+                        @for($i = 0; $i < $emptyPingCount; $i++)
+                          <div class="uptime-bar bar-empty" title="Belum ada data ping">
+                      </div>
+                      @endfor
+                      @foreach($pingHistory as $pLog)
+                      @php
+                      $isSuccess = (bool) ($pLog['success'] ?? false);
+                      $barClass = $isSuccess ? 'bar-online' : 'bar-down';
+                      $checkedAtLabel = \Illuminate\Support\Carbon::parse($pLog['checked_at'])->format('H:i:s');
+                      @endphp
+                      <div class="uptime-bar {{ $barClass }}"
+                        title="Waktu: {{ $checkedAtLabel }}&#10;Status Ping: {{ $isSuccess ? 'Connected' : 'Unreachable' }}">
+                      </div>
+                      @endforeach
+                    </div>
+                    <span class="uptime-percentage">{{ $uptimePct }}%</span>
           </div>
+          </td>
+          <td>
+            @if($web->monitoring_status !== 'paused' && $log && $log->response_time_ms)
+            <span style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : '#137a48' }}; font-weight:800;">
+              {{ number_format($log->response_time_ms) }} ms
+            </span>
+            @else
+            <span style="color:var(--muted);">-</span>
+            @endif
+          </td>
+          <td>
+            @if($web->monitoring_status === 'paused')
+            <span style="color:var(--muted);">-</span>
+            @elseif($log && $log->ssl_valid)
+            <span class="badge badge-ssl">Valid ({{ $log->ssl_days_left }} Hari)</span>
+            @elseif($log && $log->ssl_valid === false)
+            <span class="badge badge-down">SSL Expired</span>
+            @else
+            <span style="color:var(--muted);">-</span>
+            @endif
+          </td>
+          <td style="color:var(--muted); font-size:12px;">
+            {{ $web->monitoring_status === 'paused' ? 'Monitoring dijeda' : ($log ? $log->checked_at->diffForHumans() : '-') }}
+          </td>
+          <td style="text-align:center;">
+            <a href="{{ route('dashboard.show', $web->id) }}" class="btn-detail">
+              <i class="bi bi-eye"></i> Detail
+            </a>
+          </td>
+          </tr>
+          @empty
+          <tr>
+            <td colspan="8" style="text-align:center; padding: 24px; color:var(--muted);">Belum ada data website.</td>
+          </tr>
+          @endforelse
+          </tbody>
+          </table>
         </div>
 
-        <!-- 2. TABEL INSIDEN AKTIF -->
-        @if($activeIncidents->count() > 0)
-          <div class="card" style="border-color: rgba(220,38,38,0.25);">
-            <div class="card-title danger-header">
-              <span><i class="bi bi-exclamation-triangle-fill me-2"></i> Insiden Gangguan Aktif</span>
-              <span class="badge badge-down">{{ $activeIncidents->count() }} Insiden Perlu Penanganan</span>
-            </div>
-            <div class="table-responsive">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Website</th>
-                    <th>Tipe Gangguan</th>
-                    <th>Status Pekerjaan</th>
-                    <th>PIC Assigned</th>
-                    <th>Mulai Gangguan</th>
-                  </tr>
-                </thead>
-                <tbody id="incident-table-body">
-                  @foreach($activeIncidents as $incident)
-                    @php
-                      $rawType = strtolower($incident->incident_type);
-                      if (str_contains($rawType, 'warning') || str_contains($rawType, 'slow')) {
-                        $typeName = 'SLOW';
-                        $badgeClass = 'badge-warning';
-                      } elseif (str_contains($rawType, 'ssl')) {
-                        $typeName = 'SSL WARNING';
-                        $badgeClass = 'badge-ssl';
-                      } else {
-                        $typeName = 'DOWN';
-                        $badgeClass = 'badge-down';
-                      }
-
-                      $jobStatus = strtolower(trim($incident->status));
-                      if (str_contains($jobStatus, 'progress')) {
-                        $jobStyle = 'background: #fef3c7; color: #d97706; border: 1px solid rgba(217, 119, 6, 0.2);';
-                        $jobStatusText = 'ON PROGRESS';
-                      } else {
-                        $jobStyle = 'background: #fef2f2; color: var(--red); border: 1px solid rgba(220, 38, 38, 0.2);';
-                        $jobStatusText = strtoupper($incident->status);
-                      }
-                    @endphp
-                    <tr class="incident-row">
-                      <td><strong style="color:#172033;">{{ $incident->website->website_name }}</strong></td>
-                      <td><span class="badge {{ $badgeClass }}">{{ $typeName }}</span></td>
-                      <td><span class="badge" style="{{ $jobStyle }}">{{ $jobStatusText }}</span></td>
-                      <td>{{ $incident->assignedUser?->name ?? 'Belum Ditugaskan' }}</td>
-                      <td style="color:var(--muted); font-size:12px;">
-                        {{ $incident->started_at->locale('id')->diffForHumans() }}
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Pagination Navigator Insiden -->
-            <div class="pagination-container">
-              <div class="pagination-info" id="incident-pagination-info">
-                Menampilkan 0 - 0 dari 0 data
-              </div>
-              <div class="pagination-buttons">
-                <button id="btn-incident-prev" class="btn-page" disabled>
-                  <i class="bi bi-chevron-left"></i> Prev
-                </button>
-                <div id="incident-page-numbers" class="page-numbers"></div>
-                <button id="btn-incident-next" class="btn-page" disabled>
-                  Next <i class="bi bi-chevron-right"></i>
-                </button>
-              </div>
-            </div>
+        <!-- Pagination Navigator -->
+        <div class="pagination-container">
+          <div class="pagination-info" id="pagination-info">
+            Menampilkan 0 - 0 dari 0 data
           </div>
-        @endif
+          <div class="pagination-buttons">
+            <button id="btn-prev" class="btn-page" disabled>
+              <i class="bi bi-chevron-left"></i> Prev
+            </button>
+            <div id="page-numbers" class="page-numbers"></div>
+            <button id="btn-next" class="btn-page" disabled>
+              Next <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
 
-      </div> <!-- End of Dashboard Stack -->
+      <!-- 2. TABEL INSIDEN AKTIF -->
+      @if($activeIncidents->count() > 0)
+      <div class="card" style="border-color: rgba(220,38,38,0.25);">
+        <div class="card-title danger-header">
+          <span><i class="bi bi-exclamation-triangle-fill me-2"></i> Insiden Gangguan Aktif</span>
+          <span class="badge badge-down">{{ $activeIncidents->count() }} Insiden Perlu Penanganan</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Website</th>
+                <th>Tipe Gangguan</th>
+                <th>Status Pekerjaan</th>
+                <th>PIC Assigned</th>
+                <th>Mulai Gangguan</th>
+              </tr>
+            </thead>
+            <tbody id="incident-table-body">
+              @foreach($activeIncidents as $incident)
+              @php
+              $rawType = strtolower($incident->incident_type);
+              if (str_contains($rawType, 'warning') || str_contains($rawType, 'slow')) {
+              $typeName = 'SLOW';
+              $badgeClass = 'badge-warning';
+              } elseif (str_contains($rawType, 'ssl')) {
+              $typeName = 'SSL WARNING';
+              $badgeClass = 'badge-ssl';
+              } else {
+              $typeName = 'DOWN';
+              $badgeClass = 'badge-down';
+              }
+
+              $jobStatus = strtolower(trim($incident->status));
+              if (str_contains($jobStatus, 'progress')) {
+              $jobStyle = 'background: #fef3c7; color: #d97706; border: 1px solid rgba(217, 119, 6, 0.2);';
+              $jobStatusText = 'ON PROGRESS';
+              } else {
+              $jobStyle = 'background: #fef2f2; color: var(--red); border: 1px solid rgba(220, 38, 38, 0.2);';
+              $jobStatusText = strtoupper($incident->status);
+              }
+              @endphp
+              <tr class="incident-row">
+                <td><strong style="color:#172033;">{{ $incident->website->website_name }}</strong></td>
+                <td><span class="badge {{ $badgeClass }}">{{ $typeName }}</span></td>
+                <td><span class="badge" style="{{ $jobStyle }}">{{ $jobStatusText }}</span></td>
+                <td>{{ $incident->assignedUser?->name ?? 'Belum Ditugaskan' }}</td>
+                <td style="color:var(--muted); font-size:12px;">
+                  {{ $incident->started_at->locale('id')->diffForHumans() }}
+                </td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Navigator Insiden -->
+        <div class="pagination-container">
+          <div class="pagination-info" id="incident-pagination-info">
+            Menampilkan 0 - 0 dari 0 data
+          </div>
+          <div class="pagination-buttons">
+            <button id="btn-incident-prev" class="btn-page" disabled>
+              <i class="bi bi-chevron-left"></i> Prev
+            </button>
+            <div id="incident-page-numbers" class="page-numbers"></div>
+            <button id="btn-incident-next" class="btn-page" disabled>
+              Next <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      @endif
+
+    </div> <!-- End of Dashboard Stack -->
 
     </div>
   </main>
@@ -1153,29 +1268,31 @@
 
   <!-- JAVASCRIPT SYSTEM REAL-TIME & AJAX -->
   <script>
-    document.getElementById('email-notif-toggle')?.addEventListener('change', function () {
-  const isChecked = this.checked;
+    document.getElementById('email-notif-toggle')?.addEventListener('change', function() {
+      const isChecked = this.checked;
 
-  fetch("{{ route('notifications.toggleEmail') }}", {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-    },
-    body: JSON.stringify({ enabled: isChecked }),
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.status !== 'success') {
-        alert('Gagal menyimpan preferensi notifikasi.');
-        this.checked = !isChecked; // rollback kalau gagal
-      }
-    })
-    .catch(() => {
-      alert('Terjadi kesalahan jaringan.');
-      this.checked = !isChecked;
+      fetch("{{ route('notifications.toggleEmail') }}", {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          },
+          body: JSON.stringify({
+            enabled: isChecked
+          }),
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status !== 'success') {
+            alert('Gagal menyimpan preferensi notifikasi.');
+            this.checked = !isChecked; // rollback kalau gagal
+          }
+        })
+        .catch(() => {
+          alert('Terjadi kesalahan jaringan.');
+          this.checked = !isChecked;
+        });
     });
-});
 
     document.addEventListener('DOMContentLoaded', () => {
       renderIncidentPagination();
@@ -1283,22 +1400,25 @@
           checkedAt = timeAgo(log.checked_at);
         }
 
-        // Render Uptime Bar Items
+        // Render Uptime Bar Items — data berasal dari Cache (file/database) ring buffer
+        // (field `ping_history`), bukan dari log database.
+        // Urutan sudah kronologis (paling lama -> paling baru), jadi tidak perlu di-reverse.
+        const pingHistory = web.ping_history || [];
+
         let barsHtml = '';
         const maxBars = 30;
-        const emptyBarsCount = maxBars - logsHistory.length;
+        const emptyBarsCount = Math.max(0, maxBars - pingHistory.length);
 
         for (let i = 0; i < emptyBarsCount; i++) {
-          barsHtml += `<div class="uptime-bar bar-empty" title="Belum ada data"></div>`;
+          barsHtml += `<div class="uptime-bar bar-empty" title="Belum ada data ping"></div>`;
         }
 
-        logsHistory.forEach(hLog => {
-          let barClass = 'bar-online';
-          if (hLog.status === 'warning') barClass = 'bar-warning';
-          else if (['down', 'ssl_error'].includes(hLog.status)) barClass = 'bar-down';
+        pingHistory.forEach(pLog => {
+          const isSuccess = !!pLog.success;
+          let barClass = isSuccess ? 'bar-online' : 'bar-down';
+          let statusText = isSuccess ? 'Connected' : 'Unreachable';
 
-          const checkedLabel = formatCheckedAt(hLog.checked_at);
-          barsHtml += `<div class="uptime-bar ${barClass}" title="Dicek: ${checkedLabel}&#10;Status: ${hLog.status.toUpperCase()} (${hLog.response_time_ms ?? 0}ms)"></div>`;
+          barsHtml += `<div class="uptime-bar ${barClass}" title="Status Ping: ${statusText}"></div>`;
         });
 
         const uptimePct = web.uptime_percentage ?? 100;
@@ -1351,9 +1471,9 @@
       const pageNumbersEl = document.getElementById('page-numbers');
 
       if (infoEl) {
-        infoEl.innerText = totalItems > 0
-          ? `Menampilkan ${from} - ${to} dari ${totalItems} data`
-          : 'Menampilkan 0 - 0 dari 0 data';
+        infoEl.innerText = totalItems > 0 ?
+          `Menampilkan ${from} - ${to} dari ${totalItems} data` :
+          'Menampilkan 0 - 0 dari 0 data';
       }
 
       if (prevBtn) prevBtn.disabled = currentPage <= 1;

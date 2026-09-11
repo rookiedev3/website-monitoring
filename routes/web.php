@@ -19,7 +19,7 @@ Route::middleware('guest')->group(function () {
         Route::get('/', 'index')->name('login');
         Route::post('/login', 'login')->name('login.proses');
     });
-            // Register
+    // Register
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.proses');
 
@@ -42,20 +42,20 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('websites', WebsiteController::class);
     Route::patch('websites/{website}/toggle-status', [WebsiteController::class, 'toggleStatus'])->name('websites.toggle-status');
-    Route::post('/websites/check-url', [App\Http\Controllers\WebsiteController::class, 'checkUrl'])->name('websites.checkUrl');
+    Route::post('/websites/check-url', [WebsiteController::class, 'checkUrl'])->name('websites.checkUrl');
 
     Route::resource('incidents', IncidentController::class)->only(['index', 'show', 'update']);
     Route::post('/incidents/{incident}/take', [IncidentController::class, 'take'])->name('incidents.take');
     Route::post('/incidents/{incident}/notes', [IncidentController::class, 'storeNote'])->name('incidents.notes.store');
     Route::get('/api/incidents/status', [IncidentController::class, 'apiStatus'])
-    ->name('api.incidents.status');
+        ->name('api.incidents.status');
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::patch('/notifications/toggle-email', [NotificationController::class, 'toggleEmail'])
-    ->name('notifications.toggleEmail');
+        ->name('notifications.toggleEmail');
 
     // Redirect & Tandai dibaca satu notifikasi
     Route::get('/notifications/{id}/read', function ($id, Request $request) {
@@ -94,13 +94,10 @@ Route::middleware('auth')->group(function () {
     });
 
     // BUAT PROGRAMMER
-    Route::middleware('role:programmer')->prefix('programmer')->group(function () {
-    });
+    Route::middleware('role:programmer')->prefix('programmer')->group(function () {});
 
     // BUAT VIEWER
-    Route::middleware('role:viewer')->prefix('viewer')->group(function () {
-    });
+    Route::middleware('role:viewer')->prefix('viewer')->group(function () {});
 });
-
 
 // route ridho

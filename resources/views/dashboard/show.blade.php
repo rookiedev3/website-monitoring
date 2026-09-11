@@ -666,6 +666,48 @@
                 </div>
             </div>
 
+            <!-- UPTIME HISTORY PING (REAL-TIME CACHE) -->
+            <div class="card">
+                <div class="card-title" style="justify-content: space-between;">
+                    <span>
+                        <i class="bi bi-activity" style="color: var(--green-vibrant);"></i>
+                        Riwayat Ping & Uptime Realtime (30 Sampel Terakhir)
+                    </span>
+                    <span class="badge badge-online" style="font-size: 13px; padding: 6px 14px;">
+                        Uptime: {{ $uptimePercentage }}%
+                    </span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 6px 0;">
+                    @php
+                        $pingHistoryCol = collect($pingHistory ?? []);
+                        $totalPingCount = $pingHistoryCol->count();
+                        $emptyPingCount = max(0, 30 - $totalPingCount);
+                    @endphp
+                    <div style="flex: 1; min-width: 280px;">
+                        <div style="display:flex; align-items:center; gap:4px; background:rgba(0,0,0,0.02); padding:8px 12px; border-radius:8px; border:1px solid var(--line);">
+                            @for($i = 0; $i < $emptyPingCount; $i++)
+                                <div style="flex:1; height:24px; border-radius:3px; background-color:#e2e8f0;" title="Belum ada data ping"></div>
+                            @endfor
+                            @foreach($pingHistoryCol as $pLog)
+                                @php
+                                    $isSuccess = (bool) ($pLog['success'] ?? false);
+                                    $barBg = $isSuccess ? '#10b981' : '#ef4444';
+                                    $checkedAtLabel = \Illuminate\Support\Carbon::parse($pLog['checked_at'])->format('H:i:s');
+                                    $latencyInfo = isset($pLog['latency_ms']) ? " | Latency: {$pLog['latency_ms']}ms" : '';
+                                @endphp
+                                <div style="flex:1; height:24px; border-radius:3px; background-color:{{ $barBg }}; transition:all 0.2s ease; cursor:pointer;"
+                                    title="Waktu: {{ $checkedAtLabel }}&#10;Status Ping: {{ $isSuccess ? 'Connected' : 'Unreachable' }}{{ $latencyInfo }}">
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted); font-weight: 600;">
+                        <span style="display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 2px; margin-right: 4px;"></span> Connected
+                        <span style="display: inline-block; width: 10px; height: 10px; background: #ef4444; border-radius: 2px; margin-left: 12px; margin-right: 4px;"></span> Unreachable
+                    </div>
+                </div>
+            </div>
+
             <!-- LIVE PREVIEW WEBSITE -->
             <div class="card">
                 <div class="card-title" style="justify-content: space-between;">

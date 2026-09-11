@@ -97,24 +97,24 @@ class WebsiteController extends Controller
      * Endpoint API AJAX untuk mengecek duplikasi URL secara real-time dari frontend
      */
     public function checkUrl(Request $request)
-{
-    $request->validate([
-        'url' => 'required|string',
-        'ignore_id' => 'nullable|integer'
-    ]);
+    {
+        $request->validate([
+            'url' => 'required|string',
+            'ignore_id' => 'nullable|integer',
+        ]);
 
-    $query = Website::where('url', trim($request->url));
+        $query = Website::where('url', trim($request->url));
 
-    // Abaikan ID milik data yang sedang diedit
-    if ($request->filled('ignore_id')) {
-        $query->where('id', '!=', $request->ignore_id);
+        // Abaikan ID milik data yang sedang diedit
+        if ($request->filled('ignore_id')) {
+            $query->where('id', '!=', $request->ignore_id);
+        }
+
+        $exists = $query->exists();
+
+        return response()->json([
+            'exists' => $exists,
+            'message' => $exists ? 'URL website ini sudah terdaftar pada data lain.' : 'URL dapat digunakan.',
+        ]);
     }
-
-    $exists = $query->exists();
-
-    return response()->json([
-        'exists' => $exists,
-        'message' => $exists ? 'URL website ini sudah terdaftar pada data lain.' : 'URL dapat digunakan.'
-    ]);
-}
 }

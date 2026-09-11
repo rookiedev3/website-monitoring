@@ -22,11 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       Event::listen(Login::class, function (Login $event) {
+        Event::listen(Login::class, function (Login $event) {
             $event->user->forceFill(['last_login_at' => now()])->saveQuietly();
         });
         Carbon::serializeUsing(function ($carbon) {
-        return $carbon->toIso8601String();
-    });
+            return $carbon->toIso8601String();
+        });
     }
 }

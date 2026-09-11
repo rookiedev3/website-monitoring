@@ -11,15 +11,16 @@ class GoogleController extends Controller
     public function redirectLogin()
     {
         session(['google_intent' => 'login']);
+
         return Socialite::driver('google')
             ->with(['prompt' => 'select_account'])
             ->redirect();
     }
 
-
     public function redirectRegister()
     {
         session(['google_intent' => 'register']);
+
         return Socialite::driver('google')
             ->with(['prompt' => 'select_account'])
             ->redirect();

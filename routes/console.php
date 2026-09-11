@@ -1,22 +1,47 @@
 <?php
 
-use App\Jobs\CheckWebsiteJob;
-use App\Models\Website;
 use Illuminate\Support\Facades\Schedule;
 
-// Running setiap menit via Cron Job
-Schedule::call(function () {
-    $now = now();
+/*
+|--------------------------------------------------------------------------
+| Scheduler Uptime Monitoring — SHARED HOSTING EDITION
+|--------------------------------------------------------------------------
+|
+| Cron di panel shared hosting (cPanel/Plesk/dsb) HANYA mendukung entri
+| minimal "setiap 1 menit" — tidak ada opsi per detik. Solusinya:
+|
+|   php artisan schedule:run
+|
+| tetap didaftarkan sebagai SATU-SATUNYA entri cron (jalan tiap menit),
+| lalu di dalam Laravel, tugas-tugas di bawah ini yang mengatur diri
+| masing-masing:
+|
+| Contoh entri cron di cPanel ("Cron Jobs"):
+|   * * * * * php /home/USERNAME/domains/namadomain.com/artisan schedule:run >> /dev/null 2>&1
+|
+*/
 
-    // Ambil website aktif beserta log terbarunya
-    $websites = Website::where('monitoring_status', 'active')->with('latestLog')->get();
+// 1) HTTP check — command ini jalan tiap menit, tapi di dalamnya
+//    masing-masing website hanya benar-benar dicek kalau check_interval
+//    miliknya (dalam menit, dari DB) sudah lewat.
+Schedule::command('monitor:dispatch-http')
+    ->everyMinute()
+    ->withoutOverlapping();
 
-    foreach ($websites as $website) {
-        $lastChecked = $website->latestLog?->checked_at;
+// 2) Ping check — berjalan setiap detik (everySecond)
+// Cocok untuk proses daemon / schedule:work yang disupervisi Supervisor/systemd.
+Schedule::command('monitor:dispatch-ping')
+    ->everySecond()
+    ->withoutOverlapping();
 
-        // Cek apakah selisih menit terakhir cek sudah >= check_interval milik website ini (atau belum pernah dicek)
-        if (! $lastChecked || $lastChecked->diffInMinutes($now) >= $website->check_interval) {
-            CheckWebsiteJob::dispatch($website);
-        }
-    }
-})->everyMinute();
+// 2b) Ping sweep — alternatif untuk Shared Hosting dengan Cron cPanel standar per menit (* * * * * schedule:run)
+// Melakukan internal loop tiap ±1 detik selama 55 detik agar tetap real-time per detik.
+Schedule::command('monitor:ping-sweep', ['--duration' => 55])
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// 3) SSL expiration check — cukup sekali sehari.
+Schedule::command('monitor:dispatch-ssl')
+    ->dailyAt('01:00')
+    ->withoutOverlapping();

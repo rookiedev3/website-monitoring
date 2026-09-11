@@ -26,7 +26,7 @@ class Incident extends Model
         'duration_seconds',
         'root_cause',
         'resolution',
-            'report_submitted_at', 
+        'report_submitted_at',
     ];
 
     /**
@@ -38,7 +38,7 @@ class Incident extends Model
         'started_at' => 'datetime',
         'resolved_at' => 'datetime',
         'duration_seconds' => 'integer',
-    'report_submitted_at' => 'datetime', 
+        'report_submitted_at' => 'datetime',
     ];
 
     /* ==========================================

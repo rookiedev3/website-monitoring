@@ -4,23 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Incident;
 use App\Models\Website;
+use App\Services\PingHistoryService;
+use Illuminate\Support\Collection;
 
 class MonitoringController extends Controller
 {
+    public function __construct(protected PingHistoryService $pingHistory) {}
+
     public function index()
     {
-        // Ambil website beserta log terbaru & 30 log terakhir untuk bar chart
-        $websites = Website::with(['latestLog', 'monitoringLogs' => function ($query) {
-            $query->latest('checked_at')->take(30);
-        }])->orderBy('website_name')->get();
+        // Catatan: relasi 'pingLogs' dari DB TIDAK dipakai lagi.
+        // Riwayat ping & persentase uptime sekarang berasal dari Cache (file/database driver).
+        $websites = $this->attachPingCacheData(
+            Website::with(['latestLog'])->orderBy('website_name')->get()
+        );
 
-        $stats = [
-            'total' => $websites->count(),
-            'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
-            'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
-            'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
-            'paused' => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
-        ];
+        $stats = $this->buildStats($websites);
 
         $activeIncidents = Incident::with(['website', 'assignedUser'])
             ->whereIn('status', ['open', 'on_progress'])
@@ -44,38 +43,52 @@ class MonitoringController extends Controller
             ->latest()
             ->get();
 
-        return view('dashboard.show', compact('website', 'logs', 'incidents'));
+        // Riwayat ping realtime (30 terakhir) untuk grafik di halaman detail, dari cache.
+        $pingHistory = $this->pingHistory->get($website->id);
+        $uptimePercentage = $this->pingHistory->uptimePercentage($website->id);
+
+        return view('dashboard.show', compact('website', 'logs', 'incidents', 'pingHistory', 'uptimePercentage'));
     }
 
     public function apiStatus()
     {
-        // Ambil data beserta 30 history log untuk AJAX update
-        $websites = Website::with(['latestLog', 'monitoringLogs' => function ($query) {
-            $query->latest('checked_at')->take(30);
-        }])->get();
+        // Dipanggil oleh AJAX setiap beberapa detik dari dashboard.
+        // Ping history & uptime % dibaca langsung dari Cache (file/database), bukan query berat ke DB.
+        $websites = $this->attachPingCacheData(
+            Website::with(['latestLog'])->get()
+        );
 
-        // Hitung persentase Uptime 30 pengecekan terakhir
-        $websites->transform(function ($web) {
-            $logs = $web->monitoringLogs;
-            $totalLogs = $logs->count();
-            $upLogs = $logs->filter(fn ($l) => in_array($l->status, ['online', 'warning']))->count();
-
-            $web->uptime_percentage = $totalLogs > 0 ? round(($upLogs / $totalLogs) * 100, 1) : 100;
-
-            return $web;
-        });
-
-        $stats = [
-            'total' => $websites->count(),
-            'online' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'online')->count(),
-            'warning' => $websites->filter(fn ($w) => optional($w->latestLog)->status === 'warning')->count(),
-            'down' => $websites->filter(fn ($w) => in_array(optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
-            'paused' => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
-        ];
+        $stats = $this->buildStats($websites);
 
         return response()->json([
             'stats' => $stats,
             'websites' => $websites,
         ]);
+    }
+
+    /**
+     * Tempelkan `ping_history` (array) dan `uptime_percentage` ke setiap
+     * model Website berdasarkan data ring buffer di Cache (file/database).
+     */
+    private function attachPingCacheData(Collection $websites): Collection
+    {
+        return $websites->map(function (Website $website) {
+            $website->ping_history = $this->pingHistory->get($website->id);
+            $website->uptime_percentage = $this->pingHistory->uptimePercentage($website->id);
+            $website->last_status = $website->latestLog?->status;
+
+            return $website;
+        });
+    }
+
+    private function buildStats(Collection $websites): array
+    {
+        return [
+            'total' => $websites->count(),
+            'online' => $websites->filter(fn ($w) => ($w->last_status ?? optional($w->latestLog)->status) === 'online')->count(),
+            'warning' => $websites->filter(fn ($w) => ($w->last_status ?? optional($w->latestLog)->status) === 'warning')->count(),
+            'down' => $websites->filter(fn ($w) => in_array($w->last_status ?? optional($w->latestLog)->status, ['down', 'ssl_error']))->count(),
+            'paused' => $websites->filter(fn ($w) => $w->monitoring_status === 'paused')->count(),
+        ];
     }
 }

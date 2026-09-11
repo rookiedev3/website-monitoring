@@ -56,8 +56,8 @@ class ProfileController extends Controller
         ]);
 
         // Jika user mau ganti password, cek dulu password lama benar
-        if (!empty($validated['new_password'])) {
-            if (!Hash::check($validated['current_password'], $user->password)) {
+        if (! empty($validated['new_password'])) {
+            if (! Hash::check($validated['current_password'], $user->password)) {
                 return back()
                     ->withErrors(['current_password' => 'Kata sandi saat ini tidak sesuai.'])
                     ->withInput();

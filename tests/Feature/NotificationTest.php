@@ -472,4 +472,3 @@ class NotificationTest extends TestCase
         $this->assertEquals(0, $programmer->fresh()->notifications()->count());
     }
 }
-
