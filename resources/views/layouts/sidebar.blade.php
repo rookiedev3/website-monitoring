@@ -475,7 +475,7 @@
         <button class="user-profile-btn" id="userProfileBtn" title="Akun">
           <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
           <div class="user-info">
-            <h4>{{ auth()->user()->name }}</h4>
+            <h4>{{ ucwords(auth()->user()->name) }}</h4>
             <p>{{ auth()->user()->email }}</p>
           </div>
         </button>

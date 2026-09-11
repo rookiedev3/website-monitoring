@@ -41,14 +41,17 @@ class WebsiteDownNotification extends Notification
 
         return (new MailMessage)
             ->error()
-            ->subject("🔴 ALERT: Website {$this->website->website_name} DOWN!")
-            ->greeting('Perhatian!')
-            ->line("Website **{$this->website->website_name}** ({$this->website->url}) terdeteksi mengalami gangguan.")
-            ->line("• **Domain:** {$this->website->url}")
-            ->line("• **Error Type:** {$this->errorType}")
-            ->line("• **Waktu Mulai:** {$this->startTime}")
-            ->action('Lihat Incident', $url)
-            ->line('Harap segera lakukan penanganan teknis.');
+            ->subject("[ALERT] Website {$this->website->website_name} Mengalami Gangguan")
+            ->greeting('Yth. Tim,')
+            ->line('Berikut ringkasan insiden yang terdeteksi pada monitor Anda:')
+            ->line("**Monitor** : {$this->website->website_name}")
+            ->line("**URL** : {$this->website->url}")
+            ->line("**Root Cause** : {$this->errorType}")
+            ->line("**Waktu Mulai** : {$this->startTime}")
+            ->action('Lihat Detail Insiden', $url)
+            ->line('Mohon segera dilakukan penanganan teknis.')
+            ->line('Hormat kami,')
+            ->salutation('Website Monitoring System');
     }
 
     public function toDatabase($notifiable)

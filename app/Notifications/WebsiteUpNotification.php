@@ -38,12 +38,16 @@ class WebsiteUpNotification extends Notification
 
         return (new MailMessage)
             ->success()
-            ->subject("🟢 RECOVERY: Website {$this->website->website_name} Kembali Normal")
-            ->greeting('Kabar Baik!')
-            ->line("Website **{$this->website->website_name}** ({$this->website->url}) telah kembali online.")
-            ->line("• **Durasi Downtime:** {$this->duration}")
-            ->line('• **Status Incident:** Otomatis diselesaikan (Resolved)')
-            ->action('Lihat Incident', $url);
+            ->subject("[RESOLVED] Website {$this->website->website_name} Kembali Normal")
+            ->greeting('Yth. Tim,')
+            ->line('Berikut ringkasan insiden yang telah diselesaikan:')
+            ->line("**Monitor** : {$this->website->website_name}")
+            ->line("**URL** : {$this->website->url}")
+            ->line("**Status Insiden** : Resolved (diselesaikan otomatis)")
+            ->line("**Durasi Downtime** : {$this->duration}")
+            ->action('Lihat Detail Insiden', $url)
+            ->line('Hormat kami,')
+            ->salutation('Website Monitoring System');
     }
 
     public function toDatabase($notifiable)
