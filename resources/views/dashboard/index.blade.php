@@ -1298,7 +1298,7 @@
           else if (['down', 'ssl_error'].includes(hLog.status)) barClass = 'bar-down';
 
           const checkedLabel = formatCheckedAt(hLog.checked_at);
-          barsHtml += `<div class="uptime-bar ${barClass}" title="Dicek: ${checkedLabel}&#10;Status: ${hLog.status.toUpperCase()} (${hLog.response_time_ms ?? 0}ms)"></div>`;
+          barsHtml += `<div class="uptime-bar ${barClass}" title="${checkedLabel}&#10;${hLog.status.toUpperCase()} (${hLog.response_time_ms ?? 0}ms)"></div>`;
         });
 
         const uptimePct = web.uptime_percentage ?? 100;
