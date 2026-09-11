@@ -49,7 +49,7 @@ class User extends Authenticatable
      */
     public function scopeNotificationRecipients($query)
     {
-        return $query->whereIn('role', ['super_admin', 'programmer'])
+        return $query->whereIn('role', ['super_admin', 'programmer', 'viewer'])
             ->where('is_active', true);
     }
 }

@@ -640,7 +640,7 @@
 
   <!-- TOP NAVBAR UTAMA & NOTIFIKASI -->
   <header class="top-navbar">
-    @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'programmer']))
+    @if(auth()->check() && in_array(auth()->user()->role, ['super_admin', 'programmer', 'viewer']))
       @php
         $notifications = auth()->user()->unreadNotifications()->take(10)->get();
         $unreadCount = auth()->user()->unreadNotifications->count();
