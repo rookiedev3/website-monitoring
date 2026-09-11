@@ -295,20 +295,16 @@
       justify-content: center;
     }
 
-    /* ==========================================================
-        KODE RESPONSIF: STYLE MAIN CONTENT & PERGESERAN SIDEBAR
-        ========================================================== */
+    /* MAIN CONTENT & PERGESERAN SIDEBAR */
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      /* Disesuaikan: Atas 85px agar aman dari navbar, Kiri-Kanan 12px agar konsisten melebar */
       padding: 85px 12px 16px 12px;
       min-width: 0;
       transition: margin-left 0.3s ease, width 0.3s ease;
       width: calc(100% - var(--sidebar-width));
     }
 
-    /* Jika sidebar diperkecil (collapsed) di laptop */
     aside#sidebar.collapsed~main {
       margin-left: var(--sidebar-collapsed);
       width: calc(100% - var(--sidebar-collapsed));
@@ -426,6 +422,10 @@
       color: var(--muted);
     }
 
+    .filter-dropdown {
+      width: auto;
+    }
+
     .filter-dropdown select {
       background: #fbfcfe;
       border: 1px solid var(--line);
@@ -436,6 +436,7 @@
       font-weight: 700;
       outline: none;
       cursor: pointer;
+      width: 100%;
       transition: border-color 0.2s ease;
     }
 
@@ -452,9 +453,6 @@
       box-shadow: var(--shadow);
     }
 
-    /* ==========================================================
-        KODE RESPONSIF: TABEL AGAR BISA DI-SCROLL DI HP
-        ========================================================== */
     .table-responsive {
       width: 100%;
       overflow-x: auto;
@@ -650,9 +648,7 @@
       justify-content: center;
     }
 
-    /* ==========================================================
-        KODE RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px)
-        ========================================================== */
+    /* RESPONSIF: KHUSUS LAYAR HP & TABLET (Max-width: 768px) */
     @media (max-width: 768px) {
       main {
         margin-left: 0 !important;
@@ -670,6 +666,10 @@
       }
 
       .search-box {
+        width: 100%;
+      }
+
+      .filter-dropdown {
         width: 100%;
       }
 

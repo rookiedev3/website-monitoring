@@ -4,8 +4,8 @@
   <style>
     /* 1. LOCAL CSS RESET & VARIABLES (SIDEBAR GELAP ELEGANT, NAVBAR CLEAN WHITE & SOFT NEUTRAL) */
     .nav-layout-scope {
-      --sidebar-width: 215px;
-      --sidebar-collapsed: 62px;
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 80px;
       --navbar-height: 60px;
       
       --sidebar-bg: #0d1712;
@@ -56,9 +56,9 @@
     }
 
     .nav-layout-scope .notification-btn {
-      background: #013220; /* Latar belakang hijau tua yang konsisten */
-      border: 1px solid #013220; /* Border hijau tua */
-      color: #ffffff; /* Warna ikon lonceng menjadi putih */
+      background: #013220;
+      border: 1px solid #013220;
+      color: #ffffff;
       width: 38px;
       height: 38px;
       border-radius: 10px;
@@ -71,9 +71,9 @@
     }
 
     .nav-layout-scope .notification-btn:hover {
-      background: #006B3F; /* Hijau vibrant sedikit lebih terang saat di-hover */
+      background: #006B3F;
       border-color: #006B3F;
-      color: #ffffff; /* Tetap pertahankan ikon warna putih */
+      color: #ffffff;
     }
 
     .nav-layout-scope .notification-badge {
@@ -429,6 +429,10 @@
       flex-shrink: 0;
     }
 
+    .nav-layout-scope aside#sidebar.collapsed .nav-item {
+      justify-content: center;
+    }
+
     .nav-layout-scope aside#sidebar.collapsed .nav-item span {
       display: none;
     }
@@ -551,7 +555,7 @@
     /* COLLAPSED POPUP HANDLER */
     .nav-layout-scope aside#sidebar.collapsed .user-popup-menu {
       position: fixed !important;
-      left: 68px !important;
+      left: 88px !important;
       bottom: 60px !important;
       width: 52px !important;
       border-radius: 8px !important;
@@ -868,11 +872,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       const notifBtn = document.getElementById('notifDropdownBtn');
       const notifMenu = document.getElementById('notifDropdownMenu');
-      const mainContent = document.querySelector('main'); // Menargetkan elemen main di file dashboard
+      const mainContent = document.querySelector('main');
 
-      // Memastikan elemen main punya transisi agar pergerakannya mulus
+      // Mengatur transisi dan langsung memberikan padding kiri yang lebih lega sejak halaman dimuat
       if (mainContent) {
-        mainContent.style.transition = 'margin-left 0.3s ease, width 0.3s ease';
+        mainContent.style.transition = 'margin-left 0.3s ease, width 0.3s ease, padding-left 0.3s ease, padding-right 0.3s ease';
+        mainContent.style.paddingLeft = '24px'; // Jarak lebih lega dari sidebar
+        mainContent.style.paddingRight = '24px';
       }
 
       if (notifBtn && notifMenu) {
@@ -1005,7 +1011,6 @@
           });
         }
 
-        // AJAX Hapus Notifikasi
         if (notifBody) {
           notifBody.addEventListener('submit', function(e) {
             const form = e.target.closest('.notif-delete-form');
@@ -1057,7 +1062,6 @@
           });
         }
 
-        // AJAX Tandai Semua Dibaca
         if (notifMarkAllWrapper) {
           notifMarkAllWrapper.addEventListener('submit', function(e) {
             const form = e.target.closest('#notifMarkAllForm');
@@ -1089,7 +1093,6 @@
           });
         }
 
-        // Polling setiap 5 detik
         setInterval(fetchNotifications, 5000);
       }
 
@@ -1120,16 +1123,16 @@
           sidebar.classList.toggle('collapsed');
           const isCollapsed = sidebar.classList.contains('collapsed');
 
-          // Menyesuaikan navbar
           if (topNavbar) {
-            topNavbar.style.left = isCollapsed ? '62px' : '215px';
-            topNavbar.style.width = isCollapsed ? 'calc(100% - 62px)' : 'calc(100% - 215px)';
+            topNavbar.style.left = isCollapsed ? '80px' : '260px';
+            topNavbar.style.width = isCollapsed ? 'calc(100% - 80px)' : 'calc(100% - 260px)';
           }
 
-          // KUNCI: Menyesuaikan tag main dashboard yang terpisah secara paksa dan presisi
           if (mainContent) {
-            mainContent.style.marginLeft = isCollapsed ? '62px' : '215px';
-            mainContent.style.width = isCollapsed ? 'calc(100% - 62px)' : 'calc(100% - 215px)';
+            mainContent.style.marginLeft = isCollapsed ? '80px' : '260px';
+            mainContent.style.width = isCollapsed ? 'calc(100% - 80px)' : 'calc(100% - 260px)';
+            mainContent.style.paddingLeft = '24px';
+            mainContent.style.paddingRight = '24px';
           }
 
           if (userPopupMenu) userPopupMenu.classList.remove('show');
