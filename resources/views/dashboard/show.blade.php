@@ -58,7 +58,6 @@
         main {
             margin-left: var(--sidebar-width);
             flex: 1;
-            /* Disesuaikan: Atas 85px agar aman dari navbar, Kiri-Kanan 12px agar melebar konsisten */
             padding: 85px 12px 16px 12px;
             min-width: 0;
             transition: margin-left 0.3s ease, width 0.3s ease;
@@ -192,7 +191,7 @@
             border-collapse: collapse;
             text-align: left;
             font-size: 13px;
-            min-width: 650px;
+            min-width: 700px;
         }
 
         th {
@@ -290,6 +289,31 @@
             font-size: 12px;
             font-family: monospace;
             font-weight: 600;
+            max-width: 260px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn-detail {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f8fafc;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-detail:hover {
+            background: var(--green);
+            color: #fff;
+            border-color: var(--green);
         }
 
         /* UI Custom Pagination Layout */
@@ -599,6 +623,71 @@
             display: block;
         }
 
+        /* Modal Detail Log */
+        .log-modal-box {
+            max-width: 560px;
+        }
+
+        .log-modal-body {
+            background: var(--card);
+            min-height: unset;
+            display: block;
+            padding: 20px;
+        }
+
+        .log-detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+        }
+
+        .log-detail-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .log-detail-label {
+            color: var(--muted);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .log-detail-value {
+            color: var(--ink);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .log-detail-error-box {
+            margin-top: 12px;
+            background: var(--red-soft);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            color: var(--red);
+            border-radius: 10px;
+            padding: 14px;
+            font-family: monospace;
+            font-size: 12.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-detail-error-label {
+            display: block;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 14px;
+            margin-bottom: 8px;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             main {
@@ -666,48 +755,6 @@
                 </div>
             </div>
 
-            <!-- UPTIME HISTORY PING (REAL-TIME CACHE) -->
-            <div class="card">
-                <div class="card-title" style="justify-content: space-between;">
-                    <span>
-                        <i class="bi bi-activity" style="color: var(--green-vibrant);"></i>
-                        Riwayat Ping & Uptime Realtime (30 Sampel Terakhir)
-                    </span>
-                    <span class="badge badge-online" style="font-size: 13px; padding: 6px 14px;">
-                        Uptime: {{ $uptimePercentage }}%
-                    </span>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 6px 0;">
-                    @php
-                        $pingHistoryCol = collect($pingHistory ?? []);
-                        $totalPingCount = $pingHistoryCol->count();
-                        $emptyPingCount = max(0, 30 - $totalPingCount);
-                    @endphp
-                    <div style="flex: 1; min-width: 280px;">
-                        <div style="display:flex; align-items:center; gap:4px; background:rgba(0,0,0,0.02); padding:8px 12px; border-radius:8px; border:1px solid var(--line);">
-                            @for($i = 0; $i < $emptyPingCount; $i++)
-                                <div style="flex:1; height:24px; border-radius:3px; background-color:#e2e8f0;" title="Belum ada data ping"></div>
-                            @endfor
-                            @foreach($pingHistoryCol as $pLog)
-                                @php
-                                    $isSuccess = (bool) ($pLog['success'] ?? false);
-                                    $barBg = $isSuccess ? '#10b981' : '#ef4444';
-                                    $checkedAtLabel = \Illuminate\Support\Carbon::parse($pLog['checked_at'])->format('H:i:s');
-                                    $latencyInfo = isset($pLog['latency_ms']) ? " | Latency: {$pLog['latency_ms']}ms" : '';
-                                @endphp
-                                <div style="flex:1; height:24px; border-radius:3px; background-color:{{ $barBg }}; transition:all 0.2s ease; cursor:pointer;"
-                                    title="Waktu: {{ $checkedAtLabel }}&#10;Status Ping: {{ $isSuccess ? 'Connected' : 'Unreachable' }}{{ $latencyInfo }}">
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    <div style="font-size: 12px; color: var(--muted); font-weight: 600;">
-                        <span style="display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 2px; margin-right: 4px;"></span> Connected
-                        <span style="display: inline-block; width: 10px; height: 10px; background: #ef4444; border-radius: 2px; margin-left: 12px; margin-right: 4px;"></span> Unreachable
-                    </div>
-                </div>
-            </div>
-
             <!-- LIVE PREVIEW WEBSITE -->
             <div class="card">
                 <div class="card-title" style="justify-content: space-between;">
@@ -727,9 +774,6 @@
                     <img id="inlinePreviewImage" src="" alt="Live preview {{ $website->website_name }}" style="display:none;">
                     <div class="preview-hint"><i class="bi bi-arrows-fullscreen me-1"></i> Klik untuk perbesar</div>
                 </div>
-                {{-- <small style="color:var(--muted); font-size:11px; display:block; margin-top:8px;">
-                    Preview diambil lewat API screenshot pihak ketiga (kuota gratis terbatas ±25-50x/hari), gunakan tombol Refresh secukupnya.
-                </small> --}}
             </div>
 
             <!-- RIWAYAT LOG PENGECEKAN -->
@@ -742,46 +786,72 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 22%;">Waktu Cek</th>
-                                <th style="width: 15%;">Status</th>
-                                <th style="width: 15%;">HTTP Code</th>
-                                <th style="width: 18%;">Latency</th>
-                                <th style="width: 30%;">Detail Error</th>
+                                <th style="width: 20%;">Waktu Cek</th>
+                                <th style="width: 13%;">Status</th>
+                                <th style="width: 12%;">HTTP Code</th>
+                                <th style="width: 15%;">Latency</th>
+                                <th style="width: 28%;">Detail Error</th>
+                                <th style="width: 12%;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($logs as $log)
+                                @php
+                                    // Untuk tampilan ringkas di tabel (boleh singkat/terpotong)
+                                    $errorMessageShort = $log->display_error ?? $log->error_message ?? '-';
+                                    // Untuk modal detail: SELALU pakai error_message MENTAH dari DB, jangan pakai display_error
+                                    // supaya tidak ikut kepotong oleh Str::limit() di accessor display_error.
+                                    $errorMessageFull = $log->error_message ?? $log->display_error ?? '-';
+                                    $statusLabel = strtoupper($log->status_label ?? $log->status);
+                                    $httpCode = $log->formatted_http_code ?? $log->http_code ?? '-';
+                                    $latencyLabel = $log->response_time_ms ? number_format($log->response_time_ms) . ' ms' : '-';
+                                    $checkedAtFull = $log->checked_at->format('d/m/Y H:i:s');
+                                @endphp
                                 <tr>
                                     <td style="color:var(--muted); font-size:12px;">
-                                        {{ $log->checked_at->format('d/m/Y H:i:s') }}
+                                        {{ $checkedAtFull }}
                                     </td>
                                     <td>
                                         <span
                                             class="badge {{ $log->status === 'online' ? 'badge-online' : ($log->status === 'warning' ? 'badge-warning' : 'badge-down') }}">
-                                            ● {{ strtoupper($log->status_label ?? $log->status) }}
+                                            ● {{ $statusLabel }}
                                         </span>
                                     </td>
                                     <td>
-                                        <strong
-                                            style="color:var(--ink);">{{ $log->formatted_http_code ?? $log->http_code ?? '-' }}</strong>
+                                        <strong style="color:var(--ink);">{{ $httpCode }}</strong>
                                     </td>
                                     <td>
                                         @if($log->response_time_ms)
                                             <span
                                                 style="color: {{ $log->response_time_ms > 3000 ? 'var(--amber)' : '#137a48' }}; font-weight:700;">
-                                                {{ number_format($log->response_time_ms) }} ms
+                                                {{ $latencyLabel }}
                                             </span>
                                         @else
                                             <span style="color:var(--muted);">-</span>
                                         @endif
                                     </td>
-                                    <td class="text-error">
-                                        {{ $log->display_error ?? $log->error_message ?? '-' }}
+                                    <td class="text-error" title="{{ $errorMessageFull }}">
+                                        {{ $errorMessageShort }}
+                                    </td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn-detail"
+                                            onclick='openLogDetail({{ json_encode([
+                                                "waktu" => $checkedAtFull,
+                                                "status" => $statusLabel,
+                                                "http" => (string) $httpCode,
+                                                "latency" => $latencyLabel,
+                                                "error" => (string) $errorMessageFull,
+                                            ]) }})'
+                                        >
+                                            <i class="bi bi-eye"></i> Detail
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" style="text-align:center; padding: 24px; color:var(--muted);">
+                                    <td colspan="6" style="text-align:center; padding: 24px; color:var(--muted);">
                                         @if($isPaused)
                                             Monitoring website ini sedang dijeda dan belum memiliki riwayat log.
                                         @else
@@ -886,6 +956,38 @@
         </div>
     </div>
 
+    <!-- MODAL DETAIL LOG (ERROR PENUH) -->
+    <div id="logModalOverlay" class="preview-modal-overlay">
+        <div class="preview-modal-box log-modal-box">
+            <div class="preview-modal-head">
+                <h4 style="margin:0; font-size:14px; font-weight:800; color:var(--ink);">
+                    <i class="bi bi-file-text me-1"></i> Detail Log Pengecekan
+                </h4>
+                <button type="button" class="preview-modal-close" onclick="closeLogDetail()">&times;</button>
+            </div>
+            <div class="preview-modal-body log-modal-body">
+                <div class="log-detail-row">
+                    <span class="log-detail-label">Waktu Cek</span>
+                    <span class="log-detail-value" id="logDetailWaktu">-</span>
+                </div>
+                <div class="log-detail-row">
+                    <span class="log-detail-label">Status</span>
+                    <span class="log-detail-value" id="logDetailStatus">-</span>
+                </div>
+                <div class="log-detail-row">
+                    <span class="log-detail-label">HTTP Code</span>
+                    <span class="log-detail-value" id="logDetailHttp">-</span>
+                </div>
+                <div class="log-detail-row">
+                    <span class="log-detail-label">Latency</span>
+                    <span class="log-detail-value" id="logDetailLatency">-</span>
+                </div>
+                <span class="log-detail-error-label">Pesan Error Lengkap</span>
+                <div class="log-detail-error-box" id="logDetailError">-</div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const previewWebsiteUrl = @json($website->url);
 
@@ -942,6 +1044,24 @@
         });
 
         loadInlinePreview();
+
+        // ==== MODAL DETAIL LOG ====
+        function openLogDetail(data) {
+            document.getElementById('logDetailWaktu').textContent = data.waktu || '-';
+            document.getElementById('logDetailStatus').textContent = data.status || '-';
+            document.getElementById('logDetailHttp').textContent = data.http || '-';
+            document.getElementById('logDetailLatency').textContent = data.latency || '-';
+            document.getElementById('logDetailError').textContent = data.error || '-';
+            document.getElementById('logModalOverlay').style.display = 'flex';
+        }
+
+        function closeLogDetail() {
+            document.getElementById('logModalOverlay').style.display = 'none';
+        }
+
+        document.getElementById('logModalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'logModalOverlay') closeLogDetail();
+        });
     </script>
 
 </body>
