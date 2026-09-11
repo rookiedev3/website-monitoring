@@ -1144,9 +1144,9 @@
         <img id="previewModalImage" src="" alt="Live preview" style="display:none;">
       </div>
       <div class="preview-modal-footer">
-        <small style="color:var(--muted); font-size:11px;">
+        {{-- <small style="color:var(--muted); font-size:11px;">
           Preview diambil lewat API screenshot pihak ketiga (kuota gratis terbatas ±25-50x/hari), gunakan tombol Refresh secukupnya.
-        </small>
+        </small> --}}
       </div>
     </div>
   </div>
