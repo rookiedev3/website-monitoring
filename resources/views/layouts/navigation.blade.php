@@ -67,15 +67,17 @@
       justify-content: center;
       cursor: pointer;
       position: relative;
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(1, 50, 32, 0.2);
+      transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
     }
 
+    /* Warna hover lonceng disamakan dengan tombol Tambah Website Baru (menggunakan efek opacity) */
     .nav-layout-scope .notification-btn:hover {
-      background: #006B3F;
-      border-color: #006B3F;
+      background: #013220;
+      border-color: #013220;
+      opacity: 0.9;
       color: #ffffff;
     }
-
     .nav-layout-scope .notification-badge {
       position: absolute;
       top: -4px;

@@ -126,6 +126,27 @@
       /* Mengubah garis pinggir menjadi hijau */
       box-shadow: 0 4px 12px rgba(0, 107, 63, 0.3);
       /* Menyesuaikan bayangan menjadi rona hijau */
+    }.btn-refresh {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(1, 50, 32, 0.2);
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-refresh:hover {
+      background: var(--green);
+      color: #fff;
+      opacity: 0.9;
+      box-shadow: 0 4px 12px rgba(1, 50, 32, 0.2);
     }
 
     /* Metrics Cards Grid */
