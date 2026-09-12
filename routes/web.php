@@ -100,4 +100,6 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:viewer')->prefix('viewer')->group(function () {});
 });
 
+
+
 // route ridho
